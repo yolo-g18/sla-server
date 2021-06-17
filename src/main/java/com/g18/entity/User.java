@@ -33,11 +33,7 @@ public class User {
 
 	private Instant favourTimeFrom;
 	private Instant favourTimeTo;
-
-	@Email
-	@NotEmpty(message = "Email is required")
 	private String email;
-
 	private String address;
 
 	@OneToMany(mappedBy = "creator")

@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.time.Instant;
 import java.util.List;
 
@@ -22,8 +21,6 @@ public class Room {
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;
-
-    @NotBlank(message = "Name is required")
     private String name;
 
     private String description;
