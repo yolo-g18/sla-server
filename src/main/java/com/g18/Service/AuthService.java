@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -49,6 +50,8 @@ public class AuthService {
             account.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
             account.setActive(false);
             account.setUser(user);
+            account.setCreatedDate(Instant.now());
+            account.setUpdateDate(Instant.now());
 
             userRepository.save(user);
             accountRepository.save(account);
