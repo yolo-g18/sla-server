@@ -35,11 +35,9 @@ public class AuthService {
     @Transactional
     public void signup( RegisterRequest registerRequest) {
         if(checkEmailExistence(registerRequest.getEmail())){
-            log.error(registerRequest.getEmail() + " already taken");
             throw new AccountException("Email is already taken");
         }
         else if(checkUsernameExistence(registerRequest.getUsername())) {
-            log.error(registerRequest.getUsername() + " already taken");
             throw new AccountException("Username is already taken");
         } else {
             User user = new User();
