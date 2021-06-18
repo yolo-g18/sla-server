@@ -23,7 +23,6 @@ public class Event {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @NotBlank(message = "Name is required")
     private String name;
 
     private String description;

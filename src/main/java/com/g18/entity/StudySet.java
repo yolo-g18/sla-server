@@ -19,8 +19,6 @@ public class StudySet {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "creator_id")
 	private User creator;
-
-	@NotBlank(message = "Title is required")
 	private String title;
 	private String description;
 	private String tag;

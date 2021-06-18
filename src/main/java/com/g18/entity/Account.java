@@ -20,11 +20,7 @@ public class Account {
 	@OneToOne
 	@JoinColumn(name = "user_id")
 	private User user;
-
-	@NotBlank(message = "Username is required")
 	private String username;
-
-	@NotBlank(message = "Password is required")
 	private String password;
 	private boolean isActive;
 	private Instant createdDate;

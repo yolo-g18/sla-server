@@ -31,9 +31,6 @@ public class CardLearning {
     @MapsId("cardId")
     private Card card;
 
-
-    @Max(5)
-    @Min(0)
     private int q; //quality
     private double intervalTime;
     private double eFactor;
