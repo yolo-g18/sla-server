@@ -1,13 +1,13 @@
 package com.g18.exceptions;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpStatusCodeException;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class ErrorResponse {
     private HttpStatus status;
     private String message;

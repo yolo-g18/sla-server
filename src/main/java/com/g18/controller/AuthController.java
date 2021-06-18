@@ -26,17 +26,17 @@ public class AuthController {
         return new ResponseEntity<>("User Register Successful", HttpStatus.OK);
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-        return errors;
-    }
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    @ExceptionHandler(MethodArgumentNotValidException.class)
+//    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
+//        Map<String, String> errors = new HashMap<>();
+//        ex.getBindingResult().getAllErrors().forEach((error) -> {
+//            String fieldName = ((FieldError) error).getField();
+//            String errorMessage = error.getDefaultMessage();
+//            errors.put(fieldName, errorMessage);
+//        });
+//        return errors;
+//    }
 
     @GetMapping("/accountVerification/{token}")
     public ResponseEntity<String> verifyAccount(@PathVariable String token) {
