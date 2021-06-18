@@ -5,6 +5,7 @@ import com.g18.entity.Account;
 import com.g18.entity.User;
 import com.g18.entity.VerificationToken;
 import com.g18.exceptions.AccountException;
+import com.g18.exceptions.SLAException;
 import com.g18.model.NotificationEmail;
 import com.g18.repository.AccountRepository;
 import com.g18.repository.UserRepository;
@@ -83,6 +84,19 @@ public class AuthService {
 
         verificationTokenRepository.save(verificationToken);
         return token;
+    }
+
+    @Transactional
+    public void fetchUserAndEnable(VerificationToken verificationToken) {
+        String username = verificationToken.getAccount().getUsername();
+        Account account = accountRepository.findByUsername(username).orElseThrow(() -> new AccountException("Account not found with name - " + username));
+        account.setActive(true);
+        accountRepository.save(account);
+    }
+
+    public void verifyAccount(String token) {
+        Optional<VerificationToken> verificationToken = verificationTokenRepository.findByToken(token);
+        fetchUserAndEnable(verificationToken.orElseThrow(() -> new SLAException("Invalid Token")));
     }
 
 }
