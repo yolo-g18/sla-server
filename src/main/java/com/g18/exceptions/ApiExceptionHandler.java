@@ -46,12 +46,12 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handlerException(Exception ex, WebRequest req) {
-        final ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), "error occurred");
-        logger.info(ex.getMessage());
-        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<Object> handlerException(Exception ex, WebRequest req) {
+//        final ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), "error occurred");
+//        logger.info(ex.getMessage());
+//        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+//    }
 
 
 }

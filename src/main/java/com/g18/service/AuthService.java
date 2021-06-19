@@ -1,5 +1,7 @@
 package com.g18.service;
 
+import com.g18.dto.AuthenticationResponse;
+import com.g18.dto.LoginRequest;
 import com.g18.dto.RegisterRequest;
 import com.g18.entity.Account;
 import com.g18.entity.User;
@@ -10,8 +12,13 @@ import com.g18.model.NotificationEmail;
 import com.g18.repository.AccountRepository;
 import com.g18.repository.UserRepository;
 import com.g18.repository.VerificationTokenRepository;
+import com.g18.security.JwtProvider;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +29,7 @@ import java.util.UUID;
 
 @Service
 @AllArgsConstructor
+@Transactional
 @Slf4j
 public class AuthService {
 
@@ -31,6 +39,8 @@ public class AuthService {
     private final VerificationTokenRepository verificationTokenRepository;
 
     private final MailService mailService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtProvider jwtProvider;
 
     @Transactional
     public void signup( RegisterRequest registerRequest) {
@@ -97,5 +107,17 @@ public class AuthService {
         Optional<VerificationToken> verificationToken = verificationTokenRepository.findByToken(token);
         fetchUserAndEnable(verificationToken.orElseThrow(() -> new SLAException("Invalid Token")));
     }
+
+    public AuthenticationResponse login(LoginRequest loginRequest) {
+        log.info(loginRequest.toString());
+        Authentication authenticate = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
+
+        String token = jwtProvider.generateToken(authenticate);
+
+        return new AuthenticationResponse(token, loginRequest.getUsername());
+    }
+
 
 }

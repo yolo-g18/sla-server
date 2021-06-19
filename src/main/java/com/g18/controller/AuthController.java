@@ -1,5 +1,7 @@
 package com.g18.controller;
 
+import com.g18.dto.AuthenticationResponse;
+import com.g18.dto.LoginRequest;
 import com.g18.service.AuthService;
 import com.g18.dto.RegisterRequest;
 import lombok.AllArgsConstructor;
@@ -26,6 +28,11 @@ public class AuthController {
     public ResponseEntity<String> verifyAccount(@PathVariable String token) {
         authService.verifyAccount(token);
         return new ResponseEntity<>("Account Activated Successful", HttpStatus.OK);
+    }
+
+    @PostMapping("/login")
+    public AuthenticationResponse login(@RequestBody LoginRequest loginRequest) {
+        return authService.login(loginRequest);
     }
 
 }
