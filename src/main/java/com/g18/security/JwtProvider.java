@@ -48,4 +48,28 @@ public class JwtProvider {
         }
     }
 
+    public boolean validateToken(String jwt) {
+        Jwts.parserBuilder().setSigningKey(getPublicKey()).build().parseClaimsJws(jwt);
+        return true;
+    }
+
+    private PublicKey getPublicKey() {
+        try {
+            return keyStore.getCertificate("sla").getPublicKey();
+        }catch(KeyStoreException ex) {
+            throw new SLAException("Exception occured while retrieving" +
+                    " public key from keystore", ex);
+        }
+    }
+
+    public String getUsernameFromJwt(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(getPublicKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        return claims.getSubject();
+    }
+
 }
