@@ -1,4 +1,4 @@
-package com.g18.Service;
+package com.g18.service;
 
 import com.g18.exceptions.SLAException;
 import com.g18.model.NotificationEmail;

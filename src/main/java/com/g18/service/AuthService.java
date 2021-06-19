@@ -1,4 +1,4 @@
-package com.g18.Service;
+package com.g18.service;
 
 import com.g18.dto.RegisterRequest;
 import com.g18.entity.Account;
@@ -6,7 +6,6 @@ import com.g18.entity.User;
 import com.g18.entity.VerificationToken;
 import com.g18.exceptions.AccountException;
 import com.g18.exceptions.SLAException;
-import com.g18.model.ApiError;
 import com.g18.model.NotificationEmail;
 import com.g18.repository.AccountRepository;
 import com.g18.repository.UserRepository;

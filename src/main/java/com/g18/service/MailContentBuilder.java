@@ -1,4 +1,4 @@
-package com.g18.Service;
+package com.g18.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
