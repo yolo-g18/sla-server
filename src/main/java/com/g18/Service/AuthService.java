@@ -6,6 +6,7 @@ import com.g18.entity.User;
 import com.g18.entity.VerificationToken;
 import com.g18.exceptions.AccountException;
 import com.g18.exceptions.SLAException;
+import com.g18.model.ApiError;
 import com.g18.model.NotificationEmail;
 import com.g18.repository.AccountRepository;
 import com.g18.repository.UserRepository;
@@ -34,10 +35,11 @@ public class AuthService {
 
     @Transactional
     public void signup( RegisterRequest registerRequest) {
-        if(checkEmailExistence(registerRequest.getEmail())){
+        if (checkEmailExistence(registerRequest.getEmail()) && checkUsernameExistence(registerRequest.getUsername())) {
+            throw new AccountException("Email and username are already taken");
+        }else if(checkEmailExistence(registerRequest.getEmail())){
             throw new AccountException("Email is already taken");
-        }
-        else if(checkUsernameExistence(registerRequest.getUsername())) {
+        } else if(checkUsernameExistence(registerRequest.getUsername())) {
             throw new AccountException("Username is already taken");
         } else {
             User user = new User();
