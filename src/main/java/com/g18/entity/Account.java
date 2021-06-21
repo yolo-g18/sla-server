@@ -17,9 +17,10 @@ public class Account {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
+	@Column(nullable = false, unique = true)
 	private String username;
 	private String password;
 	private boolean isActive;

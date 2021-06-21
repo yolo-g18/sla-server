@@ -1,6 +1,7 @@
 package com.g18.exceptions;
 
 import com.g18.model.ApiError;
+import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.security.auth.message.AuthException;
 import java.util.*;
 
 @RestControllerAdvice
@@ -32,26 +34,44 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         for (final ObjectError error : ex.getBindingResult().getGlobalErrors()) {
             errors.put(error.getObjectName(), error.getDefaultMessage());
         }
-        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Validation failed", errors);
+        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), "Validation failed", errors);
         logger.info(errors.toString());
 
-        return handleExceptionInternal(ex, apiError, headers, apiError.getStatus(), request);
+        return handleExceptionInternal(ex, apiError, headers, HttpStatus.BAD_REQUEST, request);
     }
 
     @ExceptionHandler(AccountException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<Object> handleAccountException(AccountException ex, WebRequest req) {
-        final ApiError apiError = new ApiError(HttpStatus.CONFLICT, ex.getMessage(), "error occurred");
+        final ApiError apiError = new ApiError();
+        apiError.setStatus(HttpStatus.CONFLICT.value());
+        apiError.setMessage(ex.getMessage());
         logger.info(ex.getMessage());
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<Object> handlerException(Exception ex, WebRequest req) {
-//        final ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage(), "error occurred");
-//        logger.info(ex.getMessage());
-//        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
-//    }
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<Object> handleNotFoundException(NotFoundException ex, WebRequest req) {
+        final ApiError apiError = new ApiError();
+        apiError.setStatus(HttpStatus.NOT_FOUND.value());
+        apiError.setMessage(ex.getMessage());
+        logger.info(ex.getMessage());
+        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<Object> handlerException(Exception ex, WebRequest req) {
+        final ApiError apiError = new ApiError();
+        apiError.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        apiError.setMessage(ex.getMessage());
+        logger.info(ex.getMessage());
+        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+    }
+
+
+
 
 
 }
