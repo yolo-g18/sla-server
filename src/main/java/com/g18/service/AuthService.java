@@ -1,7 +1,11 @@
 package com.g18.service;
 
+import com.g18.dto.AuthenticationResponse;
+import com.g18.dto.LoginRequest;
+import com.g18.dto.RefreshTokenRequest;
 import com.g18.dto.RegisterRequest;
 import com.g18.entity.Account;
+import com.g18.entity.RefreshToken;
 import com.g18.entity.User;
 import com.g18.entity.VerificationToken;
 import com.g18.exceptions.AccountException;
@@ -10,18 +14,28 @@ import com.g18.model.NotificationEmail;
 import com.g18.repository.AccountRepository;
 import com.g18.repository.UserRepository;
 import com.g18.repository.VerificationTokenRepository;
+import com.g18.security.JwtProvider;
+import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Date;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @AllArgsConstructor
+@Transactional
 @Slf4j
 public class AuthService {
 
@@ -31,6 +45,9 @@ public class AuthService {
     private final VerificationTokenRepository verificationTokenRepository;
 
     private final MailService mailService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtProvider jwtProvider;
+    private final RefreshTokenService refreshTokenService;
 
     @Transactional
     public void signup( RegisterRequest registerRequest) {
@@ -75,6 +92,16 @@ public class AuthService {
         return account.isPresent();
     }
 
+    @Transactional(readOnly = true)
+    public User getCurrentUser() {
+        org.springframework.security.core.userdetails.User principal
+                = (org.springframework.security.core.userdetails.User) SecurityContextHolder
+                .getContext().getAuthentication().getPrincipal();
+        Account account = accountRepository.findByUsername(principal.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User name not found - " + principal.getUsername()));
+        return account.getUser();
+    }
+
     private String generateVerificationToken(Account account) {
         String token = UUID.randomUUID().toString();
         VerificationToken verificationToken = new VerificationToken();
@@ -88,7 +115,8 @@ public class AuthService {
     @Transactional
     public void fetchUserAndEnable(VerificationToken verificationToken) {
         String username = verificationToken.getAccount().getUsername();
-        Account account = accountRepository.findByUsername(username).orElseThrow(() -> new AccountException("Account not found with name - " + username));
+        Account account = accountRepository.findByUsername(username)
+                .orElseThrow(() -> new AccountException("Account not found with name - " + username));
         account.setActive(true);
         accountRepository.save(account);
     }
@@ -97,5 +125,48 @@ public class AuthService {
         Optional<VerificationToken> verificationToken = verificationTokenRepository.findByToken(token);
         fetchUserAndEnable(verificationToken.orElseThrow(() -> new SLAException("Invalid Token")));
     }
+
+    public AuthenticationResponse login(LoginRequest loginRequest) throws NotFoundException {
+        //check refresh token existance in db to delete
+        Account account = accountRepository.findByUsername(loginRequest.getUsername())
+                .orElseThrow(() -> new NotFoundException("Account not found with name " + loginRequest.getUsername()));
+        Optional<RefreshToken> refreshToken = refreshTokenService.getRefreshTokenByAccountId(account.getId());
+        if(refreshToken.isPresent()) {
+            refreshTokenService.deleteRefreshTokenByAccountId(account.getId());
+        }
+
+        Authentication authenticate = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
+        String token = jwtProvider.generateToken(authenticate);
+
+        log.error(String.valueOf(Date.from(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))));
+
+        return AuthenticationResponse.builder()
+                .authenticationToken(token)
+                .refreshToken(refreshTokenService.generateRefreshToken(loginRequest.getUsername()).getToken())
+                .expiresAt(String.valueOf(Date.from(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))))
+                .username(loginRequest.getUsername())
+                .build();
+    }
+
+    public AuthenticationResponse refreshToken (RefreshTokenRequest refreshTokenRequest) {
+        refreshTokenService.validateRefreshToken(refreshTokenRequest.getRefreshToken());
+        String token = jwtProvider.generateTokenWithUsername(refreshTokenRequest.getUsername());
+        return AuthenticationResponse.builder()
+                .authenticationToken(token)
+                .refreshToken(refreshTokenRequest.getRefreshToken())
+                .expiresAt(String.valueOf(Date.from(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))))
+                .username(refreshTokenRequest.getUsername())
+                .build();
+    }
+
+    public boolean isLoggedIn() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return !(authentication instanceof AnonymousAuthenticationToken) && authentication.isAuthenticated();
+    }
+
+
+
 
 }
