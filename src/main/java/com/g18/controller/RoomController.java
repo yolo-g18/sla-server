@@ -42,26 +42,6 @@ public class RoomController {
         return roomService.deleteRoom(id);
     }
 
-    @PostMapping("/createRoomMember")
-    public void createRoomMember(@RequestBody RoomMember roomMember)
-    {
-        roomService.createRoomMember(roomMember);
-    }
-
-
-
-    @PostMapping("/addExistingFolderToRoom")
-    public boolean addExistingFolderToRoom(@RequestBody RoomFolder roomFolder, @RequestBody Long room_id){return roomService.addExistingFolderToRoom(roomFolder,room_id);}
-
-    @PostMapping("/addExistingStudySetToRoom")
-    public boolean addExistingStudySetToRoom(@RequestBody RoomStudySet roomStudySet, @RequestBody Long room_id){return roomService.addExistingStudySetToRoom(roomStudySet,room_id);}
-
-    @DeleteMapping("/deleteMember/{roomMember_id}/{room_id}")
-    public boolean deleteMember(@PathVariable Long roomMember_id, @PathVariable Long room_id){return roomService.deleteMember(roomMember_id,room_id);}
-
-    @DeleteMapping("/deleteFolderFromRoom/{roomFolder_id}/{room_id}")
-    public boolean deleteFolderFromRoom(@PathVariable Long roomFolder_id, @PathVariable Long room_id){return roomService.deleteFolderFromRoom(roomFolder_id,room_id);}
-
-    @DeleteMapping("/deleteStudySetFromRoom/{roomStudyset_id}/{room_id}")
-    public boolean deleteStudySetFromRoom(@PathVariable Long roomStudyset_id, @PathVariable Long room_id){return roomService.deleteStudySetFromRoom(roomStudyset_id,room_id);}
+    @PutMapping("/addMember")
+    public Room addMember(@PathVariable RoomMember roomMember){return  roomService.addMember(roomMember);}
 }

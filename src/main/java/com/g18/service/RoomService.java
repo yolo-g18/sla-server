@@ -42,39 +42,10 @@ public class RoomService {
         return roomRepository.save(existingRoom);
     }
 
-    public void createRoomMember(RoomMember roomMember){
+    public Room addMember(RoomMember roomMember){
         Room existingRoom = roomRepository.findById(roomMember.getRoomMemberId().getRoomId()).orElse(null);
         existingRoom.getRoomMembers().add(roomMember);
-        roomRepository.save(existingRoom);
-        User existingUser = userRepository.findById(roomMember.getRoomMemberId().getMemberId()).orElse(null);
-        existingUser.getRoomsJoin().add(roomMember);
-        userRepository.save(existingUser);
-
+        return roomRepository.save(existingRoom);
     }
 
-
-    public boolean addExistingFolderToRoom(RoomFolder roomFolder, Long room_id){
-        Room existingRoom = roomRepository.findById(room_id).orElse(null);
-        return existingRoom.getRoomFolders().add(roomFolder);
-    }
-
-    public boolean addExistingStudySetToRoom(RoomStudySet roomStudySet, Long room_id){
-        Room existingRoom = roomRepository.findById(room_id).orElse(null);
-        return existingRoom.getRoomStudySets().add(roomStudySet);
-    }
-
-    public boolean deleteMember(Long roomMember_id, Long room_id){
-        Room existingRoom = roomRepository.findById(room_id).orElse(null);
-        return existingRoom.getRoomMembers().removeIf(roomMember -> (roomMember.getRoomMemberId().equals(roomMember_id)));
-    }
-
-    public boolean deleteFolderFromRoom(Long roomFolder_id, Long room_id){
-        Room existingRoom = roomRepository.findById(room_id).orElse(null);
-        return existingRoom.getRoomFolders().removeIf(roomFolder -> (roomFolder.getRoomFolderId().equals(roomFolder_id)));
-    }
-
-    public boolean deleteStudySetFromRoom(Long roomStudyset_id, Long room_id) {
-        Room existingRoom = roomRepository.findById(room_id).orElse(null);
-        return existingRoom.getRoomStudySets().removeIf(roomStudySet -> (roomStudySet.getRoomStudySetId().equals(roomStudyset_id)));
-    }
 }
