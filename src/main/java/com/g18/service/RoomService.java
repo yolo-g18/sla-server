@@ -48,4 +48,11 @@ public class RoomService {
         return roomRepository.save(existingRoom);
     }
 
+    public String deleteMember(RoomMember roomMember){
+        Room existingRoom = roomRepository.findById(roomMember.getRoomMemberId().getRoomId()).orElse(null);
+        int indexOfExistingRoomMember = existingRoom.getRoomMembers().indexOf(roomMember);
+        existingRoom.getRoomMembers().remove(indexOfExistingRoomMember);
+        return "remove member successfully";
+    }
+
 }

@@ -43,5 +43,7 @@ public class RoomController {
     }
 
     @PutMapping("/addMember")
-    public Room addMember(@PathVariable RoomMember roomMember){return  roomService.addMember(roomMember);}
+    public Room addMember(@RequestBody RoomMember roomMember){return  roomService.addMember(roomMember);}
+
+
 }
