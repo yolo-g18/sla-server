@@ -45,5 +45,9 @@ public class RoomController {
     @PutMapping("/addMember")
     public Room addMember(@RequestBody RoomMember roomMember){return  roomService.addMember(roomMember);}
 
+    @DeleteMapping("/deleteMember/{room_id}/{member_id}")
+    public String deleteMember(@PathVariable Long room_id, @PathVariable Long member_id){
+        return roomService.deleteMember(room_id,member_id);
+    }
 
 }
