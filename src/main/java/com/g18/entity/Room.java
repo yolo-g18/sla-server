@@ -21,6 +21,7 @@ public class Room {
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private User owner;
+
     private String name;
 
     private String description;
