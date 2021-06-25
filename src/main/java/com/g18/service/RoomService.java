@@ -5,7 +5,9 @@ import com.g18.repository.RoomRepository;
 import com.g18.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.PreRemove;
 import java.util.List;
 
 @Service
@@ -48,7 +50,8 @@ public class RoomService {
         return roomRepository.save(existingRoom);
     }
 
-    public String deleteMember(Long room_id,Long member_id){
+    @Transactional
+    public String deleteRelationshipRoomMember(Long room_id,Long member_id){
         Room existingRoom = roomRepository.findById(room_id).orElse(null);
         RoomMember existingRoomMember =existingRoom.getRoomMembers().stream().filter(
                 roomMember ->
@@ -57,9 +60,7 @@ public class RoomService {
 
         ).findAny().orElse(null);
         existingRoom.getRoomMembers().remove(existingRoomMember);
-        System.out.println("size: "+existingRoom.getRoomMembers().size());
-        roomRepository.save(existingRoom);
-        return "remove member successfully";
+        return "remove RoomMember successfully";
     }
 
 }

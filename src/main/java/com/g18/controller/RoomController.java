@@ -47,7 +47,7 @@ public class RoomController {
 
     @DeleteMapping("/deleteMember/{room_id}/{member_id}")
     public String deleteMember(@PathVariable Long room_id, @PathVariable Long member_id){
-        return roomService.deleteMember(room_id,member_id);
+        return roomService.deleteRelationshipRoomMember(room_id,member_id);
     }
 
 }

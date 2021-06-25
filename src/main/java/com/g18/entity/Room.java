@@ -28,7 +28,7 @@ public class Room {
     private Instant createdDate;
     private Instant updateDate;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "member", orphanRemoval=true, cascade={CascadeType.ALL})
     private List<RoomMember> roomMembers; //list members of room
 
     @OneToMany(mappedBy = "studySet")
