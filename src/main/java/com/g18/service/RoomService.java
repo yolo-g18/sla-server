@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.PreRemove;
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -73,7 +74,7 @@ public class RoomService {
         roomMember.setRoomMemberId(roomMemberId);
         roomMember.setMember(existingMember);
         roomMember.setRoom(existingRoom);
-
+        roomMember.setEnrolledDate(Instant.now());
         existingRoom.getRoomMembers().add(roomMember);
 
         roomRepository.save(existingRoom);
