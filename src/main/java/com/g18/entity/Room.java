@@ -37,12 +37,5 @@ public class Room {
     @OneToMany(mappedBy = "folder")
     private List<RoomFolder>  roomFolders; //list folders in room
 
-    @Override
-    public String toString() {
-        return "Room{" +
-                "  name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", createdDate=" + createdDate +
-                '}';
-    }
+
 }

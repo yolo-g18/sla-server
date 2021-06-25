@@ -1,5 +1,6 @@
 package com.g18.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.entity.*;
 import com.g18.model.RoomMemberId;
@@ -11,10 +12,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.PreRemove;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class RoomService {
+
+    private DateTimeFormatter formatter;
 
     @Autowired
     private UserRepository userRepository;
@@ -49,8 +57,21 @@ public class RoomService {
         return roomRepository.findAll();
     }
 
-    public String getRoomByID(Long id){
-        return roomRepository.findById(id).orElse(null).toString();
+    public ObjectNode getRoomByID(Long id){
+        formatter =
+        DateTimeFormatter.ofLocalizedDateTime( FormatStyle.SHORT )
+                .withLocale( Locale.UK )
+                .withZone( ZoneId.systemDefault() );
+
+        Room existingRoom = roomRepository.findById(id).orElse(null);
+        HashMap<String, String> map = new HashMap<>();
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode json = mapper.createObjectNode();
+        json.put("name",existingRoom.getName());
+        json.put("description",existingRoom.getDescription());
+        json.put("createdDate", formatter.format(existingRoom.getCreatedDate()));
+        return json;
+
     }
 
     public String deleteRoom(Long id){
