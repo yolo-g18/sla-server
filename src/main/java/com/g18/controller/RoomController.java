@@ -19,8 +19,7 @@ public class RoomController {
     private RoomService roomService;
 
     @PostMapping("/createRoom")
-    public Room createRoom(@RequestBody Room room){
-        return roomService.saveRoom(room);
+    public String createRoom(@RequestBody Room room){ return roomService.saveRoom(room);
     }
 
     @GetMapping("/listRooms")
@@ -34,7 +33,7 @@ public class RoomController {
     }
 
     @PutMapping("/editRoom")
-    public Room editRoom(@RequestBody Room room){
+    public String editRoom(@RequestBody Room room){
         return roomService.editRoom(room);
     }
 

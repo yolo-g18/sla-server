@@ -21,8 +21,10 @@ public class RoomService {
     @Autowired
     private RoomRepository roomRepository;
 
-    public Room saveRoom(Room room){
-        return roomRepository.save(room);
+    public String saveRoom(Room room){
+
+        roomRepository.save(room);
+        return "add Room successfully";
     }
 
     public List<Room> getRoomList(){
@@ -38,12 +40,13 @@ public class RoomService {
         return "remove room successfully";
     }
 
-    public Room editRoom(Room room){
+    public String editRoom(Room room){
         Room existingRoom = roomRepository.findById(room.getId()).orElse(null);
         existingRoom.setName(room.getName());
         existingRoom.setDescription(room.getDescription());
         existingRoom.setUpdateDate(room.getUpdateDate());
-        return roomRepository.save(existingRoom);
+        roomRepository.save(existingRoom);
+        return "edit Room successfully";
     }
 
     public String addMember(ObjectNode json){
