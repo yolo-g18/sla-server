@@ -1,5 +1,6 @@
 package com.g18.controller;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.entity.Room;
 import com.g18.entity.RoomFolder;
 import com.g18.entity.RoomMember;
@@ -43,11 +44,17 @@ public class RoomController {
     }
 
     @PutMapping("/addMember")
-    public Room addMember(@RequestBody RoomMember roomMember){return  roomService.addMember(roomMember);}
+    public Room addMember(@RequestBody ObjectNode json){
+        return roomService.addMember(json);}
 
     @DeleteMapping("/deleteMember/{room_id}/{member_id}")
     public String deleteMember(@PathVariable Long room_id, @PathVariable Long member_id){
         return roomService.deleteRelationshipRoomMember(room_id,member_id);
     }
+
+    @PutMapping("/addExistingFolder")
+    public Room addExistingFolder(@RequestBody RoomFolder roomFolder){
+        return  roomService.addExistingFolder(roomFolder);}
+
 
 }

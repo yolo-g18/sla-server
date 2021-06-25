@@ -1,6 +1,8 @@
 package com.g18.service;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.entity.*;
+import com.g18.model.RoomMemberId;
 import com.g18.repository.RoomRepository;
 import com.g18.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,9 +46,33 @@ public class RoomService {
         return roomRepository.save(existingRoom);
     }
 
-    public Room addMember(RoomMember roomMember){
-        Room existingRoom = roomRepository.findById(roomMember.getRoomMemberId().getRoomId()).orElse(null);
+    public Room addMember(ObjectNode json){
+        Long room_id = null,member_id = null;
+        try {
+            room_id = Long.parseLong(json.get("room_id").asText());
+
+        }catch (Exception e){
+            System.out.printf(e.getMessage());
+        }
+        try {
+
+            member_id = Long.parseLong(json.get("member_id").asText());
+        }catch (Exception e){
+            System.out.printf(e.getMessage());
+        }
+        Room existingRoom = roomRepository.findById(room_id).orElse(null);
+        User existingMember = userRepository.findById(member_id).orElse(null);
+        RoomMemberId roomMemberId = new RoomMemberId();
+        roomMemberId.setRoomId(room_id);
+        roomMemberId.setMemberId(member_id);
+
+        RoomMember roomMember = new RoomMember();
+        roomMember.setRoomMemberId(roomMemberId);
+        roomMember.setMember(existingMember);
+        roomMember.setRoom(existingRoom);
+
         existingRoom.getRoomMembers().add(roomMember);
+
         return roomRepository.save(existingRoom);
     }
 
@@ -61,6 +87,13 @@ public class RoomService {
         ).findAny().orElse(null);
         existingRoom.getRoomMembers().remove(existingRoomMember);
         return "remove RoomMember successfully";
+    }
+
+
+    public Room addExistingFolder(RoomFolder roomFolder){
+        Room existingRoom = roomRepository.findById(roomFolder.getRoomFolderId().getRoomId()).orElse(null);
+        existingRoom.getRoomFolders().add(roomFolder);
+        return roomRepository.save(existingRoom);
     }
 
 }
