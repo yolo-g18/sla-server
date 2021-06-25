@@ -46,7 +46,7 @@ public class RoomService {
         return roomRepository.save(existingRoom);
     }
 
-    public Room addMember(ObjectNode json){
+    public String addMember(ObjectNode json){
         Long room_id = null,member_id = null;
         try {
             room_id = Long.parseLong(json.get("room_id").asText());
@@ -73,7 +73,8 @@ public class RoomService {
 
         existingRoom.getRoomMembers().add(roomMember);
 
-        return roomRepository.save(existingRoom);
+        roomRepository.save(existingRoom);
+        return "add Member successfully";
     }
 
     @Transactional

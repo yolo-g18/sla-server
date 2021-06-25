@@ -44,7 +44,7 @@ public class RoomController {
     }
 
     @PutMapping("/addMember")
-    public Room addMember(@RequestBody ObjectNode json){
+    public String addMember(@RequestBody ObjectNode json){
         return roomService.addMember(json);}
 
     @DeleteMapping("/deleteMember/{room_id}/{member_id}")
