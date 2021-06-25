@@ -23,7 +23,7 @@ public class RoomController {
     }
 
     @GetMapping("/listRooms")
-    public List<Room> findAllRooms(){
+    public List<ObjectNode> findAllRooms(){
         return roomService.getRoomList();
     }
 

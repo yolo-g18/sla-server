@@ -15,6 +15,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -53,8 +54,21 @@ public class RoomService {
         return "add Room successfully";
     }
 
-    public List<Room> getRoomList(){
-        return roomRepository.findAll();
+    public List<ObjectNode> getRoomList(){
+         List<Room> roomList = roomRepository.findAll();
+        System.out.println(roomList.size());
+         List<ObjectNode> objectNodeList = new ArrayList<>();
+         ObjectMapper mapper;
+         for (Room room: roomList) {
+             mapper =  new ObjectMapper();
+             ObjectNode json = mapper.createObjectNode();
+             json.put("name",room.getName());
+             json.put("description",room.getDescription());
+             json.put("createdDate", formatter.format(room.getCreatedDate()));
+             objectNodeList.add(json);
+        }
+        System.out.println(objectNodeList.size());
+         return objectNodeList;
     }
 
     public ObjectNode getRoomByID(Long id){
