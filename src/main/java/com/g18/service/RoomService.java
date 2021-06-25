@@ -49,8 +49,8 @@ public class RoomService {
         return roomRepository.findAll();
     }
 
-    public Room getRoomByID(Long id){
-        return roomRepository.findById(id).orElse(null);
+    public String getRoomByID(Long id){
+        return roomRepository.findById(id).orElse(null).toString();
     }
 
     public String deleteRoom(Long id){
