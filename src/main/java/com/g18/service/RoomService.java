@@ -22,7 +22,24 @@ public class RoomService {
     @Autowired
     private RoomRepository roomRepository;
 
-    public String saveRoom(Room room){
+    public String saveRoom(ObjectNode json){
+
+        Long owner_id = null;
+
+        try {
+            owner_id = Long.parseLong(json.get("owner_id").asText());
+        }catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+
+        Room room = new Room();
+
+        room.setName(json.get("name").asText());
+        room.setDescription(json.get("description").asText());
+        User owner = userRepository.findById(owner_id).orElse(null);
+        room.setOwner(owner);
+        room.setCreatedDate(Instant.now());
 
         roomRepository.save(room);
         return "add Room successfully";
@@ -45,7 +62,7 @@ public class RoomService {
         Room existingRoom = roomRepository.findById(room.getId()).orElse(null);
         existingRoom.setName(room.getName());
         existingRoom.setDescription(room.getDescription());
-        existingRoom.setUpdateDate(room.getUpdateDate());
+        existingRoom.setUpdateDate(Instant.now());
         roomRepository.save(existingRoom);
         return "edit Room successfully";
     }

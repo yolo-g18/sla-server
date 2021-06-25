@@ -19,7 +19,7 @@ public class RoomController {
     private RoomService roomService;
 
     @PostMapping("/createRoom")
-    public String createRoom(@RequestBody Room room){ return roomService.saveRoom(room);
+    public String createRoom(@RequestBody ObjectNode json){ return roomService.saveRoom(json);
     }
 
     @GetMapping("/listRooms")
