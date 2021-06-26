@@ -149,13 +149,15 @@ public class RoomService {
     @Transactional
     public String deleteRelationshipRoomMember(Long room_id,Long member_id){
         Room existingRoom = roomRepository.findById(room_id).orElse(null);
+        List<RoomMember> roomMembers = existingRoom.getRoomMembers();
         RoomMember existingRoomMember =existingRoom.getRoomMembers().stream().filter(
                 roomMember ->
                     roomMember.getRoomMemberId().getMemberId().equals(member_id) &&
                             roomMember.getRoomMemberId().getRoomId().equals(room_id)
 
         ).findAny().orElse(null);
-        existingRoom.getRoomMembers().remove(existingRoomMember);
+        boolean count = existingRoom.getRoomMembers().remove(existingRoomMember);
+        roomRepository.saveAndFlush(existingRoom);
         return "remove Member successfully";
     }
 

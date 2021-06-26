@@ -1,8 +1,11 @@
 package com.g18.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.hibernate.annotations.Fetch;
 
 import javax.persistence.*;
 import java.time.Instant;
@@ -18,7 +21,7 @@ public class Room {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
     private User owner;
 
@@ -28,7 +31,7 @@ public class Room {
     private Instant createdDate;
     private Instant updateDate;
 
-    @OneToMany(mappedBy = "member", orphanRemoval=true, cascade={CascadeType.ALL})
+    @OneToMany(mappedBy = "room", orphanRemoval=true, cascade={CascadeType.ALL})
     private List<RoomMember> roomMembers; //list members of room
 
     @OneToMany(mappedBy = "studySet")
@@ -37,5 +40,8 @@ public class Room {
     @OneToMany(mappedBy = "folder")
     private List<RoomFolder>  roomFolders; //list folders in room
 
-
+    @Override
+    public String toString() {
+        return String.valueOf(id);
+    }
 }
