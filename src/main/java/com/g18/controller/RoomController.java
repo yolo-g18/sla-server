@@ -51,9 +51,9 @@ public class RoomController {
         return roomService.deleteRelationshipRoomMember(room_id,member_id);
     }
 
-    @PutMapping("/addExistingFolder")
-    public Room addExistingFolder(@RequestBody RoomFolder roomFolder){
-        return  roomService.addExistingFolder(roomFolder);}
+    @PutMapping("/addFolderToRoom")
+    public String addExistingFolder(@RequestBody ObjectNode json){
+        return  roomService.addFolderToRoom(json);}
 
 
 }

@@ -3,7 +3,9 @@ package com.g18.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.entity.*;
+import com.g18.model.RoomFolderId;
 import com.g18.model.RoomMemberId;
+import com.g18.repository.FolderRepository;
 import com.g18.repository.RoomRepository;
 import com.g18.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,9 @@ import java.util.Locale;
 @Service
 public class RoomService {
 
-    private DateTimeFormatter formatter;
+    private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime( FormatStyle.SHORT )
+            .withLocale( Locale.UK )
+            .withZone( ZoneId.systemDefault() );;
 
     @Autowired
     private UserRepository userRepository;
@@ -31,6 +35,10 @@ public class RoomService {
     @Autowired
     private RoomRepository roomRepository;
 
+    @Autowired
+    private FolderRepository folderRepository;
+
+    @Transactional
     public String saveRoom(ObjectNode json){
 
         Long owner_id = null;
@@ -54,11 +62,8 @@ public class RoomService {
         return "add Room successfully";
     }
 
+    @Transactional
     public List<ObjectNode> getRoomList(){
-        formatter =
-                DateTimeFormatter.ofLocalizedDateTime( FormatStyle.SHORT )
-                        .withLocale( Locale.UK )
-                        .withZone( ZoneId.systemDefault() );
 
          List<Room> roomList = roomRepository.findAll();
          List<ObjectNode> objectNodeList = new ArrayList<>();
@@ -76,11 +81,8 @@ public class RoomService {
          return objectNodeList;
     }
 
+    @Transactional
     public ObjectNode getRoomByID(Long id){
-        formatter =
-        DateTimeFormatter.ofLocalizedDateTime( FormatStyle.SHORT )
-                .withLocale( Locale.UK )
-                .withZone( ZoneId.systemDefault() );
 
         Room existingRoom = roomRepository.findById(id).orElse(null);
         HashMap<String, String> map = new HashMap<>();
@@ -94,11 +96,13 @@ public class RoomService {
 
     }
 
+    @Transactional
     public String deleteRoom(Long id){
         roomRepository.deleteById(id);
         return "remove room successfully";
     }
 
+    @Transactional
     public String editRoom(ObjectNode json){
         Long id= null;
 
@@ -115,6 +119,7 @@ public class RoomService {
         return "edit Room successfully";
     }
 
+    @Transactional
     public String addMember(ObjectNode json){
         Long room_id = null,member_id = null;
         try {
@@ -161,11 +166,42 @@ public class RoomService {
         return "remove Member successfully";
     }
 
+    @Transactional
+    public String addFolderToRoom(ObjectNode json){
+        Long room_id = null,folder_id = null;
 
-    public Room addExistingFolder(RoomFolder roomFolder){
-        Room existingRoom = roomRepository.findById(roomFolder.getRoomFolderId().getRoomId()).orElse(null);
-        existingRoom.getRoomFolders().add(roomFolder);
-        return roomRepository.save(existingRoom);
+        try {
+            room_id = Long.parseLong(json.get("room_id").asText());
+
+        }catch (Exception e){
+            System.out.printf(e.getMessage());
+        }
+        try {
+
+            folder_id = Long.parseLong(json.get("folder_id").asText());
+        }catch (Exception e){
+            System.out.printf(e.getMessage());
+        }
+
+        RoomFolderId roomFolderId = new RoomFolderId();
+        roomFolderId.setFolderId(folder_id);
+        roomFolderId.setRoomId(room_id);
+
+        Folder folder = folderRepository.findById(folder_id).orElse(null);
+        Room room = roomRepository.findById(room_id).orElse(null);
+
+        RoomFolder roomFolder = new RoomFolder();
+
+        roomFolder.setRoomFolderId(roomFolderId);
+        roomFolder.setFolder(folder);
+        roomFolder.setRoom(room);
+        roomFolder.setCreatedDate(Instant.now());
+
+        room.getRoomFolders().add(roomFolder);
+
+        roomRepository.saveAndFlush(room);
+
+        return "add Folder to Room successfully";
     }
 
 }
