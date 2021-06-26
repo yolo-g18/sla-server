@@ -154,14 +154,15 @@ public class RoomService {
     @Transactional
     public String deleteRelationshipRoomMember(Long room_id,Long member_id){
         Room existingRoom = roomRepository.findById(room_id).orElse(null);
-        List<RoomMember> roomMembers = existingRoom.getRoomMembers();
+
         RoomMember existingRoomMember =existingRoom.getRoomMembers().stream().filter(
                 roomMember ->
                     roomMember.getRoomMemberId().getMemberId().equals(member_id) &&
                             roomMember.getRoomMemberId().getRoomId().equals(room_id)
 
         ).findAny().orElse(null);
-        boolean count = existingRoom.getRoomMembers().remove(existingRoomMember);
+
+        existingRoom.getRoomMembers().remove(existingRoomMember);
         roomRepository.saveAndFlush(existingRoom);
         return "remove Member successfully";
     }
@@ -202,6 +203,22 @@ public class RoomService {
         roomRepository.saveAndFlush(room);
 
         return "add Folder to Room successfully";
+    }
+
+    @Transactional
+    public String deleteRelationshipRoomFolder(Long room_id,Long folder_id){
+        Room existingRoom = roomRepository.getOne(room_id);
+
+        RoomFolder existingRoomFolder = existingRoom.getRoomFolders().stream().filter(
+                roomFolder ->
+                        roomFolder.getRoomFolderId().getFolderId().equals(folder_id) &&
+                                roomFolder.getRoomFolderId().getRoomId().equals(room_id)
+
+        ).findAny().orElse(null);
+
+        existingRoom.getRoomFolders().remove(existingRoomFolder);
+        roomRepository.saveAndFlush(existingRoom);
+        return "remove Folder from Room successfully";
     }
 
 }
