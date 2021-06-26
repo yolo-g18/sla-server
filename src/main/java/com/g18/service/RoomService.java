@@ -264,4 +264,20 @@ public class RoomService {
         return "add StudySet to Room successfully";
     }
 
+    @Transactional
+    public String deleteRelationshipRoomStudySet(Long room_id,Long studySet_id){
+        Room existingRoom = roomRepository.getOne(room_id);
+
+        RoomStudySet existingRoomStudySet = existingRoom.getRoomStudySets().stream().filter(
+                roomStudySet ->
+                        roomStudySet.getRoomStudySetId().getStudySetId().equals(studySet_id) &&
+                                roomStudySet.getRoomStudySetId().getRoomId().equals(room_id)
+
+        ).findAny().orElse(null);
+
+        existingRoom.getRoomStudySets().remove(existingRoomStudySet);
+        roomRepository.saveAndFlush(existingRoom);
+        return "remove StudySet from Room successfully";
+    }
+
 }

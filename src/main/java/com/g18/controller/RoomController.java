@@ -63,4 +63,9 @@ public class RoomController {
     @PutMapping("/addStudySetToRoom")
     public String addStudySetToRoom(@RequestBody ObjectNode json){
         return  roomService.addStudySetToRoom(json);}
+
+    @DeleteMapping("/deleteStudySetFromRoom/{room_id}/{studySet_id}")
+    public String deleteStudySetFromRoom(@PathVariable Long room_id, @PathVariable Long studySet_id){
+        return roomService.deleteRelationshipRoomStudySet(room_id,studySet_id);
+    }
 }
