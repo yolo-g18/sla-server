@@ -33,8 +33,8 @@ public class RoomController {
     }
 
     @PutMapping("/editRoom")
-    public String editRoom(@RequestBody Room room){
-        return roomService.editRoom(room);
+    public String editRoom(@RequestBody ObjectNode json){
+        return roomService.editRoom(json);
     }
 
     @DeleteMapping("/deleteRoom/{id}")

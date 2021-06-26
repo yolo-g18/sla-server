@@ -55,10 +55,15 @@ public class RoomService {
     }
 
     public List<ObjectNode> getRoomList(){
+        formatter =
+                DateTimeFormatter.ofLocalizedDateTime( FormatStyle.SHORT )
+                        .withLocale( Locale.UK )
+                        .withZone( ZoneId.systemDefault() );
+
          List<Room> roomList = roomRepository.findAll();
-        System.out.println(roomList.size());
          List<ObjectNode> objectNodeList = new ArrayList<>();
          ObjectMapper mapper;
+
          for (Room room: roomList) {
              mapper =  new ObjectMapper();
              ObjectNode json = mapper.createObjectNode();
@@ -67,7 +72,7 @@ public class RoomService {
              json.put("createdDate", formatter.format(room.getCreatedDate()));
              objectNodeList.add(json);
         }
-        System.out.println(objectNodeList.size());
+
          return objectNodeList;
     }
 
@@ -81,6 +86,7 @@ public class RoomService {
         HashMap<String, String> map = new HashMap<>();
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode json = mapper.createObjectNode();
+
         json.put("name",existingRoom.getName());
         json.put("description",existingRoom.getDescription());
         json.put("createdDate", formatter.format(existingRoom.getCreatedDate()));
@@ -93,10 +99,17 @@ public class RoomService {
         return "remove room successfully";
     }
 
-    public String editRoom(Room room){
-        Room existingRoom = roomRepository.findById(room.getId()).orElse(null);
-        existingRoom.setName(room.getName());
-        existingRoom.setDescription(room.getDescription());
+    public String editRoom(ObjectNode json){
+        Long id= null;
+
+        try {
+            id = Long.parseLong(json.get("id").asText());
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+        Room existingRoom = roomRepository.findById(id).orElse(null);
+        existingRoom.setName(json.get("name").asText());
+        existingRoom.setDescription(json.get("description").asText());
         existingRoom.setUpdateDate(Instant.now());
         roomRepository.save(existingRoom);
         return "edit Room successfully";
@@ -143,7 +156,7 @@ public class RoomService {
 
         ).findAny().orElse(null);
         existingRoom.getRoomMembers().remove(existingRoomMember);
-        return "remove RoomMember successfully";
+        return "remove Member successfully";
     }
 
 
