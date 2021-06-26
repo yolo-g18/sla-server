@@ -32,6 +32,6 @@ public class Folder {
 
 	@OneToMany(mappedBy = "studySet")
 	private List<FolderStudySet> folderStudySets; //list study sets in folder
-	
+
 
 }
