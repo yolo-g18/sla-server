@@ -52,11 +52,15 @@ public class RoomController {
     }
 
     @PutMapping("/addFolderToRoom")
-    public String addExistingFolder(@RequestBody ObjectNode json){
+    public String addFolderToRoom(@RequestBody ObjectNode json){
         return  roomService.addFolderToRoom(json);}
 
     @DeleteMapping("/deleteFolderFromRoom/{room_id}/{folder_id}")
     public String deleteFolder(@PathVariable Long room_id, @PathVariable Long folder_id){
         return roomService.deleteRelationshipRoomFolder(room_id,folder_id);
     }
+
+    @PutMapping("/addStudySetToRoom")
+    public String addStudySetToRoom(@RequestBody ObjectNode json){
+        return  roomService.addStudySetToRoom(json);}
 }

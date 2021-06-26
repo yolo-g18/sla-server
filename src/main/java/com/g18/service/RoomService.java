@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.entity.*;
 import com.g18.model.RoomFolderId;
 import com.g18.model.RoomMemberId;
+import com.g18.model.RoomStudySetId;
 import com.g18.repository.FolderRepository;
 import com.g18.repository.RoomRepository;
+import com.g18.repository.StudySetRepository;
 import com.g18.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +39,9 @@ public class RoomService {
 
     @Autowired
     private FolderRepository folderRepository;
+
+    @Autowired
+    private StudySetRepository studySetRepository;
 
     @Transactional
     public String saveRoom(ObjectNode json){
@@ -219,6 +224,44 @@ public class RoomService {
         existingRoom.getRoomFolders().remove(existingRoomFolder);
         roomRepository.saveAndFlush(existingRoom);
         return "remove Folder from Room successfully";
+    }
+
+    @Transactional
+    public String addStudySetToRoom(ObjectNode json){
+        Long room_id = null,studySet_id = null;
+
+        try {
+            room_id = Long.parseLong(json.get("room_id").asText());
+
+        }catch (Exception e){
+            System.out.printf(e.getMessage());
+        }
+        try {
+
+            studySet_id = Long.parseLong(json.get("studySet_id").asText());
+        }catch (Exception e){
+            System.out.printf(e.getMessage());
+        }
+
+        RoomStudySetId roomStudySetId = new RoomStudySetId();
+        roomStudySetId.setStudySetId(studySet_id);
+        roomStudySetId.setRoomId(room_id);
+
+        StudySet studySet = studySetRepository.getOne(studySet_id);
+        Room room = roomRepository.getOne(room_id);
+
+        RoomStudySet roomStudySet = new RoomStudySet();
+
+        roomStudySet.setRoomStudySetId(roomStudySetId);
+        roomStudySet.setStudySet(studySet);
+        roomStudySet.setRoom(room);
+        roomStudySet.setCreatedDate(Instant.now());
+
+        room.getRoomStudySets().add(roomStudySet);
+
+        roomRepository.saveAndFlush(room);
+
+        return "add StudySet to Room successfully";
     }
 
 }
