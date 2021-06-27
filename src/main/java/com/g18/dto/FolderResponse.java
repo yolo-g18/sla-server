@@ -15,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 public class FolderResponse {
     private String username;
+    private Long id;
     private String title;
     private String description;
     private Instant createdDate;

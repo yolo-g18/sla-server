@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Id;
 import javax.validation.constraints.*;
 
 @Data
@@ -26,6 +27,7 @@ public class FolderRequest {
       @NotBlank(message = "Username is required")
       @NotNull(message = "Username is required")
       private String username;*/
+    private Long Id;
     @Size(min = 10, max = 30, message = "Description must be between 10 and 30 characters")
     @NotBlank(message = "Description is required")
     @NotNull(message = "Description is required")

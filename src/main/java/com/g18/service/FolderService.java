@@ -13,10 +13,12 @@ import com.g18.repository.FolderRepository;
 import com.g18.repository.StudySetRepository;
 import com.g18.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import javax.mail.FolderNotFoundException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +27,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-
+@Slf4j
 public class FolderService {
 
     private final FolderRepository folderRepository;
@@ -73,27 +75,32 @@ public class FolderService {
     @Author : DuongBHT
     @Date : 27/06/2021
     @param:{
-            @folderID: not null
+            @owner ID: not null
             }
     @Description: View folder by folderID
     */
     public List<FolderResponse> getAllFolder(Long id) {
-        if(id == (Long) id){
-            throw new SLAException("Invalid ID");
-        }
-        User user =  (User) userRepository.findById(id).orElseThrow(() -> new SLAException("User not found"));
+
+        // parsing id of room need edit
+        /*try {
+            id = Long.parseLong(id.toString());
+        }catch (Exception e){
+            throw new SLAException("Invalid id");
+        }*/
+        User user = (User) userRepository.findById(id).orElseThrow(() -> new SLAException("User not found"));
         Account account = (Account) accountRepository.findByUser(user).orElseThrow(() -> new SLAException("Not found"));
         List<Folder> folders = folderRepository.getFolderByOwner(user);
         List<FolderResponse> folderResponses = new ArrayList<>();
 
-        for (Folder folder: folders) {
+        for (Folder folder : folders) {
             folderResponses.add(new FolderResponse(account.getUsername(),
-                            folder.getTitle(),
-                            folder.getDescription(),
-                            folder.getCreatedDate(),
-                            folder.getUpdateDate(),
-                            folder.getColor(),
-                            folder.getFolderStudySets().size()));
+                    folder.getId(),
+                    folder.getTitle(),
+                    folder.getDescription(),
+                    folder.getCreatedDate(),
+                    folder.getUpdateDate(),
+                    folder.getColor(),
+                    folder.getFolderStudySets().size()));
         }
         return folderResponses;
     }
@@ -111,7 +118,42 @@ public class FolderService {
     @Description: Edit folder by folderID
     */
     public void editFolder(FolderRequest folderRequest) {
+        if (!checkFolderExistence(folderRequest.getId())) {
+            throw new SLAException("Folder not found");
+        } else {
+            Folder existingFolder = folderRepository.findById(folderRequest.getId()).orElse(null);
 
+            if (!existingFolder.getTitle().equalsIgnoreCase(folderRequest.getTitle())) {
+                existingFolder.setTitle(folderRequest.getTitle());
+                existingFolder.setUpdateDate(Instant.now());
+            }
+            if (!existingFolder.getDescription().equalsIgnoreCase(folderRequest.getTitle())) {
+                existingFolder.setDescription(folderRequest.getDescription());
+                existingFolder.setUpdateDate(Instant.now());
+            }
+            if (!existingFolder.getColor().equals(folderRequest.getColor())) {
+                existingFolder.setColor(folderRequest.getColor());
+                existingFolder.setUpdateDate(Instant.now());
+            }
+
+            existingFolder.setUpdateDate(Instant.now());
+
+            try {
+                folderRepository.save(existingFolder);
+            } catch (SLAException ex) {
+                log.error(String.valueOf(ex));
+            }
+        }
+        // find that specific folder
+//        Folder existingFolder = folderRepository.findById(folderRequest.getId()).orElseThrow(() -> new SLAException("Not found folder"));
+
+        // update attributes
+
+    }
+
+    private boolean checkFolderExistence(Long folderId) {
+        Optional<Folder> folder = folderRepository.findById(folderId);
+        return folder.isPresent();
     }
 
     /*

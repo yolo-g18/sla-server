@@ -42,7 +42,7 @@ public class FolderController {
 
     @PutMapping("/edit")
     public ResponseEntity<String> edit(@Valid @RequestBody FolderRequest folderRequest) {
-        folderService.createFolder(folderRequest);
+        folderService.editFolder(folderRequest);
         return new ResponseEntity<>("Update Folder Successful", HttpStatus.OK);
     }
 
