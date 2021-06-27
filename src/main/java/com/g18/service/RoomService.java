@@ -188,7 +188,7 @@ public class RoomService {
         roomMember.setRoom(existingRoom);
         roomMember.setEnrolledDate(Instant.now());
 
-        // add member to room
+        // add relationship roomMember
         existingRoom.getRoomMembers().add(roomMember);
 
         roomRepository.saveAndFlush(existingRoom);
@@ -198,8 +198,11 @@ public class RoomService {
 
     @Transactional
     public String deleteRelationshipRoomMember(Long room_id,Long member_id){
+
+        // find specific room
         Room existingRoom = roomRepository.findById(room_id).orElse(null);
 
+        // find roomMember in roomMemberList of a room
         RoomMember existingRoomMember =existingRoom.getRoomMembers().stream().filter(
                 roomMember ->
                     roomMember.getRoomMemberId().getMemberId().equals(member_id) &&
@@ -207,8 +210,11 @@ public class RoomService {
 
         ).findAny().orElse(null);
 
+        // remove relationship roomMember
         existingRoom.getRoomMembers().remove(existingRoomMember);
+
         roomRepository.saveAndFlush(existingRoom);
+
         return "remove Member successfully";
     }
 
