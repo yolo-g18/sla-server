@@ -72,10 +72,16 @@ public class RoomService {
     @Transactional
     public List<ObjectNode> getRoomList(){
 
+         // load all rooms in database
          List<Room> roomList = roomRepository.findAll();
+
+         // json load all rooms to client
          List<ObjectNode> objectNodeList = new ArrayList<>();
+
+         // helper create objectnode
          ObjectMapper mapper;
 
+         // load all room to json list
          for (Room room: roomList) {
              mapper =  new ObjectMapper();
              ObjectNode json = mapper.createObjectNode();
