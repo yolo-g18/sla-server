@@ -362,4 +362,29 @@ public class RoomService {
         return "remove StudySet from Room successfully";
     }
 
+    @Transactional
+    public List<ObjectNode> getRoomMemberList(Long id){
+
+        // load all roomMembers in database
+        List<RoomMember> roomMemberList = roomRepository.findById(id).get().getRoomMembers();
+
+        // json load all rooms to client
+        List<ObjectNode> objectNodeList = new ArrayList<>();
+
+        // helper create objectnode
+        ObjectMapper mapper;
+
+        // load all room to json list
+        for (RoomMember roomMember: roomMemberList) {
+            mapper =  new ObjectMapper();
+            ObjectNode json = mapper.createObjectNode();
+            json.put("name",roomMember.getMember().getFirstName()+" "
+                    +roomMember.getMember().getLastName());
+            json.put("enrolledDate", formatter.format(roomMember.getEnrolledDate()));
+            objectNodeList.add(json);
+        }
+
+        return objectNodeList;
+    }
+
 }

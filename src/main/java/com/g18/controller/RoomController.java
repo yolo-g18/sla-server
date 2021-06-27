@@ -68,4 +68,9 @@ public class RoomController {
     public String deleteStudySetFromRoom(@PathVariable Long room_id, @PathVariable Long studySet_id){
         return roomService.deleteStudySetFromRoom(room_id,studySet_id);
     }
+
+    @GetMapping("/listMembersOfRoom/{id}")
+    public List<ObjectNode> listMembersOfRoom(@PathVariable Long id){
+        return roomService.getRoomMemberList(id);
+    }
 }
