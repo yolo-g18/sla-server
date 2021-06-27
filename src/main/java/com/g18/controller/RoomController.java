@@ -56,8 +56,8 @@ public class RoomController {
         return  roomService.addFolderToRoom(json);}
 
     @DeleteMapping("/deleteFolderFromRoom/{room_id}/{folder_id}")
-    public String deleteFolder(@PathVariable Long room_id, @PathVariable Long folder_id){
-        return roomService.deleteRelationshipRoomFolder(room_id,folder_id);
+    public String deleteFolderFromRoom(@PathVariable Long room_id, @PathVariable Long folder_id){
+        return roomService.deleteFolderFromRoom(room_id,folder_id);
     }
 
     @PutMapping("/addStudySetToRoom")

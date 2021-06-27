@@ -269,9 +269,12 @@ public class RoomService {
     }
 
     @Transactional
-    public String deleteRelationshipRoomFolder(Long room_id,Long folder_id){
-        Room existingRoom = roomRepository.getOne(room_id);
+    public String deleteFolderFromRoom(Long room_id,Long folder_id){
 
+        // find specific room
+        Room existingRoom = roomRepository.findById(room_id).orElse(null);
+
+        // find roomFolder in roomFolderList of room
         RoomFolder existingRoomFolder = existingRoom.getRoomFolders().stream().filter(
                 roomFolder ->
                         roomFolder.getRoomFolderId().getFolderId().equals(folder_id) &&
@@ -279,8 +282,11 @@ public class RoomService {
 
         ).findAny().orElse(null);
 
+        // remove relationship roomFolder
         existingRoom.getRoomFolders().remove(existingRoomFolder);
+
         roomRepository.saveAndFlush(existingRoom);
+
         return "remove Folder from Room successfully";
     }
 
