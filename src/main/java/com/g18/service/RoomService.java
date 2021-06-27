@@ -146,7 +146,7 @@ public class RoomService {
     }
 
     @Transactional
-    public String addRelationshipRoomMember(ObjectNode json){
+    public String addMemberToRoom(ObjectNode json){
 
         Long room_id = null,member_id = null;
 
@@ -193,11 +193,11 @@ public class RoomService {
 
         roomRepository.saveAndFlush(existingRoom);
 
-        return "add Member successfully";
+        return "add Member to Room successfully";
     }
 
     @Transactional
-    public String deleteRelationshipRoomMember(Long room_id,Long member_id){
+    public String deleteMemberFromRoom(Long room_id,Long member_id){
 
         // find specific room
         Room existingRoom = roomRepository.findById(room_id).orElse(null);
@@ -215,40 +215,52 @@ public class RoomService {
 
         roomRepository.saveAndFlush(existingRoom);
 
-        return "remove Member successfully";
+        return "remove Member from Room successfully";
     }
 
     @Transactional
     public String addFolderToRoom(ObjectNode json){
+
         Long room_id = null,folder_id = null;
 
+        // parsing id of room
         try {
+
             room_id = Long.parseLong(json.get("room_id").asText());
 
         }catch (Exception e){
             System.out.printf(e.getMessage());
         }
+
+        // parsing id of folder
         try {
 
             folder_id = Long.parseLong(json.get("folder_id").asText());
+
         }catch (Exception e){
             System.out.printf(e.getMessage());
         }
 
+        // create id of roomFolder
         RoomFolderId roomFolderId = new RoomFolderId();
+
         roomFolderId.setFolderId(folder_id);
         roomFolderId.setRoomId(room_id);
 
+        // find specific folder
         Folder folder = folderRepository.findById(folder_id).orElse(null);
+        // find specific room
         Room room = roomRepository.findById(room_id).orElse(null);
 
         RoomFolder roomFolder = new RoomFolder();
 
+        // set attributes for roomFolder
         roomFolder.setRoomFolderId(roomFolderId);
         roomFolder.setFolder(folder);
         roomFolder.setRoom(room);
         roomFolder.setCreatedDate(Instant.now());
 
+        // add relationship roomFolder
         room.getRoomFolders().add(roomFolder);
 
         roomRepository.saveAndFlush(room);
