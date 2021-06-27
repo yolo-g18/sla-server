@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.ExpressionException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class EventService implements IEventService {
     @Autowired
@@ -51,6 +53,11 @@ public class EventService implements IEventService {
         for (long item: ids){
             eventRepository.deleteById(item);
         }
+    }
+
+    @Override
+    public List<EventDto> findEventInRange(String from, String to) {
+        return null;
     }
 
 

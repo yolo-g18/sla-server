@@ -9,6 +9,14 @@ public class EventController {
     @Autowired
     private IEventService eventService;
 
+
+//    @GetMapping(value = "event")
+//    public EventDto showEvent(@RequestParam("from") String from
+//    ,@RequestParam("to") String to){
+//
+//    }
+
+
     @PostMapping(value = "event")
     public EventDto createEvent(@RequestBody EventDto eventDto) {
        return eventService.save(eventDto);
@@ -19,8 +27,11 @@ public class EventController {
         eventDto.setId(id);
         return eventService.save(eventDto);
     }
+
     @DeleteMapping(value = "event")
     public void deleteEvent ( @RequestBody long[] ids){
         eventService.delete(ids);
     }
+
+
 }
