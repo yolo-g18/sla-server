@@ -114,7 +114,9 @@ public class RoomService {
 
     @Transactional
     public String deleteRoom(Long id){
+
         roomRepository.deleteById(id);
+
         return "remove room successfully";
     }
 
