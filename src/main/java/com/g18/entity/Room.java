@@ -18,8 +18,7 @@ public class Room {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "owner_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private User owner;
     private String name;
 
@@ -27,12 +26,12 @@ public class Room {
     private Instant createdDate;
     private Instant updateDate;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<RoomMember> roomMembers; //list members of room
 
-    @OneToMany(mappedBy = "studySet")
+    @OneToMany(mappedBy = "room")
     private List<RoomStudySet>  roomStudySets; //list study sets in room
 
-    @OneToMany(mappedBy = "folder")
+    @OneToMany(mappedBy = "room")
     private List<RoomFolder>  roomFolders; //list folders in room
 }

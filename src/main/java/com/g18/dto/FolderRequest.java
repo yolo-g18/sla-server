@@ -2,6 +2,7 @@ package com.g18.dto;
 
 import com.g18.model.Color;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import javax.validation.constraints.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class FolderRequest {
 
     /*  @NotBlank(message = "Email is required")
