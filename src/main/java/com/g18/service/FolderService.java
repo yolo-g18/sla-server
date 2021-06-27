@@ -127,6 +127,9 @@ public class FolderService {
                 existingFolder.setTitle(folderRequest.getTitle());
                 existingFolder.setUpdateDate(Instant.now());
             }
+  /*          else {
+                existingFolder.setTitle();
+            }*/
             if (!existingFolder.getDescription().equalsIgnoreCase(folderRequest.getTitle())) {
                 existingFolder.setDescription(folderRequest.getDescription());
                 existingFolder.setUpdateDate(Instant.now());
@@ -144,10 +147,6 @@ public class FolderService {
                 log.error(String.valueOf(ex));
             }
         }
-        // find that specific folder
-//        Folder existingFolder = folderRepository.findById(folderRequest.getId()).orElseThrow(() -> new SLAException("Not found folder"));
-
-        // update attributes
 
     }
 
@@ -164,21 +163,20 @@ public class FolderService {
             }
     @Description: Edit folder by folderID
     */
-    public void deleteFolder(FolderRequest folderRequest) {
+    public void deleteFolder(Long folderId) {
+        if (!checkFolderExistence(folderId)) {
+            throw new SLAException("Folder not found");
+        } else {
+            Folder existingFolder = folderRepository.findById(folderId).orElse(null);
 
-    }
-
-    /*
-    @Author : DuongBHT
-    @Date : 27/06/2021
-    @param:{
-            @folderID : not null
-            @creatorID :
+            try {
+                folderRepository.delete(existingFolder);
+            } catch (SLAException ex) {
+                log.error(String.valueOf(ex));
             }
-    @Description:
-    */
-    public void shareFolder(FolderRequest folderRequest) {
-
+        }
     }
+
+
 
 }

@@ -41,15 +41,15 @@ public class FolderController {
     }
 
     @PutMapping("/edit")
-    public ResponseEntity<String> edit(@Valid @RequestBody FolderRequest folderRequest) {
+    public ResponseEntity<String> edit(@RequestBody FolderRequest folderRequest) {
         folderService.editFolder(folderRequest);
         return new ResponseEntity<>("Update Folder Successful", HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<String> delete(@Valid @RequestBody FolderRequest folderRequest) {
-        folderService.createFolder(folderRequest);
-        return new ResponseEntity<>("Create Folder Successful", HttpStatus.OK);
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> delete(@PathVariable Long id) {
+        folderService.deleteFolder(id);
+        return new ResponseEntity<>("Delete Folder Successful", HttpStatus.OK);
     }
 
    /* @PostMapping("/share")
