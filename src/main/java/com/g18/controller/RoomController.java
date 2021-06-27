@@ -73,4 +73,9 @@ public class RoomController {
     public List<ObjectNode> listMembersOfRoom(@PathVariable Long id){
         return roomService.getRoomMemberList(id);
     }
+
+    @GetMapping("/listFoldersOfRoom/{id}")
+    public List<ObjectNode> listFoldersOfRoom(@PathVariable Long id){
+        return roomService.getRoomFolderList(id);
+    }
 }

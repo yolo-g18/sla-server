@@ -368,13 +368,13 @@ public class RoomService {
         // load all roomMembers in database
         List<RoomMember> roomMemberList = roomRepository.findById(id).get().getRoomMembers();
 
-        // json load all rooms to client
+        // json load all roomMembers to client
         List<ObjectNode> objectNodeList = new ArrayList<>();
 
         // helper create objectnode
         ObjectMapper mapper;
 
-        // load all room to json list
+        // load all roomMembers to json list
         for (RoomMember roomMember: roomMemberList) {
             mapper =  new ObjectMapper();
             ObjectNode json = mapper.createObjectNode();
@@ -387,4 +387,28 @@ public class RoomService {
         return objectNodeList;
     }
 
+    @Transactional
+    public List<ObjectNode> getRoomFolderList(Long id){
+
+        // load all roomFolders in database
+        List<RoomFolder> roomFolderList = roomRepository.findById(id).get().getRoomFolders();
+
+        // json load all roomFolders to client
+        List<ObjectNode> objectNodeList = new ArrayList<>();
+
+        // helper create objectnode
+        ObjectMapper mapper;
+
+        // load all roomFolders to json list
+        for (RoomFolder roomFolder: roomFolderList) {
+            mapper =  new ObjectMapper();
+            ObjectNode json = mapper.createObjectNode();
+            json.put("name", roomFolder.getFolder().getTitle());
+            json.put("description",roomFolder.getFolder().getDescription());
+            json.put("enrolledDate", formatter.format(roomFolder.getCreatedDate()));
+            objectNodeList.add(json);
+        }
+
+        return objectNodeList;
+    }
 }
