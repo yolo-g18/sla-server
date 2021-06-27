@@ -18,7 +18,7 @@ public class Folder {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "creator_id")
 	private User owner;
 
@@ -30,7 +30,7 @@ public class Folder {
 	@Enumerated(EnumType.STRING)
 	private Color color;
 
-	@OneToMany(mappedBy = "studySet")
+	@OneToMany(mappedBy = "folder", orphanRemoval=true, cascade=CascadeType.ALL)
 	private List<FolderStudySet> folderStudySets; //list study sets in folder
 	
 

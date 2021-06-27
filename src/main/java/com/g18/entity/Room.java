@@ -27,12 +27,12 @@ public class Room {
     private Instant createdDate;
     private Instant updateDate;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "room", orphanRemoval=true, cascade=CascadeType.ALL)
     private List<RoomMember> roomMembers; //list members of room
 
-    @OneToMany(mappedBy = "studySet")
+    @OneToMany(mappedBy = "room", orphanRemoval=true, cascade=CascadeType.ALL)
     private List<RoomStudySet>  roomStudySets; //list study sets in room
 
-    @OneToMany(mappedBy = "folder")
+    @OneToMany(mappedBy = "room", orphanRemoval=true, cascade=CascadeType.ALL)
     private List<RoomFolder>  roomFolders; //list folders in room
 }
