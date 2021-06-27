@@ -122,18 +122,26 @@ public class RoomService {
 
     @Transactional
     public String editRoom(ObjectNode json){
+
         Long id= null;
 
+        // parsing id of room need edit
         try {
             id = Long.parseLong(json.get("id").asText());
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
+
+        // find that specific room
         Room existingRoom = roomRepository.findById(id).orElse(null);
+
+        // update attributes
         existingRoom.setName(json.get("name").asText());
         existingRoom.setDescription(json.get("description").asText());
         existingRoom.setUpdateDate(Instant.now());
+
         roomRepository.save(existingRoom);
+
         return "edit Room successfully";
     }
 
