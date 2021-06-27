@@ -47,7 +47,7 @@ public class RoomService {
     public String saveRoom(ObjectNode json){
 
         Long owner_id = null;
-
+        // parsing id of person created room
         try {
             owner_id = Long.parseLong(json.get("owner_id").asText());
         }catch (Exception e)
@@ -57,6 +57,7 @@ public class RoomService {
 
         Room room = new Room();
 
+        // set attributes for a new room
         room.setName(json.get("name").asText());
         room.setDescription(json.get("description").asText());
         User owner = userRepository.findById(owner_id).orElse(null);
@@ -64,6 +65,7 @@ public class RoomService {
         room.setCreatedDate(Instant.now());
 
         roomRepository.save(room);
+
         return "add Room successfully";
     }
 
