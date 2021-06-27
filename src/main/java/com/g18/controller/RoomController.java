@@ -42,9 +42,9 @@ public class RoomController {
         return roomService.deleteRoom(id);
     }
 
-    @PutMapping("/addMember")
-    public String addMember(@RequestBody ObjectNode json){
-        return roomService.addMember(json);}
+    @PutMapping("/addRelationshipRoomMember")
+    public String addRelationshipRoomMember(@RequestBody ObjectNode json){
+        return roomService.addRelationshipRoomMember(json);}
 
     @DeleteMapping("/deleteMember/{room_id}/{member_id}")
     public String deleteMember(@PathVariable Long room_id, @PathVariable Long member_id){

@@ -146,34 +146,53 @@ public class RoomService {
     }
 
     @Transactional
-    public String addMember(ObjectNode json){
+    public String addRelationshipRoomMember(ObjectNode json){
+
         Long room_id = null,member_id = null;
+
+        // parsing id of room
         try {
+
             room_id = Long.parseLong(json.get("room_id").asText());
 
         }catch (Exception e){
             System.out.printf(e.getMessage());
         }
+
+        // parsing id of member
         try {
 
             member_id = Long.parseLong(json.get("member_id").asText());
+
         }catch (Exception e){
             System.out.printf(e.getMessage());
         }
+
+        // find that room
         Room existingRoom = roomRepository.findById(room_id).orElse(null);
+        // find that member
         User existingMember = userRepository.findById(member_id).orElse(null);
+
+        //create id of roomMember
         RoomMemberId roomMemberId = new RoomMemberId();
+
         roomMemberId.setRoomId(room_id);
         roomMemberId.setMemberId(member_id);
 
+
         RoomMember roomMember = new RoomMember();
+
+        // set attributes form roomMember
         roomMember.setRoomMemberId(roomMemberId);
         roomMember.setMember(existingMember);
         roomMember.setRoom(existingRoom);
         roomMember.setEnrolledDate(Instant.now());
+
+        // add member to room
         existingRoom.getRoomMembers().add(roomMember);
 
-        roomRepository.save(existingRoom);
+        roomRepository.saveAndFlush(existingRoom);
+
         return "add Member successfully";
     }
 
