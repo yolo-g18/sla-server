@@ -292,35 +292,47 @@ public class RoomService {
 
     @Transactional
     public String addStudySetToRoom(ObjectNode json){
+
         Long room_id = null,studySet_id = null;
 
+        // parsing if of room
         try {
+
             room_id = Long.parseLong(json.get("room_id").asText());
 
         }catch (Exception e){
             System.out.printf(e.getMessage());
         }
+
+        // parsing id of studySet
         try {
 
             studySet_id = Long.parseLong(json.get("studySet_id").asText());
+
         }catch (Exception e){
             System.out.printf(e.getMessage());
         }
 
+        // create id of roomStudySet
         RoomStudySetId roomStudySetId = new RoomStudySetId();
+
         roomStudySetId.setStudySetId(studySet_id);
         roomStudySetId.setRoomId(room_id);
 
-        StudySet studySet = studySetRepository.getOne(studySet_id);
-        Room room = roomRepository.getOne(room_id);
+        // find specific studySet
+        StudySet studySet = studySetRepository.findById(studySet_id).orElse(null);
+        // find specific room
+        Room room = roomRepository.findById(room_id).orElse(null);
 
         RoomStudySet roomStudySet = new RoomStudySet();
 
+        // set attributes for roomStudySet
         roomStudySet.setRoomStudySetId(roomStudySetId);
         roomStudySet.setStudySet(studySet);
         roomStudySet.setRoom(room);
         roomStudySet.setCreatedDate(Instant.now());
 
+        // add relationship roomStudySet
         room.getRoomStudySets().add(roomStudySet);
 
         roomRepository.saveAndFlush(room);
