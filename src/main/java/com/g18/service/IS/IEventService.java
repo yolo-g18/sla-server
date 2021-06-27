@@ -8,6 +8,6 @@ public interface IEventService {
     EventDto save(EventDto eventDto);
     EventDto update(EventDto eventDto);
     void delete(long[] ids);
-    List<EventDto> findEventInRange(String from,String to);
+//    List<EventDto> findEventInRange(String from,String to);
 
 }

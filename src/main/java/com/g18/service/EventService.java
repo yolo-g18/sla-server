@@ -1,5 +1,6 @@
 package com.g18.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.g18.converter.EventConverter;
 import com.g18.dto.EventDto;
 import com.g18.entity.Event;
@@ -8,10 +9,16 @@ import com.g18.exceptions.AccountException;
 import com.g18.repository.EventRepository;
 import com.g18.repository.UserRepository;
 import com.g18.service.IS.IEventService;
+import jdk.nashorn.internal.ir.ObjectNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.ExpressionException;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -55,10 +62,26 @@ public class EventService implements IEventService {
         }
     }
 
-    @Override
-    public List<EventDto> findEventInRange(String from, String to) {
-        return null;
-    }
+//    @Transactional
+//    public List<ObjectNode> findAllBetweenDate(String from, String to) {
+//        LocalDateTime start = LocalDateTime.of(LocalDate.parse(from), LocalTime.of(0, 0, 0));
+//        LocalDateTime end = LocalDateTime.of(LocalDate.parse(to), LocalTime.of(23, 59, 59));
+//        //load all events between date in database
+//        List<Event> eventList =  eventRepository.getAllBetweenDates(start,end);
+//        // json load all rooms to client
+//        List<ObjectNode> objectNodeList = new ArrayList<>();
+//        // helper create objectnode
+//        ObjectMapper mapper;
+//        // load all room to json list
+//        for (Event room: eventList) {
+//            mapper =  new ObjectMapper();
+//            ObjectNode json = mapper.createObjectNode();
+//            json.put("name",room.getName());
+//            json.put("description",room.getDescription());
+//            json.put("createdDate", formatter.format(room.getCreatedDate()));
+//            objectNodeList.add(json);
+//        }
+//    }
 
 
 }
