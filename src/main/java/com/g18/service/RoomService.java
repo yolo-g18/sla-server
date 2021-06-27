@@ -403,9 +403,34 @@ public class RoomService {
         for (RoomFolder roomFolder: roomFolderList) {
             mapper =  new ObjectMapper();
             ObjectNode json = mapper.createObjectNode();
-            json.put("name", roomFolder.getFolder().getTitle());
+            json.put("title", roomFolder.getFolder().getTitle());
             json.put("description",roomFolder.getFolder().getDescription());
-            json.put("enrolledDate", formatter.format(roomFolder.getCreatedDate()));
+            json.put("createdDate", formatter.format(roomFolder.getCreatedDate()));
+            objectNodeList.add(json);
+        }
+
+        return objectNodeList;
+    }
+
+    @Transactional
+    public List<ObjectNode> getRoomStudySetList(Long id){
+
+        // load all roomStudySets in database
+        List<RoomStudySet> roomStudySetList = roomRepository.findById(id).get().getRoomStudySets();
+
+        // json load all roomStudySets to client
+        List<ObjectNode> objectNodeList = new ArrayList<>();
+
+        // helper create objectnode
+        ObjectMapper mapper;
+
+        // load all roomStudySets to json list
+        for (RoomStudySet roomStudySet: roomStudySetList) {
+            mapper =  new ObjectMapper();
+            ObjectNode json = mapper.createObjectNode();
+            json.put("title", roomStudySet.getStudySet().getTitle());
+            json.put("description",roomStudySet.getStudySet().getDescription());
+            json.put("createdDate", formatter.format(roomStudySet.getCreatedDate()));
             objectNodeList.add(json);
         }
 
