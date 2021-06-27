@@ -97,16 +97,19 @@ public class RoomService {
     @Transactional
     public ObjectNode getRoomByID(Long id){
 
+        // find a specific room
         Room existingRoom = roomRepository.findById(id).orElse(null);
-        HashMap<String, String> map = new HashMap<>();
+
+        // create a json
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode json = mapper.createObjectNode();
+
 
         json.put("name",existingRoom.getName());
         json.put("description",existingRoom.getDescription());
         json.put("createdDate", formatter.format(existingRoom.getCreatedDate()));
-        return json;
 
+        return json;
     }
 
     @Transactional
