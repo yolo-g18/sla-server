@@ -341,9 +341,12 @@ public class RoomService {
     }
 
     @Transactional
-    public String deleteRelationshipRoomStudySet(Long room_id,Long studySet_id){
-        Room existingRoom = roomRepository.getOne(room_id);
+    public String deleteStudySetFromRoom(Long room_id,Long studySet_id){
 
+        // find specific room
+        Room existingRoom = roomRepository.findById(room_id).orElse(null);
+
+        // find roomStudySet in roomStudySetList
         RoomStudySet existingRoomStudySet = existingRoom.getRoomStudySets().stream().filter(
                 roomStudySet ->
                         roomStudySet.getRoomStudySetId().getStudySetId().equals(studySet_id) &&
@@ -351,8 +354,11 @@ public class RoomService {
 
         ).findAny().orElse(null);
 
+        // remove relationship roomStudySet
         existingRoom.getRoomStudySets().remove(existingRoomStudySet);
+
         roomRepository.saveAndFlush(existingRoom);
+
         return "remove StudySet from Room successfully";
     }
 
