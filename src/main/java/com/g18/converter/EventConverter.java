@@ -16,7 +16,7 @@ public class EventConverter {
         event.setColor(eventDto.getColor());
         event.setCreatedTime(eventDto.getCreatedTime());
         event.setUpdateTime(eventDto.getUpdateTime());
-        event.setUser(eventDto.getUser());
+//        event.setUser(eventDto.getUser());
         return event;
     }
 
@@ -30,7 +30,7 @@ public class EventConverter {
         eventDto.setColor(event.getColor());
         eventDto.setCreatedTime(event.getCreatedTime());
         eventDto.setUpdateTime(event.getUpdateTime());
-        eventDto.setUser(event.getUser());
+//        eventDto.setUser(event.getUser());
         return eventDto;
     }
 
@@ -43,7 +43,7 @@ public class EventConverter {
         event.setColor(eventDto.getColor());
         event.setCreatedTime(eventDto.getCreatedTime());
         event.setUpdateTime(eventDto.getUpdateTime());
-        event.setUser(eventDto.getUser());
+//        event.setUser(eventDto.getUser());
         return event;
     }
 

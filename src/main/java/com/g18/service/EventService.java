@@ -1,6 +1,7 @@
 package com.g18.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.converter.EventConverter;
 import com.g18.dto.EventDto;
 import com.g18.entity.Event;
@@ -9,7 +10,8 @@ import com.g18.exceptions.AccountException;
 import com.g18.repository.EventRepository;
 import com.g18.repository.UserRepository;
 import com.g18.service.IS.IEventService;
-import jdk.nashorn.internal.ir.ObjectNode;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.ExpressionException;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class EventService implements IEventService {
     @Autowired
     private EventRepository eventRepository;
@@ -62,25 +65,49 @@ public class EventService implements IEventService {
         }
     }
 
+    @Override
+    public List<EventDto> findEventBetweenDate() {
+        List<EventDto> results = new ArrayList<>();
+        List<Event> events = eventRepository.findAll();
+        for (Event item : events) {
+            EventDto eventDto = eventConverter.toDto(item);
+            results.add(eventDto);
+            log.error(eventDto.getName() + " /| ");
+        }
+        return results;
+    }
+
+    @Override
+    public List<EventDto> getAllBetweenDates() {
+        List<EventDto> results = new ArrayList<>();
+        List<Event> events = eventRepository.getAllBetweenDates();
+        for (Event item : events){
+            EventDto eventDto = eventConverter.toDto(item);
+            results.add(eventDto);
+        }
+        return results;
+    }
+
 //    @Transactional
-//    public List<ObjectNode> findAllBetweenDate(String from, String to) {
-//        LocalDateTime start = LocalDateTime.of(LocalDate.parse(from), LocalTime.of(0, 0, 0));
-//        LocalDateTime end = LocalDateTime.of(LocalDate.parse(to), LocalTime.of(23, 59, 59));
+//    public List<ObjectNode> findAllBetweenDate() {
+////        LocalDateTime start = LocalDateTime.of(LocalDate.parse(from), LocalTime.of(0, 0, 0));
+////        LocalDateTime end = LocalDateTime.of(LocalDate.parse(to), LocalTime.of(23, 59, 59));
 //        //load all events between date in database
-//        List<Event> eventList =  eventRepository.getAllBetweenDates(start,end);
+//        List<Event> eventList = eventRepository.findAll();
 //        // json load all rooms to client
 //        List<ObjectNode> objectNodeList = new ArrayList<>();
 //        // helper create objectnode
 //        ObjectMapper mapper;
 //        // load all room to json list
-//        for (Event room: eventList) {
-//            mapper =  new ObjectMapper();
+//        for (Event event : eventList) {
+//            mapper = new ObjectMapper();
 //            ObjectNode json = mapper.createObjectNode();
-//            json.put("name",room.getName());
-//            json.put("description",room.getDescription());
-//            json.put("createdDate", formatter.format(room.getCreatedDate()));
+//            json.put("id", event.getId());
+//            json.put("name", event.getName());
+//            json.put("color", event.getColor().toString());
 //            objectNodeList.add(json);
 //        }
+//        return objectNodeList;
 //    }
 
 
