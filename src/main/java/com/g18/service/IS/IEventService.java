@@ -8,7 +8,6 @@ public interface IEventService {
     EventDto save(EventDto eventDto);
     EventDto update(EventDto eventDto);
     void delete(long[] ids);
-    List<EventDto> findEventBetweenDate();
-    List<EventDto> getAllBetweenDates();
+    List<EventDto> getAllBetweenDates(String from, String to);
 
 }

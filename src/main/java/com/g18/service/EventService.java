@@ -65,50 +65,27 @@ public class EventService implements IEventService {
         }
     }
 
-    @Override
-    public List<EventDto> findEventBetweenDate() {
-        List<EventDto> results = new ArrayList<>();
-        List<Event> events = eventRepository.findAll();
-        for (Event item : events) {
-            EventDto eventDto = eventConverter.toDto(item);
-            results.add(eventDto);
-            log.error(eventDto.getName() + " /| ");
-        }
-        return results;
-    }
+//    @Override
+//    public List<EventDto> findEventBetweenDate() {
+//        List<EventDto> results = new ArrayList<>();
+//        List<Event> events = eventRepository.findAll();
+//        for (Event item : events) {
+//            EventDto eventDto = eventConverter.toDto(item);
+//            results.add(eventDto);
+//            log.error(eventDto.getName() + " /| ");
+//        }
+//        return results;
+//    }
 
     @Override
-    public List<EventDto> getAllBetweenDates() {
+    public List<EventDto> getAllBetweenDates(String from,String to) {
         List<EventDto> results = new ArrayList<>();
-        List<Event> events = eventRepository.getAllBetweenDates();
+        List<Event> events = eventRepository.getAllBetweenDates(from,to);
         for (Event item : events){
             EventDto eventDto = eventConverter.toDto(item);
             results.add(eventDto);
         }
         return results;
     }
-
-//    @Transactional
-//    public List<ObjectNode> findAllBetweenDate() {
-////        LocalDateTime start = LocalDateTime.of(LocalDate.parse(from), LocalTime.of(0, 0, 0));
-////        LocalDateTime end = LocalDateTime.of(LocalDate.parse(to), LocalTime.of(23, 59, 59));
-//        //load all events between date in database
-//        List<Event> eventList = eventRepository.findAll();
-//        // json load all rooms to client
-//        List<ObjectNode> objectNodeList = new ArrayList<>();
-//        // helper create objectnode
-//        ObjectMapper mapper;
-//        // load all room to json list
-//        for (Event event : eventList) {
-//            mapper = new ObjectMapper();
-//            ObjectNode json = mapper.createObjectNode();
-//            json.put("id", event.getId());
-//            json.put("name", event.getName());
-//            json.put("color", event.getColor().toString());
-//            objectNodeList.add(json);
-//        }
-//        return objectNodeList;
-//    }
-
 
 }

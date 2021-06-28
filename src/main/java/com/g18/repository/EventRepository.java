@@ -11,9 +11,9 @@ import java.util.List;
 
 public interface EventRepository extends JpaRepository<Event,Long> {
     void deleteById(long id);
-    @Query(value = "SELECT * FROM sla_db.event WHERE created_time >= '2021-06-26 17:30:08.958825' AND created_time <= '2021-06-27 17:30:08.958825'", nativeQuery = true)
-    List<Event> getAllBetweenDates();
-//    List<Event> getAllBetweenDates(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    @Query(value = "SELECT * FROM sla_db.event WHERE created_time >= :from AND created_time <= :to", nativeQuery = true)
+    List<Event> getAllBetweenDates(@Param("from") String from, @Param("to") String to);
+
 
 }
 

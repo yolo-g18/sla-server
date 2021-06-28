@@ -2,10 +2,14 @@ package com.g18.converter;
 
 import com.g18.dto.EventDto;
 import com.g18.entity.Event;
+import com.g18.service.AuthService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class EventConverter {
+    @Autowired
+    private AuthService authService;
     public Event toEntity(EventDto eventDto){
         Event event = new Event();
         event.setId(eventDto.getId());
@@ -16,7 +20,7 @@ public class EventConverter {
         event.setColor(eventDto.getColor());
         event.setCreatedTime(eventDto.getCreatedTime());
         event.setUpdateTime(eventDto.getUpdateTime());
-//        event.setUser(eventDto.getUser());
+        event.setUser(authService.getCurrentUser());
         return event;
     }
 
@@ -30,7 +34,7 @@ public class EventConverter {
         eventDto.setColor(event.getColor());
         eventDto.setCreatedTime(event.getCreatedTime());
         eventDto.setUpdateTime(event.getUpdateTime());
-//        eventDto.setUser(event.getUser());
+        eventDto.setUserId(event.getId());
         return eventDto;
     }
 
@@ -43,7 +47,7 @@ public class EventConverter {
         event.setColor(eventDto.getColor());
         event.setCreatedTime(eventDto.getCreatedTime());
         event.setUpdateTime(eventDto.getUpdateTime());
-//        event.setUser(eventDto.getUser());
+        event.setUser(authService.getCurrentUser());
         return event;
     }
 

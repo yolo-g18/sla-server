@@ -17,17 +17,9 @@ public class EventController {
     @Autowired
     private EventService es;
 
-
-    @GetMapping(value = "test")
-    public String count(){
-        List<EventDto> a = eventService.findEventBetweenDate();
-        String rs = a.size() + " count";
-        return rs;
-    }
-
     @GetMapping(value = "event")
-    public List<EventDto> showEvent(){
-        return eventService.findEventBetweenDate();
+    public List<EventDto> showEvent(@RequestParam("from") String from,@RequestParam("to") String to){
+        return eventService.getAllBetweenDates(from,to);
     }
 
     @PostMapping(value = "event")
