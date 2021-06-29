@@ -50,6 +50,17 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
+    @ExceptionHandler(RoomException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<Object> handleRoomException(AccountException ex, WebRequest req) {
+        final ApiError apiError = new ApiError();
+        apiError.setStatus(HttpStatus.CONFLICT.value());
+        apiError.setMessage(ex.getMessage());
+        logger.info(ex.getMessage());
+        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+    }
+
+
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<Object> handleNotFoundException(NotFoundException ex, WebRequest req) {
