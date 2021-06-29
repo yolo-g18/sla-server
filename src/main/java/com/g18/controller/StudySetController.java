@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -40,8 +38,8 @@ public class StudySetController {
 		return studySetService.editStudySet(json);
 	}
 	
-	@DeleteMapping("/delete/{id}")
-	public String deleteStudySet(@PathVariable Long id) {
+	@DeleteMapping("/delete")
+	public String deleteStudySet(@RequestParam(value="id") Long id) {
 		return studySetService.deleteStudySet(id);
 	}
 	

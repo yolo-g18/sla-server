@@ -62,29 +62,26 @@ public class StudySetService {
     }
 
     public String deleteStudySet(Long id) {
-
-    	return "delete StudySet successfully";
+        studySetRepository.deleteById(id);
+        return "delete StudySet successfully";
     }
 
     public String editStudySet(ObjectNode json) {
-
-
         return "edit StudySet successfully";
     }
 
 
     public List<ObjectNode> listStudySet(ObjectNode json) {
-
-		return null;
-	}
-
-	public ObjectNode viewStudySetBy(Long id) {
         return null;
-	}
+    }
+
+    public ObjectNode viewStudySetBy(Long id) {
+        return null;
+    }
 
 
-	public String shareStudySetBy(ObjectNode json) {
-		// TODO Auto-generated method stub
-		return "share StudySet successfully";
-	}
+    public String shareStudySetBy(ObjectNode json) {
+        // TODO Auto-generated method stub
+        return "share StudySet successfully";
+    }
 }
