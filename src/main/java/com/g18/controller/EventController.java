@@ -14,9 +14,6 @@ public class EventController {
     @Autowired
     private IEventService eventService;
 
-    @Autowired
-    private EventService es;
-
     @GetMapping(value = "event")
     public List<EventDto> showEvent(@RequestParam("from") String from,@RequestParam("to") String to){
         return eventService.getAllBetweenDates(from,to);
@@ -30,6 +27,7 @@ public class EventController {
     @PutMapping(value = "event/{id}")
     public EventDto updateEvent(@RequestBody EventDto eventDto,@PathVariable("id") long id) {
         eventDto.setId(id);
+        //need to check event is null before save
         return eventService.save(eventDto);
     }
 
