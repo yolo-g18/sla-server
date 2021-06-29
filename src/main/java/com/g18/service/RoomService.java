@@ -3,6 +3,7 @@ package com.g18.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.entity.*;
+import com.g18.exceptions.RoomException;
 import com.g18.model.RoomFolderId;
 import com.g18.model.RoomMemberId;
 import com.g18.model.RoomStudySetId;
@@ -10,6 +11,7 @@ import com.g18.repository.FolderRepository;
 import com.g18.repository.RoomRepository;
 import com.g18.repository.StudySetRepository;
 import com.g18.repository.UserRepository;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +44,14 @@ public class RoomService {
 
     @Autowired
     private StudySetRepository studySetRepository;
+
+    public boolean isIdExisted(Long id){
+       if(roomRepository.getOne(id) == null)
+            return false;
+       else
+           return true;
+    }
+
 
     @Transactional
     public String saveRoom(ObjectNode json){
@@ -113,7 +123,16 @@ public class RoomService {
     }
 
     @Transactional
-    public String deleteRoom(Long id){
+    public String deleteRoom(Long id) {
+
+        if(null == id)
+        {
+            throw new RoomException("id is null");
+        }
+        else if(isIdExisted(id) == false)
+        {
+            throw new RoomException("not found room");
+        }
 
         roomRepository.deleteById(id);
 
