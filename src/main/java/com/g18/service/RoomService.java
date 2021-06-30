@@ -179,7 +179,7 @@ public class RoomService {
         }
 
         // find that room
-        Room existingRoom = roomRepository.getOne(room_id);
+        Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
         // find that member
         User existingMember = userRepository.getOne(member_id);
 
