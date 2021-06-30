@@ -359,11 +359,6 @@ public class RoomService {
         roomStudySet.setRoom(room);
         roomStudySet.setCreatedDate(Instant.now());
 
-        if(room.getRoomStudySets().contains(roomStudySet))
-        {
-            return "StudySet is already in Room";
-        }
-
         // add relationship roomStudySet
         room.getRoomStudySets().add(roomStudySet);
 
