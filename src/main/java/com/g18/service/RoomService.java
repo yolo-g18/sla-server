@@ -304,8 +304,18 @@ public class RoomService {
 
         ).findAny().orElse(null);
 
-        // remove relationship roomFolder
-        existingRoom.getRoomFolders().remove(existingRoomFolder);
+        if(null == existingRoomFolder)
+        {
+            // cancel remove because no relationship
+            return "Room dosen't include Folder";
+        }
+        else
+        {
+            // remove relationship roomFolder
+            existingRoom.getRoomFolders().remove(existingRoomFolder);
+        }
+
+
 
         roomRepository.saveAndFlush(existingRoom);
 
