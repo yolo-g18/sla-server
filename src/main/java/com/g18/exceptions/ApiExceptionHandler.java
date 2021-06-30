@@ -84,8 +84,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
             NoDataFoundException ex, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("message", "No rooms found");
+        body.put("message", "No data found");
 
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
