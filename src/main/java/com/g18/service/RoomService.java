@@ -197,6 +197,12 @@ public class RoomService {
         roomMember.setRoom(existingRoom);
         roomMember.setEnrolledDate(Instant.now());
 
+        if(existingRoom.getRoomMembers().contains(roomMember))
+        {
+            return "Member is already in Room";
+        }
+
+
         // add relationship roomMember
         existingRoom.getRoomMembers().add(roomMember);
 
@@ -232,8 +238,6 @@ public class RoomService {
 
             roomRepository.saveAndFlush(existingRoom);
         }
-
-
 
         return "remove Member from Room successfully";
     }
@@ -314,8 +318,6 @@ public class RoomService {
             // remove relationship roomFolder
             existingRoom.getRoomFolders().remove(existingRoomFolder);
         }
-
-
 
         roomRepository.saveAndFlush(existingRoom);
 
