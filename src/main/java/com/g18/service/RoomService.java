@@ -3,6 +3,7 @@ package com.g18.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.entity.*;
+import com.g18.exceptions.FolderNotFoundException;
 import com.g18.exceptions.MemberNotFoundException;
 import com.g18.exceptions.NoDataFoundException;
 import com.g18.exceptions.RoomNotFoundException;
@@ -261,9 +262,10 @@ public class RoomService {
         roomFolderId.setRoomId(room_id);
 
         // find specific folder
-        Folder folder = folderRepository.getOne(folder_id);
+        Folder folder = folderRepository.findById(folder_id).orElseThrow(() -> {new FolderNotFoundException();
+        });
         // find specific room
-        Room room = roomRepository.getOne(room_id);
+        Room room = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
 
         RoomFolder roomFolder = new RoomFolder();
 
