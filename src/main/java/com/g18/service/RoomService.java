@@ -279,7 +279,7 @@ public class RoomService {
     public String deleteFolderFromRoom(Long room_id,Long folder_id){
 
         // find specific room
-        Room existingRoom = roomRepository.findById(room_id).orElse(null);
+        Room existingRoom = roomRepository.getOne(room_id);
 
         // find roomFolder in roomFolderList of room
         RoomFolder existingRoomFolder = existingRoom.getRoomFolders().stream().filter(
