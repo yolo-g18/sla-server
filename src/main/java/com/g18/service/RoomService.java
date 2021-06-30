@@ -330,9 +330,9 @@ public class RoomService {
         roomStudySetId.setRoomId(room_id);
 
         // find specific studySet
-        StudySet studySet = studySetRepository.findById(studySet_id).orElse(null);
+        StudySet studySet = studySetRepository.getOne(studySet_id);
         // find specific room
-        Room room = roomRepository.findById(room_id).orElse(null);
+        Room room = roomRepository.getOne(room_id);
 
         RoomStudySet roomStudySet = new RoomStudySet();
 
