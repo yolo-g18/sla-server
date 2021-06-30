@@ -378,6 +378,12 @@ public class RoomService {
         // load all roomMembers in database
         List<RoomMember> roomMemberList = roomRepository.findById(id).get().getRoomMembers();
 
+        if(roomMemberList.isEmpty()){
+            throw new NoDataFoundException(); // not found roomMembers
+        }
+
+
+
         // json load all roomMembers to client
         List<ObjectNode> objectNodeList = new ArrayList<>();
 
