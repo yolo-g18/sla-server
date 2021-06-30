@@ -404,15 +404,11 @@ public class RoomService {
             // cancel remove because no relationship
               return "Room dosen't include StudySet";
         }
-        else
-        {
-            // remove relationship roomStudySet
-            existingRoom.getRoomStudySets().remove(existingRoomStudySet);
 
-            roomRepository.saveAndFlush(existingRoom);
-        }
+        // remove relationship roomStudySet
+        existingRoom.getRoomStudySets().remove(existingRoomStudySet);
 
-
+        roomRepository.saveAndFlush(existingRoom);
 
         return "remove StudySet from Room successfully";
     }
