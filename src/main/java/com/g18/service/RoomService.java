@@ -3,7 +3,6 @@ package com.g18.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.entity.*;
-import com.g18.exceptions.NoDataFoundException;
 import com.g18.exceptions.RoomNotFoundException;
 import com.g18.model.RoomFolderId;
 import com.g18.model.RoomMemberId;
@@ -15,11 +14,14 @@ import com.g18.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.PreRemove;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -59,7 +61,7 @@ public class RoomService {
         // set attributes for a new room
         room.setName(json.get("name").asText());
         room.setDescription(json.get("description").asText());
-        User owner = userRepository.getOne(owner_id);
+        User owner = userRepository.findById(owner_id).orElse(null);
         room.setOwner(owner);
         room.setCreatedDate(Instant.now());
 
@@ -73,11 +75,6 @@ public class RoomService {
 
          // load all rooms in database
          List<Room> roomList = roomRepository.findAll();
-
-         if(roomList.isEmpty())
-         {
-             throw new NoDataFoundException(); // all room empty
-         }
 
          // json load all rooms to client
          List<ObjectNode> objectNodeList = new ArrayList<>();
@@ -119,9 +116,6 @@ public class RoomService {
     @Transactional
     public String deleteRoom(Long id){
 
-        // find a specific room
-        Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
-
         roomRepository.deleteById(id);
 
         return "remove room successfully";
@@ -140,7 +134,7 @@ public class RoomService {
         }
 
         // find that specific room
-        Room existingRoom = roomRepository.getOne(id);
+        Room existingRoom = roomRepository.findById(id).orElse(null);
 
         // update attributes
         existingRoom.setName(json.get("name").asText());
@@ -176,9 +170,9 @@ public class RoomService {
         }
 
         // find that room
-        Room existingRoom = roomRepository.getOne(room_id);
+        Room existingRoom = roomRepository.findById(room_id).orElse(null);
         // find that member
-        User existingMember = userRepository.getOne(member_id);
+        User existingMember = userRepository.findById(member_id).orElse(null);
 
         //create id of roomMember
         RoomMemberId roomMemberId = new RoomMemberId();
@@ -207,7 +201,7 @@ public class RoomService {
     public String deleteMemberFromRoom(Long room_id,Long member_id){
 
         // find specific room
-        Room existingRoom = roomRepository.getOne(room_id);
+        Room existingRoom = roomRepository.findById(room_id).orElse(null);
 
         // find roomMember in roomMemberList of a room
         RoomMember existingRoomMember =existingRoom.getRoomMembers().stream().filter(
@@ -255,9 +249,9 @@ public class RoomService {
         roomFolderId.setRoomId(room_id);
 
         // find specific folder
-        Folder folder = folderRepository.getOne(folder_id);
+        Folder folder = folderRepository.findById(folder_id).orElse(null);
         // find specific room
-        Room room = roomRepository.getOne(room_id);
+        Room room = roomRepository.findById(room_id).orElse(null);
 
         RoomFolder roomFolder = new RoomFolder();
 
@@ -279,7 +273,7 @@ public class RoomService {
     public String deleteFolderFromRoom(Long room_id,Long folder_id){
 
         // find specific room
-        Room existingRoom = roomRepository.getOne(room_id);
+        Room existingRoom = roomRepository.findById(room_id).orElse(null);
 
         // find roomFolder in roomFolderList of room
         RoomFolder existingRoomFolder = existingRoom.getRoomFolders().stream().filter(
@@ -327,9 +321,9 @@ public class RoomService {
         roomStudySetId.setRoomId(room_id);
 
         // find specific studySet
-        StudySet studySet = studySetRepository.getOne(studySet_id);
+        StudySet studySet = studySetRepository.findById(studySet_id).orElse(null);
         // find specific room
-        Room room = roomRepository.getOne(room_id);
+        Room room = roomRepository.findById(room_id).orElse(null);
 
         RoomStudySet roomStudySet = new RoomStudySet();
 
@@ -351,7 +345,7 @@ public class RoomService {
     public String deleteStudySetFromRoom(Long room_id,Long studySet_id){
 
         // find specific room
-        Room existingRoom = roomRepository.getOne(room_id);
+        Room existingRoom = roomRepository.findById(room_id).orElse(null);
 
         // find roomStudySet in roomStudySetList
         RoomStudySet existingRoomStudySet = existingRoom.getRoomStudySets().stream().filter(
@@ -374,12 +368,6 @@ public class RoomService {
 
         // load all roomMembers in database
         List<RoomMember> roomMemberList = roomRepository.findById(id).get().getRoomMembers();
-
-        if(roomMemberList.isEmpty())
-        {
-            throw new NoDataFoundException(); // all roomMember empty
-        }
-
 
         // json load all roomMembers to client
         List<ObjectNode> objectNodeList = new ArrayList<>();
@@ -406,12 +394,6 @@ public class RoomService {
         // load all roomFolders in database
         List<RoomFolder> roomFolderList = roomRepository.findById(id).get().getRoomFolders();
 
-        if(roomFolderList.isEmpty())
-        {
-            throw new NoDataFoundException(); // all roomFolder empty
-        }
-
-
         // json load all roomFolders to client
         List<ObjectNode> objectNodeList = new ArrayList<>();
 
@@ -436,12 +418,6 @@ public class RoomService {
 
         // load all roomStudySets in database
         List<RoomStudySet> roomStudySetList = roomRepository.findById(id).get().getRoomStudySets();
-
-        if(roomStudySetList.isEmpty())
-        {
-            throw new NoDataFoundException(); // all roomStudySet empty
-        }
-
 
         // json load all roomStudySets to client
         List<ObjectNode> objectNodeList = new ArrayList<>();

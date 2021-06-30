@@ -1,13 +1,12 @@
 package com.g18.controller;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.g18.entity.Room;
-import com.g18.entity.RoomFolder;
-import com.g18.entity.RoomMember;
-import com.g18.entity.RoomStudySet;
-import com.g18.model.RoomMemberId;
+
 import com.g18.service.RoomService;
+import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,8 +26,9 @@ public class RoomController {
         return roomService.getRoomList();
     }
 
+
     @GetMapping("/room/{id}")
-    public ObjectNode findRoomByID(@PathVariable Long id){
+    public ObjectNode getRoomByID(@PathVariable Long id){
         return roomService.getRoomByID(id);
     }
 
@@ -38,7 +38,7 @@ public class RoomController {
     }
 
     @DeleteMapping("/deleteRoom/{id}")
-    public String deleteRoom(@PathVariable Long id){
+    public String deleteRoom(@PathVariable Long id) {
         return roomService.deleteRoom(id);
     }
 
