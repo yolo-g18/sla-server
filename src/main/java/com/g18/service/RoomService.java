@@ -232,12 +232,11 @@ public class RoomService {
             // cancel remove because no relationship
             return "Room dosen't include Member";
         }
-        else{
-            // remove relationship roomMember
-            existingRoom.getRoomMembers().remove(existingRoomMember);
 
-            roomRepository.saveAndFlush(existingRoom);
-        }
+        // remove relationship roomMember
+        existingRoom.getRoomMembers().remove(existingRoomMember);
+
+        roomRepository.saveAndFlush(existingRoom);
 
         return "remove Member from Room successfully";
     }
