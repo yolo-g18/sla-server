@@ -380,8 +380,11 @@ public class RoomService {
     @Transactional
     public List<ObjectNode> getRoomMemberList(Long id){
 
+        // find specific room
+        Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
+
         // load all roomMembers in database
-        List<RoomMember> roomMemberList = roomRepository.findById(id).get().getRoomMembers();
+        List<RoomMember> roomMemberList = existingRoom.getRoomMembers();
 
         if(roomMemberList.isEmpty()){
             throw new NoDataFoundException(); // not found roomMembers
