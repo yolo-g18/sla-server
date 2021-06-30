@@ -143,7 +143,7 @@ public class RoomService {
         }
 
         // find that specific room
-        Room existingRoom = roomRepository.findById(id).orElse(null);
+        Room existingRoom = roomRepository.getOne(id);
 
         // update attributes
         existingRoom.setName(json.get("name").asText());
