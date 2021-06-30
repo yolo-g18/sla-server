@@ -406,6 +406,12 @@ public class RoomService {
         // load all roomFolders in database
         List<RoomFolder> roomFolderList = roomRepository.findById(id).get().getRoomFolders();
 
+        if(roomFolderList.isEmpty())
+        {
+            throw new NoDataFoundException(); // all roomFolder empty
+        }
+
+
         // json load all roomFolders to client
         List<ObjectNode> objectNodeList = new ArrayList<>();
 
