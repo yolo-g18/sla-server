@@ -412,8 +412,12 @@ public class RoomService {
     @Transactional
     public List<ObjectNode> getRoomFolderList(Long id){
 
+        // find specific room
+        Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
+
+
         // load all roomFolders in database
-        List<RoomFolder> roomFolderList = roomRepository.findById(id).get().getRoomFolders();
+        List<RoomFolder> roomFolderList = existingRoom.getRoomFolders();
 
         if(roomFolderList.isEmpty()){
             throw new NoDataFoundException(); // not found roomFolders
