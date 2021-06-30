@@ -382,8 +382,6 @@ public class RoomService {
             throw new NoDataFoundException(); // not found roomMembers
         }
 
-
-
         // json load all roomMembers to client
         List<ObjectNode> objectNodeList = new ArrayList<>();
 
@@ -408,6 +406,11 @@ public class RoomService {
 
         // load all roomFolders in database
         List<RoomFolder> roomFolderList = roomRepository.findById(id).get().getRoomFolders();
+
+        if(roomFolderList.isEmpty()){
+            throw new NoDataFoundException(); // not found roomFolders
+        }
+
 
         // json load all roomFolders to client
         List<ObjectNode> objectNodeList = new ArrayList<>();
