@@ -22,7 +22,7 @@ import java.util.*;
 @RestControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
-
+    // handle wrong path website
     @Override
     protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         Map<String,String> responseBody = new HashMap<>();
@@ -61,6 +61,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
+    // handle not found Room entity
     @ExceptionHandler(RoomNotFoundException.class)
     public ResponseEntity<Object> handleCityNotFoundException(
             RoomNotFoundException ex, WebRequest request) {
@@ -71,6 +72,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
+    // handle no data (ex: a list is empty)
     @ExceptionHandler(NoDataFoundException.class)
     public ResponseEntity<Object> handleNodataFoundException(
             NoDataFoundException ex, WebRequest request) {
