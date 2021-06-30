@@ -198,12 +198,6 @@ public class RoomService {
         roomMember.setRoom(existingRoom);
         roomMember.setEnrolledDate(Instant.now());
 
-        if(existingRoom.getRoomMembers().contains(roomMember))
-        {
-            return "Member is already in Room";
-        }
-
-
         // add relationship roomMember
         existingRoom.getRoomMembers().add(roomMember);
 
