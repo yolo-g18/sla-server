@@ -369,10 +369,19 @@ public class RoomService {
 
         ).findAny().orElse(null);
 
-        // remove relationship roomStudySet
-        existingRoom.getRoomStudySets().remove(existingRoomStudySet);
+        // remove only existed relationship
+        if(null == existingRoomStudySet){
+              return "Room dosen't include StudySet";
+        }
+        else
+        {
+            // remove relationship roomStudySet
+            existingRoom.getRoomStudySets().remove(existingRoomStudySet);
 
-        roomRepository.saveAndFlush(existingRoom);
+            roomRepository.saveAndFlush(existingRoom);
+        }
+
+
 
         return "remove StudySet from Room successfully";
     }
