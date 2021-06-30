@@ -354,7 +354,7 @@ public class RoomService {
     public String deleteStudySetFromRoom(Long room_id,Long studySet_id){
 
         // find specific room
-        Room existingRoom = roomRepository.findById(room_id).orElse(null);
+        Room existingRoom = roomRepository.getOne(room_id);
 
         // find roomStudySet in roomStudySetList
         RoomStudySet existingRoomStudySet = existingRoom.getRoomStudySets().stream().filter(
