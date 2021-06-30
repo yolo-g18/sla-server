@@ -62,7 +62,7 @@ public class RoomService {
         // set attributes for a new room
         room.setName(json.get("name").asText());
         room.setDescription(json.get("description").asText());
-        User owner = userRepository.findById(owner_id).orElse(null);
+        User owner = userRepository.getOne(owner_id);
         room.setOwner(owner);
         room.setCreatedDate(Instant.now());
 
