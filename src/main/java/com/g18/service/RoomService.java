@@ -210,8 +210,10 @@ public class RoomService {
     @Transactional
     public String deleteMemberFromRoom(Long room_id,Long member_id){
 
-        // find specific room
-        Room existingRoom = roomRepository.getOne(room_id);
+        // find that room
+        Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
+        // find that member
+        User existingMember = userRepository.findById(member_id).orElseThrow(() -> new MemberNotFoundException());
 
         // find roomMember in roomMemberList of a room
         RoomMember existingRoomMember =existingRoom.getRoomMembers().stream().filter(
