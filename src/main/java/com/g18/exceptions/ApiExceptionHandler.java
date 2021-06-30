@@ -82,6 +82,17 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(FolderNotFoundException.class)
+    public ResponseEntity<Object> handleFolderNotFoundException(
+            FolderNotFoundException ex, WebRequest request) {
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("message", "Folder not found");
+
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+
+
     // handle no data (ex: a list is empty)
     @ExceptionHandler(NoDataFoundException.class)
     public ResponseEntity<Object> handleNoDataFoundException(
