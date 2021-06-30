@@ -505,6 +505,7 @@ public class RoomService {
         for (RoomStudySet roomStudySet: roomStudySetList) {
             mapper =  new ObjectMapper();
             ObjectNode json = mapper.createObjectNode();
+            json.put("studySet_id",roomStudySet.getRoomStudySetId().getStudySetId());
             json.put("title", roomStudySet.getStudySet().getTitle());
             json.put("description",roomStudySet.getStudySet().getDescription());
             json.put("createdDate", formatter.format(roomStudySet.getCreatedDate()));
