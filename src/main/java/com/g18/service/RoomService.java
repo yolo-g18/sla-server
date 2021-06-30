@@ -356,8 +356,10 @@ public class RoomService {
     @Transactional
     public String deleteStudySetFromRoom(Long room_id,Long studySet_id){
 
+        // find specific studySet
+        StudySet studySet = studySetRepository.findById(studySet_id).orElseThrow(() -> new StudySetNotFoundException());
         // find specific room
-        Room existingRoom = roomRepository.getOne(room_id);
+        Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
 
         // find roomStudySet in roomStudySetList
         RoomStudySet existingRoomStudySet = existingRoom.getRoomStudySets().stream().filter(
