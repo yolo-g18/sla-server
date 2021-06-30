@@ -283,6 +283,12 @@ public class RoomService {
         roomFolder.setRoom(room);
         roomFolder.setCreatedDate(Instant.now());
 
+        if(room.getRoomFolders().contains(roomFolder))
+        {
+            return "Folder is already in Room";
+        }
+
+
         // add relationship roomFolder
         room.getRoomFolders().add(roomFolder);
 
