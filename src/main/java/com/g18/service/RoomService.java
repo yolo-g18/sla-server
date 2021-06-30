@@ -259,9 +259,9 @@ public class RoomService {
         roomFolderId.setRoomId(room_id);
 
         // find specific folder
-        Folder folder = folderRepository.findById(folder_id).orElseThrow(() -> new FolderNotFoundException());
+        Folder folder = folderRepository.getOne(folder_id);
         // find specific room
-        Room room = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
+        Room room = roomRepository.getOne(room_id);
 
         RoomFolder roomFolder = new RoomFolder();
 
