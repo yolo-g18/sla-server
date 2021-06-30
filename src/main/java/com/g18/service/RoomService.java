@@ -91,6 +91,7 @@ public class RoomService {
          for (Room room: roomList) {
              mapper =  new ObjectMapper();
              ObjectNode json = mapper.createObjectNode();
+             json.put("room_id",room.getId());
              json.put("name",room.getName());
              json.put("description",room.getDescription());
              json.put("createdDate", formatter.format(room.getCreatedDate()));
