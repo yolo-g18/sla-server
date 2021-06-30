@@ -92,6 +92,15 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(StudySetNotFoundException.class)
+    public ResponseEntity<Object> handleStudySetNotFoundException(
+            StudySetNotFoundException ex, WebRequest request) {
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("message", "StudySet not found");
+
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
 
     // handle no data (ex: a list is empty)
     @ExceptionHandler(NoDataFoundException.class)
