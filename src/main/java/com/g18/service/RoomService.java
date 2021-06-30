@@ -285,8 +285,10 @@ public class RoomService {
     @Transactional
     public String deleteFolderFromRoom(Long room_id,Long folder_id){
 
+        // find specific folder
+        Folder folder = folderRepository.findById(folder_id).orElseThrow(() -> new FolderNotFoundException());
         // find specific room
-        Room existingRoom = roomRepository.getOne(room_id);
+        Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
 
         // find roomFolder in roomFolderList of room
         RoomFolder existingRoomFolder = existingRoom.getRoomFolders().stream().filter(
