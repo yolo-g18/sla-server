@@ -122,6 +122,9 @@ public class RoomService {
     @Transactional
     public String deleteRoom(Long id){
 
+        // find a specific room
+        Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
+
         roomRepository.deleteById(id);
 
         return "remove room successfully";
