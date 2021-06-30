@@ -221,10 +221,19 @@ public class RoomService {
 
         ).findAny().orElse(null);
 
-        // remove relationship roomMember
-        existingRoom.getRoomMembers().remove(existingRoomMember);
+        if(null == existingRoomMember)
+        {
+            // cancel remove because no relationship
+            return "Room dosen't include Member";
+        }
+        else{
+            // remove relationship roomMember
+            existingRoom.getRoomMembers().remove(existingRoomMember);
 
-        roomRepository.saveAndFlush(existingRoom);
+            roomRepository.saveAndFlush(existingRoom);
+        }
+
+
 
         return "remove Member from Room successfully";
     }
