@@ -178,9 +178,9 @@ public class RoomService {
         }
 
         // find that room
-        Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
+        Room existingRoom = roomRepository.getOne(room_id);
         // find that member
-        User existingMember = userRepository.findById(member_id).orElseThrow(() -> new MemberNotFoundException());
+        User existingMember = userRepository.getOne(member_id);
 
         //create id of roomMember
         RoomMemberId roomMemberId = new RoomMemberId();
@@ -446,8 +446,12 @@ public class RoomService {
     @Transactional
     public List<ObjectNode> getRoomStudySetList(Long id){
 
+        // find specific room
+        Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
+
+
         // load all roomStudySets in database
-        List<RoomStudySet> roomStudySetList = roomRepository.findById(id).get().getRoomStudySets();
+        List<RoomStudySet> roomStudySetList = existingRoom.getRoomStudySets();
 
         if(roomStudySetList.isEmpty()){
             throw new NoDataFoundException(); // not found roomStudySets
