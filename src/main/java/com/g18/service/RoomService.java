@@ -378,8 +378,9 @@ public class RoomService {
 
         ).findAny().orElse(null);
 
-        // remove only existed relationship
+
         if(null == existingRoomStudySet){
+            // cancel remove because no relationship
               return "Room dosen't include StudySet";
         }
         else
