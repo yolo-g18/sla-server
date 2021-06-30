@@ -13,31 +13,21 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import javax.security.auth.message.AuthException;
-import java.time.LocalDateTime;
 import java.util.*;
 @Slf4j
+@EnableWebMvc
 @RestControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
+
+
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(final MethodArgumentNotValidException ex,
-                                                                  final HttpHeaders headers,
-                                                                  final HttpStatus status,
-                                                                  final WebRequest request) {
-        final Map<String, String> errors = new HashMap<>();
-        for (final FieldError error : ex.getBindingResult().getFieldErrors()) {
-            errors.put(error.getField(), error.getDefaultMessage());
-        }
-
-        for (final ObjectError error : ex.getBindingResult().getGlobalErrors()) {
-            errors.put(error.getObjectName(), error.getDefaultMessage());
-        }
-        final ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST.value(), "Validation failed", errors);
-        logger.info(errors.toString());
-
-        return handleExceptionInternal(ex, apiError, headers, HttpStatus.BAD_REQUEST, request);
+    protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        Map<String,String> responseBody = new HashMap<>();
+        responseBody.put("message","The URL you have reached is not in service at this time.");
+        return new ResponseEntity<Object>(responseBody,HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(AccountException.class)
@@ -49,6 +39,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         logger.info(ex.getMessage());
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
     }
+
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<Object> handleNotFoundException(NotFoundException ex, WebRequest req) {

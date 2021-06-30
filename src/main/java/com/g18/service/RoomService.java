@@ -15,14 +15,11 @@ import com.g18.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.PreRemove;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -105,7 +102,7 @@ public class RoomService {
     public ObjectNode getRoomByID(Long id){
 
         // find a specific room
-        Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException(id));
+        Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
 
         // create a json
         ObjectMapper mapper = new ObjectMapper();
@@ -123,7 +120,7 @@ public class RoomService {
     public String deleteRoom(Long id){
 
         // find a specific room
-        Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException(id));
+        Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
 
         roomRepository.deleteById(id);
 
