@@ -82,7 +82,6 @@ public class RoomService {
              throw new NoDataFoundException(); // all room empty
          }
 
-
          // json load all rooms to client
          List<ObjectNode> objectNodeList = new ArrayList<>();
 
@@ -123,6 +122,9 @@ public class RoomService {
     @Transactional
     public String deleteRoom(Long id){
 
+        // find a specific room
+        Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException(id));
+
         roomRepository.deleteById(id);
 
         return "remove room successfully";
@@ -141,7 +143,7 @@ public class RoomService {
         }
 
         // find that specific room
-        Room existingRoom = roomRepository.findById(id).orElse(null);
+        Room existingRoom = roomRepository.getOne(id);
 
         // update attributes
         existingRoom.setName(json.get("name").asText());
