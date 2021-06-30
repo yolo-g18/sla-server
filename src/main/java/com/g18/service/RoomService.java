@@ -3,6 +3,7 @@ package com.g18.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.entity.*;
+import com.g18.exceptions.NoDataFoundException;
 import com.g18.exceptions.RoomNotFoundException;
 import com.g18.model.RoomFolderId;
 import com.g18.model.RoomMemberId;
@@ -75,6 +76,11 @@ public class RoomService {
 
          // load all rooms in database
          List<Room> roomList = roomRepository.findAll();
+
+         if(roomList.isEmpty()){
+             throw new NoDataFoundException(); // not found room
+         }
+
 
          // json load all rooms to client
          List<ObjectNode> objectNodeList = new ArrayList<>();
