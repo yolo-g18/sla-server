@@ -333,9 +333,9 @@ public class RoomService {
         roomStudySetId.setRoomId(room_id);
 
         // find specific studySet
-        StudySet studySet = studySetRepository.findById(studySet_id).orElseThrow(() -> new StudySetNotFoundException());
+        StudySet studySet = studySetRepository.getOne(studySet_id);
         // find specific room
-        Room room = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
+        Room room = roomRepository.getOne(room_id);
 
         RoomStudySet roomStudySet = new RoomStudySet();
 
