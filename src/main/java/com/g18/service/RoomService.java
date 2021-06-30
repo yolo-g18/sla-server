@@ -471,6 +471,7 @@ public class RoomService {
         for (RoomFolder roomFolder: roomFolderList) {
             mapper =  new ObjectMapper();
             ObjectNode json = mapper.createObjectNode();
+            json.put("folder_id",roomFolder.getRoomFolderId().getFolderId());
             json.put("title", roomFolder.getFolder().getTitle());
             json.put("description",roomFolder.getFolder().getDescription());
             json.put("createdDate", formatter.format(roomFolder.getCreatedDate()));
