@@ -437,6 +437,12 @@ public class RoomService {
         // load all roomStudySets in database
         List<RoomStudySet> roomStudySetList = roomRepository.findById(id).get().getRoomStudySets();
 
+        if(roomStudySetList.isEmpty())
+        {
+            throw new NoDataFoundException(); // all roomStudySet empty
+        }
+
+
         // json load all roomStudySets to client
         List<ObjectNode> objectNodeList = new ArrayList<>();
 
