@@ -3,6 +3,7 @@ package com.g18.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.entity.*;
+import com.g18.exceptions.RoomNotFoundException;
 import com.g18.model.RoomFolderId;
 import com.g18.model.RoomMemberId;
 import com.g18.model.RoomStudySetId;
@@ -60,7 +61,7 @@ public class RoomService {
         // set attributes for a new room
         room.setName(json.get("name").asText());
         room.setDescription(json.get("description").asText());
-        User owner = userRepository.findById(owner_id).orElse(null);
+        User owner = userRepository.getOne(owner_id);
         room.setOwner(owner);
         room.setCreatedDate(Instant.now());
 
@@ -98,7 +99,7 @@ public class RoomService {
     public ObjectNode getRoomByID(Long id){
 
         // find a specific room
-        Room existingRoom = roomRepository.findById(id).orElse(null);
+        Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException(id));
 
         // create a json
         ObjectMapper mapper = new ObjectMapper();
@@ -114,6 +115,11 @@ public class RoomService {
 
     @Transactional
     public String deleteRoom(Long id){
+
+        if(null == id)
+        {
+            throw new RoomNotFoundException(id);
+        }
 
         roomRepository.deleteById(id);
 

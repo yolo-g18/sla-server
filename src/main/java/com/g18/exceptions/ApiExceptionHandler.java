@@ -16,10 +16,10 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.security.auth.message.AuthException;
+import java.time.LocalDateTime;
 import java.util.*;
-
-@RestControllerAdvice
 @Slf4j
+@RestControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(final MethodArgumentNotValidException ex,
@@ -49,7 +49,6 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         logger.info(ex.getMessage());
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
     }
-
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<Object> handleNotFoundException(NotFoundException ex, WebRequest req) {
@@ -68,6 +67,27 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         apiError.setMessage(ex.getMessage());
         logger.info(ex.getMessage());
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+    }
+
+    @ExceptionHandler(RoomNotFoundException.class)
+    public ResponseEntity<Object> handleCityNotFoundException(
+            RoomNotFoundException ex, WebRequest request) {
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("message", "Room not found");
+
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(NoDataFoundException.class)
+    public ResponseEntity<Object> handleNodataFoundException(
+            NoDataFoundException ex, WebRequest request) {
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("message", "No rooms found");
+
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
 
