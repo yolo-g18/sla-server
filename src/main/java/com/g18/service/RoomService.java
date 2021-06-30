@@ -436,6 +436,7 @@ public class RoomService {
         for (RoomMember roomMember: roomMemberList) {
             mapper =  new ObjectMapper();
             ObjectNode json = mapper.createObjectNode();
+            json.put("member_id",roomMember.getRoomMemberId().getMemberId());
             json.put("name",roomMember.getMember().getFirstName()+" "
                     +roomMember.getMember().getLastName());
             json.put("enrolledDate", formatter.format(roomMember.getEnrolledDate()));
