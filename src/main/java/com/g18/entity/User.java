@@ -46,7 +46,7 @@ public class User {
 	@OneToMany(mappedBy = "owner")
 	private List<Folder>  FoldersOwn; //list folders created
 
-	@OneToMany(mappedBy = "room")
+	@OneToMany(mappedBy = "member", orphanRemoval=true, cascade=CascadeType.ALL)
 	private List<RoomMember>  roomsJoin; //list rooms joined
 
 	@OneToMany(mappedBy = "studySet")
