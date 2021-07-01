@@ -28,9 +28,13 @@ import java.util.Locale;
 @Service
 public class RoomService {
 
+
     private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime( FormatStyle.SHORT )
             .withLocale( Locale.UK )
             .withZone( ZoneId.systemDefault() );;
+
+    @Autowired
+    private AuthService authService;
 
     @Autowired
     private UserRepository userRepository;
@@ -497,5 +501,26 @@ public class RoomService {
         }
 
         return objectNodeList;
+    }
+
+    public boolean isCreatorOfRoom(Long room_id){
+
+        // find specific room
+        Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
+
+        // get creator of room
+        User creatorOfRoom = existingRoom.getOwner();
+
+        // get user logined
+        User currenUserLogined = authService.getCurrentUser();
+
+        // verify user is creator of room
+        if(currenUserLogined.getId().equals(creatorOfRoom.getId()))
+        {
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 }

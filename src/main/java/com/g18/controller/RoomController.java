@@ -84,4 +84,9 @@ public class RoomController {
         return roomService.getRoomStudySetList(id);
     }
 
+    @GetMapping("/isCreatorOfRoom/{room_id}")
+    public boolean isCreatorOfRoom(@PathVariable Long room_id){
+        return roomService.isCreatorOfRoom(room_id);
+    }
+
 }
