@@ -146,6 +146,10 @@ public class RoomService {
             System.out.println(e.getMessage());
         }
 
+        // verify room's permisson
+        if(isCreatorOfRoom(id) == false)
+            return "You are not creator of Room, You don't have permisson!!!";
+
         // find that specific room
         Room existingRoom = roomRepository.getOne(id);
 
