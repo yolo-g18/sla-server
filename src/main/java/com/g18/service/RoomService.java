@@ -314,7 +314,7 @@ public class RoomService {
     public String deleteFolderFromRoom(Long room_id,Long folder_id){
 
         // verify room's permisson
-        if(isCreatorOfRoom(room_id) == false || isMemberOfRoom(room_id) == false)
+        if(isMemberOfRoom(room_id) == false)
             return "You are not member of Room, You don't have permisson!!!";
 
         // find specific folder
