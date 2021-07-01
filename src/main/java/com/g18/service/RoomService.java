@@ -566,8 +566,16 @@ public class RoomService {
         // get user logined
         User currenUserLogined = authService.getCurrentUser();
 
-        // finding member
+        // get creator of room
+        User creatorOfRoom = existingRoom.getOwner();
 
+        // verify user is creator of room (creator also a member of room)
+        if(currenUserLogined.getId().equals(creatorOfRoom.getId()))
+        {
+            return true;
+        }
+
+        // determine user is member
         RoomMember roomMember = existingRoom.getRoomMembers().stream().filter(
                 member -> member.getRoomMemberId().getMemberId().equals(currenUserLogined.getId())
         ).findAny().orElse(null);
