@@ -391,10 +391,15 @@ public class RoomService {
     @Transactional
     public String deleteStudySetFromRoom(Long room_id,Long studySet_id){
 
-        // find specific studySet
-        StudySet studySet = studySetRepository.findById(studySet_id).orElseThrow(() -> new StudySetNotFoundException());
+        // verify room's permisson
+        if(isCreatorOfRoom(room_id) == false || isMemberOfRoom(room_id) == false)
+            return "You are not member of Room, You don't have permisson!!!";
+
         // find specific room
         Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
+
+        // find specific studySet
+        StudySet studySet = studySetRepository.findById(studySet_id).orElseThrow(() -> new StudySetNotFoundException());
 
         // find roomStudySet in roomStudySetList
         RoomStudySet existingRoomStudySet = existingRoom.getRoomStudySets().stream().filter(
