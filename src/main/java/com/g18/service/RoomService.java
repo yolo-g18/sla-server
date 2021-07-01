@@ -181,6 +181,10 @@ public class RoomService {
             System.out.printf(e.getMessage());
         }
 
+        // verify room's permisson
+        if(isCreatorOfRoom(room_id) == false)
+            return "You are not creator of Room, You don't have permisson!!!";
+
         // parsing id of member
         try {
 
@@ -189,11 +193,6 @@ public class RoomService {
         }catch (Exception e){
             System.out.printf(e.getMessage());
         }
-
-        // verify room's permisson
-        if(isCreatorOfRoom(room_id) == false)
-             return "You are not creator of Room, You don't have permisson!!!";
-
 
         // find that room
         Room existingRoom = roomRepository.getOne(room_id);
