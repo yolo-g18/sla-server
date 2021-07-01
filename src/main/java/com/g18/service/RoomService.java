@@ -540,4 +540,29 @@ public class RoomService {
             return false;
         }
     }
+
+    public boolean isMemberOfRoom(Long room_id){
+
+        // find specific room
+        Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
+
+        // get user logined
+        User currenUserLogined = authService.getCurrentUser();
+
+        // finding member
+
+        RoomMember roomMember = existingRoom.getRoomMembers().stream().filter(
+                member -> member.getRoomMemberId().getMemberId().equals(currenUserLogined.getId())
+        ).findAny().orElse(null);
+
+        // verify user is member of room
+        if(null == roomMember)
+        {
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+
 }
