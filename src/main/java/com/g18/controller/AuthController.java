@@ -40,7 +40,7 @@ public class AuthController {
     }
 
     @PostMapping("refresh/token")
-    public AuthenticationResponse refreshTokens(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
+    public AuthenticationResponse refreshTokens(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) throws Exception {
         return authService.refreshToken(refreshTokenRequest);
     }
 
