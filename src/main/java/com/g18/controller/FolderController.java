@@ -1,6 +1,7 @@
 package com.g18.controller;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.g18.model.Color;
 import com.g18.service.FolderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -52,5 +53,10 @@ public class FolderController {
     @GetMapping("/isCreatorOfFolder/{folder_id}")
     public boolean isCreatorOfFolder(@PathVariable Long folder_id){
         return folderService.isCreatorOfFolder(folder_id);
+    }
+
+    @GetMapping("/getColorFolder")
+    public Color[] getColorFolder(){
+        return folderService.listColorForFolder();
     }
 }
