@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -24,8 +25,8 @@ public class Folder {
 
 	private String title;
 	private String description;
-	private Date createdDate;
-	private Date updateDate;
+	private Instant createdDate;
+	private Instant updateDate;
 
 	@Enumerated(EnumType.STRING)
 	private Color color;
