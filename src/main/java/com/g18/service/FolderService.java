@@ -53,4 +53,29 @@ public class FolderService {
         return "create Folder successfully";
     }
 
+    @Transactional
+    public String editFolder(ObjectNode json){
+
+        Long id= null;
+
+        // parsing id of folder need edit
+        try {
+            id = Long.parseLong(json.get("id").asText());
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+
+        // find that specific room
+        Folder existingFolder = folderRepository.getOne(id);
+
+        // update attributes
+        existingFolder.setTitle(json.get("title").asText());
+        existingFolder.setDescription(json.get("description").asText());
+        existingFolder.setUpdateDate(Instant.now());
+
+        folderRepository.save(existingFolder);
+
+        return "edit Folder successfully";
+    }
+
 }
