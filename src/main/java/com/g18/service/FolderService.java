@@ -1,5 +1,6 @@
 package com.g18.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.entity.Folder;
 import com.g18.entity.Room;
@@ -88,5 +89,23 @@ public class FolderService {
         folderRepository.deleteById(id);
 
         return "remove Folder successfully";
+    }
+
+    @Transactional
+    public ObjectNode getFolderByID(Long id){
+
+        // find a specific folder
+        Folder existingFolder = folderRepository.getOne(id);
+
+        // create a json
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode json = mapper.createObjectNode();
+
+        json.put("folder_id",existingFolder.getId());
+        json.put("title",existingFolder.getTitle());
+        json.put("description",existingFolder.getDescription());
+        json.put("createdDate", formatter.format(existingFolder.getCreatedDate()));
+
+        return json;
     }
 }
