@@ -22,4 +22,9 @@ public class FolderController {
     public String deleteFolder(@PathVariable Long id) {
         return folderService.deleteFolder(id);
     }
+
+    @GetMapping("/getFolder/{id}")
+    public ObjectNode getFolder(@PathVariable Long id){
+        return folderService.getFolderByID(id);
+    }
 }
