@@ -5,6 +5,8 @@ import com.g18.service.FolderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 public class FolderController {
 
     @Autowired
@@ -26,5 +28,10 @@ public class FolderController {
     @GetMapping("/getFolder/{id}")
     public ObjectNode getFolder(@PathVariable Long id){
         return folderService.getFolderByID(id);
+    }
+
+    @GetMapping("/listFolders")
+    public List<ObjectNode> listAllFolders(){
+        return folderService.getFolderList();
     }
 }
