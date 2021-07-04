@@ -30,7 +30,7 @@ public class Folder {
 	@Enumerated(EnumType.STRING)
 	private Color color;
 
-	@OneToMany(mappedBy = "studySet")
+	@OneToMany(mappedBy = "folder")
 	private List<FolderStudySet> folderStudySets; //list study sets in folder
 	
 
