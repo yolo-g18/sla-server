@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.entity.Folder;
 import com.g18.entity.Room;
 import com.g18.entity.User;
+import com.g18.exceptions.NoDataFoundException;
 import com.g18.exceptions.RoomNotFoundException;
 import com.g18.repository.FolderRepository;
 import com.g18.repository.UserRepository;
@@ -15,6 +16,8 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class FolderService {
@@ -107,5 +110,31 @@ public class FolderService {
         json.put("createdDate", formatter.format(existingFolder.getCreatedDate()));
 
         return json;
+    }
+
+    @Transactional
+    public List<ObjectNode> getFolderList(){
+
+        // load all folders in database
+        List<Folder> folderList = folderRepository.findAll();
+
+        // json load all rooms to client
+        List<ObjectNode> objectNodeList = new ArrayList<>();
+
+        // helper create objectnode
+        ObjectMapper mapper;
+
+        // load all room to json list
+        for (Folder folder: folderList) {
+            mapper =  new ObjectMapper();
+            ObjectNode json = mapper.createObjectNode();
+            json.put("folder_id",folder.getId());
+            json.put("title",folder.getTitle());
+            json.put("description",folder.getDescription());
+            json.put("createdDate", formatter.format(folder.getCreatedDate()));
+            objectNodeList.add(json);
+        }
+
+        return objectNodeList;
     }
 }
