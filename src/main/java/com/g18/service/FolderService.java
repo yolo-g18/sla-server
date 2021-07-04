@@ -82,12 +82,17 @@ public class FolderService {
             System.out.println(e.getMessage());
         }
 
+        // verify folder's permisson
+        if(isCreatorOfFolder(id) == false)
+            return "You are not creator of Folder, You don't have permisson!!!";
+
         // find that specific room
         Folder existingFolder = folderRepository.getOne(id);
 
         // update attributes
         existingFolder.setTitle(json.get("title").asText());
         existingFolder.setDescription(json.get("description").asText());
+        existingFolder.setColor(Color.valueOf(json.get("color").asText()));
         existingFolder.setUpdateDate(Instant.now());
 
         folderRepository.save(existingFolder);
