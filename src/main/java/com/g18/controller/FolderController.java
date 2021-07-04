@@ -38,4 +38,9 @@ public class FolderController {
     @PutMapping("/addStudySetToFolder")
     public String addStudySetToFolder(@RequestBody ObjectNode json){
         return folderService.addStudySetToFolder(json);}
+
+    @DeleteMapping("/deleteStudySetFromFolder/{folder_id}/{studySet_id}")
+    public String deleteStudySetFromFolder(@PathVariable Long folder_id, @PathVariable Long studySet_id){
+        return folderService.deleteStudySetFromFolder(folder_id,studySet_id);
+    }
 }
