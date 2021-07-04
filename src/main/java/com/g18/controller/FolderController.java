@@ -3,9 +3,7 @@ package com.g18.controller;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.service.FolderService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 public class FolderController {
 
@@ -18,5 +16,10 @@ public class FolderController {
     @PutMapping("/editFolder")
     public String editFolder(@RequestBody ObjectNode json){
         return folderService.editFolder(json);
+    }
+
+    @DeleteMapping("/deleteFolder/{id}")
+    public String deleteFolder(@PathVariable Long id) {
+        return folderService.deleteFolder(id);
     }
 }
