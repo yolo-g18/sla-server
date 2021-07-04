@@ -60,6 +60,7 @@ public class FolderService {
         // set attributes for a new folder
         folder.setTitle(json.get("title").asText());
         folder.setDescription(json.get("description").asText());
+        folder.setColor(Color.valueOf(json.get("color").asText()));
         User owner = userRepository.getOne(creator_id);
         folder.setOwner(owner);
         folder.setCreatedDate(Instant.now());
