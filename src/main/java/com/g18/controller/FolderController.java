@@ -43,4 +43,9 @@ public class FolderController {
     public String deleteStudySetFromFolder(@PathVariable Long folder_id, @PathVariable Long studySet_id){
         return folderService.deleteStudySetFromFolder(folder_id,studySet_id);
     }
+
+    @GetMapping("/listStudySetsOfFolder/{id}")
+    public List<ObjectNode> listStudySetsOfFolder(@PathVariable Long id){
+        return folderService.getFolderStudySetList(id);
+    }
 }

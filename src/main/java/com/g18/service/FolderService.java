@@ -244,7 +244,7 @@ public class FolderService {
         for (FolderStudySet folderStudySet: folderStudySetList) {
             mapper =  new ObjectMapper();
             ObjectNode json = mapper.createObjectNode();
-            json.put("studySet_id",folderStudySet.getFolderStudySetId().getStudySetId();
+            json.put("studySet_id",folderStudySet.getFolderStudySetId().getStudySetId());
             json.put("title", folderStudySet.getStudySet().getTitle());
             json.put("description",folderStudySet.getStudySet().getDescription());
             json.put("createdDate", formatter.format(folderStudySet.getCreatedDate()));
