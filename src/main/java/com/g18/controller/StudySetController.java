@@ -1,10 +1,14 @@
 package com.g18.controller;
 
+import com.g18.dto.StudySetRequest;
+import com.g18.dto.StudySetResponse;
+import com.g18.entity.StudySet;
 import lombok.AllArgsConstructor;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -19,29 +23,38 @@ public class StudySetController {
     private StudySetService studySetService;
 	
 	@GetMapping("/list")
-    public List<ObjectNode> listStudySet(@RequestBody ObjectNode json){
-        return studySetService.listStudySet(json);
+    public ResponseEntity listStudySet(){
+        return studySetService.listStudySet();
     }
-	
-	@GetMapping("/view/{id}")
-    public ObjectNode  viewStudySet(@PathVariable Long id){
+
+	@GetMapping("/view")
+    public ResponseEntity viewStudySet(@RequestParam(value="id") Long id){
         return studySetService.viewStudySetBy(id);
     }
 	
 	@PostMapping("/create")
-	public String createRoom(@RequestBody ObjectNode json){ 
-		return studySetService.createStudySet(json);
+	public String createRoom(@RequestBody StudySetRequest request){
+		return studySetService.createStudySet(request);
 	}
 	
 	@PutMapping("/edit")
-	public String editStudySet(@RequestBody ObjectNode json){
-		return studySetService.editStudySet(json);
+	public String editStudySet(@RequestBody StudySetRequest request){
+		return studySetService.editStudySet(request);
 	}
-	
+
 	@DeleteMapping("/delete")
 	public String deleteStudySet(@RequestParam(value="id") Long id) {
 		return studySetService.deleteStudySet(id);
 	}
+
+	@GetMapping("/learning")
+	public String learning(@RequestParam(value="id") Long id){
+		return studySetService.learningFlashCard(id);
+	}
+
+
+
+
 	
 	
 	
