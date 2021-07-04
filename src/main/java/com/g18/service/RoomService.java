@@ -31,7 +31,7 @@ public class RoomService {
 
     private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime( FormatStyle.SHORT )
             .withLocale( Locale.UK )
-            .withZone( ZoneId.systemDefault() );;
+            .withZone( ZoneId.systemDefault() );
 
     @Autowired
     private AuthService authService;
@@ -71,7 +71,7 @@ public class RoomService {
 
         roomRepository.save(room);
 
-        return "add Room successfully";
+        return "create Room successfully";
     }
 
     @Transactional
