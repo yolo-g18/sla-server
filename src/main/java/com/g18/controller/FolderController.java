@@ -48,4 +48,9 @@ public class FolderController {
     public List<ObjectNode> listStudySetsOfFolder(@PathVariable Long id){
         return folderService.getFolderStudySetList(id);
     }
+
+    @GetMapping("/isCreatorOfFolder/{folder_id}")
+    public boolean isCreatorOfFolder(@PathVariable Long folder_id){
+        return folderService.isCreatorOfFolder(folder_id);
+    }
 }
