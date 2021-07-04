@@ -17,6 +17,6 @@ public class FolderController {
 
     @PutMapping("/editFolder")
     public String editFolder(@RequestBody ObjectNode json){
-        return folderService.editFolder(json)
+        return folderService.editFolder(json);
     }
 }
