@@ -37,6 +37,9 @@ public class FolderService {
     @Autowired
     private StudySetRepository studySetRepository;
 
+    @Autowired
+    private AuthService authService;
+
     @Transactional
     public String saveFolder(ObjectNode json){
 
@@ -252,5 +255,26 @@ public class FolderService {
         }
 
         return objectNodeList;
+    }
+
+    public boolean isCreatorOfFolder(Long folder_id){
+
+        // find specific folder
+        Folder existingFolder = folderRepository.getOne(folder_id);
+
+        // get creator of folder
+        User creatorOfFolder = existingFolder.getOwner();
+
+        // get user logined
+        User currenUserLogined = authService.getCurrentUser();
+
+        // verify user is creator of folder
+        if(currenUserLogined.getId().equals(creatorOfFolder.getId()))
+        {
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 }
