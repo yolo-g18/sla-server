@@ -3,6 +3,7 @@ package com.g18.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.entity.*;
+import com.g18.exceptions.MemberNotFoundException;
 import com.g18.exceptions.NoDataFoundException;
 import com.g18.exceptions.RoomNotFoundException;
 import com.g18.model.FolderStudySetId;
@@ -191,5 +192,35 @@ public class FolderService {
         folderRepository.saveAndFlush(existingFolder);
 
         return "add StudySet to Folder successfully";
+    }
+
+    @Transactional
+    public String deleteStudySetFromFolder(Long folder_id,Long studySet_id){
+
+        // find that folder
+        Folder existingFolder = folderRepository.getOne(folder_id);
+        // find that studySet
+        StudySet existingStudySet = studySetRepository.getOne(studySet_id);
+
+        // find folderStudySet in folderStudySetList of a folder
+        FolderStudySet existingFolderStudySet =existingFolder.getFolderStudySets().stream().filter(
+                folderStudySet ->
+                        folderStudySet.getFolderStudySetId().getFolderId().equals(folder_id) &&
+                                folderStudySet.getFolderStudySetId().getStudySetId().equals(studySet_id)
+
+        ).findAny().orElse(null);
+
+        if(null == existingFolderStudySet)
+        {
+            // cancel remove because no relationship
+            return "Folder dosen't include StudySet";
+        }
+
+        // remove relationship roomMember
+        existingFolder.getFolderStudySets().remove(existingFolderStudySet);
+
+        folderRepository.saveAndFlush(existingFolder);
+
+        return "remove StudySet from Folder successfully";
     }
 }
