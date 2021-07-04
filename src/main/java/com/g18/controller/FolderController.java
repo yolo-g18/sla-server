@@ -34,4 +34,8 @@ public class FolderController {
     public List<ObjectNode> listAllFolders(){
         return folderService.getFolderList();
     }
+
+    @PutMapping("/addStudySetToFolder")
+    public String addStudySetToFolder(@RequestBody ObjectNode json){
+        return folderService.addStudySetToFolder(json);}
 }
