@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.entity.Folder;
 import com.g18.entity.Room;
 import com.g18.entity.User;
+import com.g18.exceptions.RoomNotFoundException;
 import com.g18.repository.FolderRepository;
 import com.g18.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,4 +79,14 @@ public class FolderService {
         return "edit Folder successfully";
     }
 
+    @Transactional
+    public String deleteFolder(Long id){
+
+        // find a specific folder
+        Folder existingFolder = folderRepository.getOne(id);
+
+        folderRepository.deleteById(id);
+
+        return "remove Folder successfully";
+    }
 }
