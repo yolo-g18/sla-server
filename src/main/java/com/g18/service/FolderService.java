@@ -223,4 +223,34 @@ public class FolderService {
 
         return "remove StudySet from Folder successfully";
     }
+
+    @Transactional
+    public List<ObjectNode> getFolderStudySetList(Long id){
+
+        // find specific folder
+        Folder existingFolder = folderRepository.getOne(id);
+
+
+        // load all folderStudySets in database
+        List<FolderStudySet> folderStudySetList = existingFolder.getFolderStudySets();
+
+        // json load all roomStudySets to client
+        List<ObjectNode> objectNodeList = new ArrayList<>();
+
+        // helper create objectnode
+        ObjectMapper mapper;
+
+        // load all folderStudySets to json list
+        for (FolderStudySet folderStudySet: folderStudySetList) {
+            mapper =  new ObjectMapper();
+            ObjectNode json = mapper.createObjectNode();
+            json.put("studySet_id",folderStudySet.getFolderStudySetId().getStudySetId();
+            json.put("title", folderStudySet.getStudySet().getTitle());
+            json.put("description",folderStudySet.getStudySet().getDescription());
+            json.put("createdDate", formatter.format(folderStudySet.getCreatedDate()));
+            objectNodeList.add(json);
+        }
+
+        return objectNodeList;
+    }
 }
