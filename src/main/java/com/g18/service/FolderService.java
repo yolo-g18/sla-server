@@ -2,12 +2,13 @@ package com.g18.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.g18.entity.Folder;
-import com.g18.entity.Room;
-import com.g18.entity.User;
+import com.g18.entity.*;
 import com.g18.exceptions.NoDataFoundException;
 import com.g18.exceptions.RoomNotFoundException;
+import com.g18.model.FolderStudySetId;
+import com.g18.model.RoomMemberId;
 import com.g18.repository.FolderRepository;
+import com.g18.repository.StudySetRepository;
 import com.g18.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,9 @@ public class FolderService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private StudySetRepository studySetRepository;
 
     @Transactional
     public String saveFolder(ObjectNode json){
@@ -136,5 +140,56 @@ public class FolderService {
         }
 
         return objectNodeList;
+    }
+
+    @Transactional
+    public String addStudySetToFolder(ObjectNode json){
+
+        Long folder_id = null,studySet_id = null;
+
+        // parsing id of folder
+        try {
+
+            folder_id = Long.parseLong(json.get("folder_id").asText());
+
+        }catch (Exception e){
+            System.out.printf(e.getMessage());
+        }
+
+        // parsing id of studySet
+        try {
+
+            studySet_id = Long.parseLong(json.get("studySet_id").asText());
+
+        }catch (Exception e){
+            System.out.printf(e.getMessage());
+        }
+
+        // find that folder
+        Folder existingFolder = folderRepository.getOne(folder_id);
+        // find that studySet
+        StudySet existingStudySet = studySetRepository.getOne(studySet_id);
+
+        //create id of folderStudySet
+        FolderStudySetId folderStudySetId = new FolderStudySetId();
+
+        folderStudySetId.setFolderId(folder_id);
+        folderStudySetId.setStudySetId(studySet_id);
+
+
+        FolderStudySet folderStudySet = new FolderStudySet();
+
+        // set attributes form folderStudySet
+        folderStudySet.setFolderStudySetId(folderStudySetId);
+        folderStudySet.setStudySet(existingStudySet);
+        folderStudySet.setFolder(existingFolder);
+        folderStudySet.setCreatedDate(Instant.now());
+
+        // add relationship folderStudySet
+        existingFolder.getFolderStudySets().add(folderStudySet);
+
+        folderRepository.saveAndFlush(existingFolder);
+
+        return "add StudySet to Folder successfully";
     }
 }
