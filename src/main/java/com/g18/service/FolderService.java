@@ -220,9 +220,9 @@ public class FolderService {
     public String deleteStudySetFromFolder(Long folder_id,Long studySet_id){
 
         // find that folder
-        Folder existingFolder = folderRepository.getOne(folder_id);
+        Folder existingFolder = folderRepository.findById(folder_id).orElseThrow(() -> new FolderNotFoundException());
         // find that studySet
-        StudySet existingStudySet = studySetRepository.getOne(studySet_id);
+        StudySet existingStudySet = studySetRepository.findById(studySet_id).orElseThrow(() -> new StudySetNotFoundException());
 
         // find folderStudySet in folderStudySetList of a folder
         FolderStudySet existingFolderStudySet =existingFolder.getFolderStudySets().stream().filter(
