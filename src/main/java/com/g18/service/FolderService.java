@@ -86,7 +86,7 @@ public class FolderService {
             return "You are not creator of Folder, You don't have permisson!!!";
 
         // find that specific room
-        Folder existingFolder = folderRepository.getOne(id);
+        Folder existingFolder = folderRepository.findById(id).orElseThrow(() -> new FolderNotFoundException());
 
         // update attributes
         existingFolder.setTitle(json.get("title").asText());
