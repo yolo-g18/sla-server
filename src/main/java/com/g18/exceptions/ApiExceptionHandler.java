@@ -81,6 +81,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
+
     // handle not found Room entity
     @ExceptionHandler(RoomNotFoundException.class)
     public ResponseEntity<Object> handleRoomNotFoundException(
@@ -102,7 +103,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(FolderNotFoundException.class)
+    @ExceptionHandler(value = FolderNotFoundException.class)
     public ResponseEntity<Object> handleFolderNotFoundException(
             FolderNotFoundException ex, WebRequest request) {
 
@@ -132,7 +133,6 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
-
 
 
 

@@ -3,19 +3,17 @@ package com.g18.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.entity.*;
-import com.g18.exceptions.MemberNotFoundException;
-import com.g18.exceptions.NoDataFoundException;
-import com.g18.exceptions.RoomNotFoundException;
+import com.g18.exceptions.*;
 import com.g18.model.Color;
 import com.g18.model.FolderStudySetId;
-import com.g18.model.RoomMemberId;
+
 import com.g18.repository.FolderRepository;
 import com.g18.repository.StudySetRepository;
 import com.g18.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -23,6 +21,7 @@ import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
 
 @Service
 public class FolderService {
@@ -103,8 +102,12 @@ public class FolderService {
     @Transactional
     public String deleteFolder(Long id){
 
+        // verify folder's permisson
+        if(isCreatorOfFolder(id) == false)
+            return "You are not creator of Folder, You don't have permisson!!!";
+
         // find a specific folder
-        Folder existingFolder = folderRepository.getOne(id);
+
 
         folderRepository.deleteById(id);
 
@@ -115,7 +118,7 @@ public class FolderService {
     public ObjectNode getFolderByID(Long id){
 
         // find a specific folder
-        Folder existingFolder = folderRepository.getOne(id);
+        Folder existingFolder = folderRepository.findById(id).orElseThrow(() -> new FolderNotFoundException());
 
         // create a json
         ObjectMapper mapper = new ObjectMapper();

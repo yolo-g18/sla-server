@@ -11,10 +11,10 @@ import com.g18.repository.FolderRepository;
 import com.g18.repository.RoomRepository;
 import com.g18.repository.StudySetRepository;
 import com.g18.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.persistence.PreRemove;
 import java.time.Instant;
 import java.time.ZoneId;
