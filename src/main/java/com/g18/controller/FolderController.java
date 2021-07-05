@@ -51,13 +51,18 @@ public class FolderController {
         return folderService.getFolderStudySetList(id);
     }
 
-    @GetMapping("/isCreatorOfFolder/{folder_id}")
-    public boolean isCreatorOfFolder(@PathVariable Long folder_id){
-        return folderService.isCreatorOfFolder(folder_id);
+    @GetMapping("/isCreatorOfFolder/{id}")
+    public boolean isCreatorOfFolder(@PathVariable Long id){
+        return folderService.isCreatorOfFolder(id);
     }
 
     @GetMapping("/getColorFolder")
     public Color[] getColorFolder(){
         return folderService.listColorForFolder();
+    }
+
+    @GetMapping("/cardinalityOfFolder/{id}")
+    public int CardinalityOfFolder(@PathVariable Long id){
+        return folderService.CardinalityOfFolder(id);
     }
 }

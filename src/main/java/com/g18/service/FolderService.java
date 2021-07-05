@@ -283,10 +283,28 @@ public class FolderService {
         return objectNodeList;
     }
 
-    public boolean isCreatorOfFolder(Long folder_id){
+    public int CardinalityOfFolder(Long id){
+        // find that folder
+        Folder existingFolder = folderRepository.findById(id).orElseThrow(() -> new FolderNotFoundException());
+
+        // load all folderStudySets in database
+        List<FolderStudySet> folderStudySetList = existingFolder.getFolderStudySets();
+
+        if(folderStudySetList.isEmpty())
+        {
+            throw new NoDataFoundException();
+        }
+
+        return folderStudySetList.size();
+    }
+
+
+
+
+    public boolean isCreatorOfFolder(Long id){
 
         // find specific folder
-        Folder existingFolder = folderRepository.findById(folder_id).orElseThrow(() -> new FolderNotFoundException());
+        Folder existingFolder = folderRepository.findById(id).orElseThrow(() -> new FolderNotFoundException());
 
         // get creator of folder
         User creatorOfFolder = existingFolder.getOwner();
