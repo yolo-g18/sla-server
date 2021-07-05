@@ -130,9 +130,6 @@ public class RoomService {
         if(isCreatorOfRoom(id) == false)
             return "You are not creator of Room, You don't have permisson!!!";
 
-        // find a specific room
-        Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
-
         roomRepository.deleteById(id);
 
         return "remove room successfully";
@@ -155,7 +152,7 @@ public class RoomService {
             return "You are not creator of Room, You don't have permisson!!!";
 
         // find that specific room
-        Room existingRoom = roomRepository.getOne(id);
+        Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
 
         // update attributes
         existingRoom.setName(json.get("name").asText());
