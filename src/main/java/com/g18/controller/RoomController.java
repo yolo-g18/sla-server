@@ -89,7 +89,7 @@ public class RoomController {
         return roomService.isCreatorOfRoom(id);
     }
 
-    @GetMapping("/isMemberOfRoom/{room_id}")
+    @GetMapping("/isMemberOfRoom/{id}")
     public boolean isMemberOfRoom(@PathVariable Long id){
         return roomService.isMemberOfRoom(id);
     }
