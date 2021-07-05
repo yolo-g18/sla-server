@@ -188,9 +188,11 @@ public class FolderService {
         }
 
         // find that folder
-        Folder existingFolder = folderRepository.findById(folder_id).orElseThrow(() -> new FolderNotFoundException());
+        Folder existingFolder = folderRepository.findById(folder_id).
+                orElseThrow(() -> new FolderNotFoundException());
         // find that studySet
-        StudySet existingStudySet = studySetRepository.findById(studySet_id).orElseThrow(() -> new StudySetNotFoundException());
+        StudySet existingStudySet = studySetRepository.findById(studySet_id).
+                orElseThrow(() -> new StudySetNotFoundException());
 
         //create id of folderStudySet
         FolderStudySetId folderStudySetId = new FolderStudySetId();
@@ -219,9 +221,11 @@ public class FolderService {
     public String deleteStudySetFromFolder(Long folder_id,Long studySet_id){
 
         // find that folder
-        Folder existingFolder = folderRepository.findById(folder_id).orElseThrow(() -> new FolderNotFoundException());
+        Folder existingFolder = folderRepository.findById(folder_id).
+                orElseThrow(() -> new FolderNotFoundException());
         // find that studySet
-        StudySet existingStudySet = studySetRepository.findById(studySet_id).orElseThrow(() -> new StudySetNotFoundException());
+        StudySet existingStudySet = studySetRepository.findById(studySet_id).
+                orElseThrow(() -> new StudySetNotFoundException());
 
         // find folderStudySet in folderStudySetList of a folder
         FolderStudySet existingFolderStudySet =existingFolder.getFolderStudySets().stream().filter(

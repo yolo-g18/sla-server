@@ -192,9 +192,9 @@ public class RoomService {
         }
 
         // find that room
-        Room existingRoom = roomRepository.getOne(room_id);
+        Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
         // find that member
-        User existingMember = userRepository.getOne(member_id);
+        User existingMember = userRepository.findById(member_id).orElseThrow(() -> new MemberNotFoundException());
 
         //create id of roomMember
         RoomMemberId roomMemberId = new RoomMemberId();
