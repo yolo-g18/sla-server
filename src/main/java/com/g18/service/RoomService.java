@@ -532,10 +532,10 @@ public class RoomService {
         return objectNodeList;
     }
 
-    public boolean isCreatorOfRoom(Long room_id){
+    public boolean isCreatorOfRoom(Long id){
 
         // find specific room
-        Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
+        Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
 
         // get creator of room
         User creatorOfRoom = existingRoom.getOwner();
@@ -553,10 +553,10 @@ public class RoomService {
         }
     }
 
-    public boolean isMemberOfRoom(Long room_id){
+    public boolean isMemberOfRoom(Long id){
 
         // find specific room
-        Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
+        Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
 
         // get user logined
         User currenUserLogined = authService.getCurrentUser();

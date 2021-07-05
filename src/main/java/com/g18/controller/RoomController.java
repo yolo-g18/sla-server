@@ -84,14 +84,14 @@ public class RoomController {
         return roomService.getRoomStudySetList(id);
     }
 
-    @GetMapping("/isCreatorOfRoom/{room_id}")
-    public boolean isCreatorOfRoom(@PathVariable Long room_id){
-        return roomService.isCreatorOfRoom(room_id);
+    @GetMapping("/isCreatorOfRoom/{id}")
+    public boolean isCreatorOfRoom(@PathVariable Long id){
+        return roomService.isCreatorOfRoom(id);
     }
 
     @GetMapping("/isMemberOfRoom/{room_id}")
-    public boolean isMemberOfRoom(@PathVariable Long room_id){
-        return roomService.isMemberOfRoom(room_id);
+    public boolean isMemberOfRoom(@PathVariable Long id){
+        return roomService.isMemberOfRoom(id);
     }
 
 }
