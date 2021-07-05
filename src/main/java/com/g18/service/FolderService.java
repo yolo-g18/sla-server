@@ -189,9 +189,9 @@ public class FolderService {
         }
 
         // find that folder
-        Folder existingFolder = folderRepository.getOne(folder_id);
+        Folder existingFolder = folderRepository.findById(folder_id).orElseThrow(() -> new FolderNotFoundException());
         // find that studySet
-        StudySet existingStudySet = studySetRepository.getOne(studySet_id);
+        StudySet existingStudySet = studySetRepository.findById(studySet_id).orElseThrow(() -> new StudySetNotFoundException());
 
         //create id of folderStudySet
         FolderStudySetId folderStudySetId = new FolderStudySetId();

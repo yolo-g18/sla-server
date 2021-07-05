@@ -31,7 +31,7 @@ public class Folder {
 	@Enumerated(EnumType.STRING)
 	private Color color;
 
-	@OneToMany(mappedBy = "folder")
+	@OneToMany(mappedBy = "folder",orphanRemoval=true, cascade=CascadeType.ALL)
 	private List<FolderStudySet> folderStudySets; //list study sets in folder
 	
 
