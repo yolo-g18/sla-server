@@ -126,6 +126,7 @@ public class FolderService {
 
         json.put("folder_id",existingFolder.getId());
         json.put("title",existingFolder.getTitle());
+        json.put("color",existingFolder.getColor().toString());
         json.put("description",existingFolder.getDescription());
         json.put("createdDate", formatter.format(existingFolder.getCreatedDate()));
 
@@ -137,6 +138,11 @@ public class FolderService {
 
         // load all folders in database
         List<Folder> folderList = folderRepository.findAll();
+
+        if(folderList.isEmpty())
+        {
+            throw new NoDataFoundException();
+        }
 
         // json load all rooms to client
         List<ObjectNode> objectNodeList = new ArrayList<>();
@@ -150,6 +156,7 @@ public class FolderService {
             ObjectNode json = mapper.createObjectNode();
             json.put("folder_id",folder.getId());
             json.put("title",folder.getTitle());
+            json.put("color",folder.getColor().toString());
             json.put("description",folder.getDescription());
             json.put("createdDate", formatter.format(folder.getCreatedDate()));
             objectNodeList.add(json);
