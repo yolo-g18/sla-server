@@ -99,20 +99,7 @@ public class FolderService {
         return "edit Folder successfully";
     }
 
-    @Transactional
-    public String deleteFolder(Long id){
 
-        // verify folder's permisson
-        if(isCreatorOfFolder(id) == false)
-            return "You are not creator of Folder, You don't have permisson!!!";
-
-        // find a specific folder
-
-
-        folderRepository.deleteById(id);
-
-        return "remove Folder successfully";
-    }
 
     @Transactional
     public ObjectNode getFolderByID(Long id){
@@ -163,6 +150,18 @@ public class FolderService {
         }
 
         return objectNodeList;
+    }
+
+    @Transactional
+    public String deleteFolder(Long id){
+
+        // verify folder's permisson
+        if(isCreatorOfFolder(id) == false)
+            return "You are not creator of Folder, You don't have permisson!!!";
+
+        folderRepository.deleteById(id);
+
+        return "remove Folder successfully";
     }
 
     @Transactional
@@ -249,12 +248,16 @@ public class FolderService {
     @Transactional
     public List<ObjectNode> getFolderStudySetList(Long id){
 
-        // find specific folder
-        Folder existingFolder = folderRepository.getOne(id);
-
+        // find that folder
+        Folder existingFolder = folderRepository.findById(id).orElseThrow(() -> new FolderNotFoundException());
 
         // load all folderStudySets in database
         List<FolderStudySet> folderStudySetList = existingFolder.getFolderStudySets();
+
+        if(folderStudySetList.isEmpty())
+        {
+            throw new NoDataFoundException();
+        }
 
         // json load all roomStudySets to client
         List<ObjectNode> objectNodeList = new ArrayList<>();
@@ -279,7 +282,7 @@ public class FolderService {
     public boolean isCreatorOfFolder(Long folder_id){
 
         // find specific folder
-        Folder existingFolder = folderRepository.getOne(folder_id);
+        Folder existingFolder = folderRepository.findById(folder_id).orElseThrow(() -> new FolderNotFoundException());
 
         // get creator of folder
         User creatorOfFolder = existingFolder.getOwner();
