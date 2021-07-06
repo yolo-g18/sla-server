@@ -18,12 +18,13 @@ public class UserResponse {
     private String lastname;
     private String avatar;
     private String job;
-    private String phone;
     private String email;
     private String address;
     private String schoolName;
-    private Instant createdAt;
-    private Instant updatedAt;
-    private Instant favourTimeFrom;
-    private Instant favourTimeTo;
+    private String major;
+    private String bio;
+    private String createdAt;
+    private String updatedAt;
+    private String favourTimeFrom;
+    private String favourTimeTo;
 }

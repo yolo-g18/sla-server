@@ -79,7 +79,7 @@ public class AuthService {
         }
     }
 
-    private boolean checkEmailExistence(String email) {
+    public boolean checkEmailExistence(String email) {
         Optional<User> user = userRepository.findByEmail(email);
         return user.isPresent();
     }
@@ -169,22 +169,20 @@ public class AuthService {
                     .lastname(account.getUser().getLastName())
                     .avatar(user.getAvatar())
                     .job(user.getJob())
-                    .phone(user.getPhone())
                     .email(user.getEmail())
+                    .bio(account.getUser().getBio())
                     .address(user.getAddress())
                     .schoolName(user.getSchoolName())
-                    .createdAt(account.getCreatedDate())
-                    .updatedAt(account.getUpdateDate())
-                    .favourTimeFrom(user.getFavourTimeFrom())
-                    .favourTimeTo(user.getFavourTimeTo())
+                    .createdAt(String.valueOf(account.getCreatedDate()))
+                    .updatedAt(String.valueOf(account.getUpdateDate()))
+                    .favourTimeFrom(String.valueOf(user.getFavourTimeFrom()))
+                    .favourTimeTo(String.valueOf(user.getFavourTimeTo()))
                     .build();
             return userResponse;
 
         }catch (Exception ex) {
-            log.error(String.valueOf("dasd" + ex));
+            throw new SLAException("Occur error");
         }
-        return null;
-
     }
 
     public AuthenticationResponse refreshToken (RefreshTokenRequest refreshTokenRequest) throws Exception{
