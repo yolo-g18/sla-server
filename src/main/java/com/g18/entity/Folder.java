@@ -31,7 +31,11 @@ public class Folder {
 	@Enumerated(EnumType.STRING)
 	private Color color;
 
+<<<<<<< feature/room
 	@OneToMany(mappedBy = "folder",orphanRemoval=true, cascade=CascadeType.ALL)
+=======
+	@OneToMany(mappedBy = "folder", orphanRemoval=true, cascade=CascadeType.ALL)
+>>>>>>> dev
 	private List<FolderStudySet> folderStudySets; //list study sets in folder
 
 

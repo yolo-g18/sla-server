@@ -1,9 +1,6 @@
 package com.g18.service;
 
-import com.g18.dto.AuthenticationResponse;
-import com.g18.dto.LoginRequest;
-import com.g18.dto.RefreshTokenRequest;
-import com.g18.dto.RegisterRequest;
+import com.g18.dto.*;
 import com.g18.entity.Account;
 import com.g18.entity.RefreshToken;
 import com.g18.entity.User;
@@ -102,6 +99,15 @@ public class AuthService {
         return account.getUser();
     }
 
+    public Account getCurrentAccount() {
+        org.springframework.security.core.userdetails.User principal
+                = (org.springframework.security.core.userdetails.User) SecurityContextHolder
+                .getContext().getAuthentication().getPrincipal();
+        Account account = accountRepository.findByUsername(principal.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User name not found - " + principal.getUsername()));
+        return account;
+    }
+
     private String generateVerificationToken(Account account) {
         String token = UUID.randomUUID().toString();
         VerificationToken verificationToken = new VerificationToken();
@@ -130,6 +136,7 @@ public class AuthService {
         //check refresh token existance in db to delete
         Account account = accountRepository.findByUsername(loginRequest.getUsername())
                 .orElseThrow(() -> new NotFoundException("Account not found with name " + loginRequest.getUsername()));
+        UserResponse userResponse = getUserResponseByCurrentAccount(account);
         Optional<RefreshToken> refreshToken = refreshTokenService.getRefreshTokenByAccountId(account.getId());
         if(refreshToken.isPresent()) {
             refreshTokenService.deleteRefreshTokenByAccountId(account.getId());
@@ -146,18 +153,53 @@ public class AuthService {
                 .authenticationToken(token)
                 .refreshToken(refreshTokenService.generateRefreshToken(loginRequest.getUsername()).getToken())
                 .expiresAt(String.valueOf(Date.from(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))))
-                .username(loginRequest.getUsername())
+                .userResponse(userResponse)
                 .build();
     }
 
-    public AuthenticationResponse refreshToken (RefreshTokenRequest refreshTokenRequest) {
+    public UserResponse getUserResponseByCurrentAccount(Account account) {
+        User user = account.getUser();
+        log.error("firstname: " + user.getFirstName());
+        log.error("lastname: " + user.getLastName());
+        try{
+            UserResponse userResponse = UserResponse.builder()
+                    ._id(user.getId())
+                    .username(account.getUsername())
+                    .fullname((user.getFirstName() != null && user.getLastName() != null) ? user.getFirstName() + " " + user.getLastName() : null)
+                    .avatar(user.getAvatar())
+                    .job(user.getJob())
+                    .phone(user.getPhone())
+                    .email(user.getEmail())
+                    .address(user.getAddress())
+                    .schoolName(user.getSchoolName())
+                    .createdAt(account.getCreatedDate())
+                    .updatedAt(account.getUpdateDate())
+                    .favourTimeFrom(user.getFavourTimeFrom())
+                    .favourTimeTo(user.getFavourTimeTo())
+                    .build();
+            return userResponse;
+
+        }catch (Exception ex) {
+            log.error(String.valueOf("dasd" + ex));
+        }
+        return null;
+
+    }
+
+    public AuthenticationResponse refreshToken (RefreshTokenRequest refreshTokenRequest) throws Exception{
         refreshTokenService.validateRefreshToken(refreshTokenRequest.getRefreshToken());
+        Account account = accountRepository.findByUsername(refreshTokenRequest.getUsername())
+                .orElseThrow(() -> new NotFoundException("Account not found with name " + refreshTokenRequest.getUsername()));
+        User user = account.getUser();
+
+        UserResponse userResponse = getUserResponseByCurrentAccount(account);
+
         String token = jwtProvider.generateTokenWithUsername(refreshTokenRequest.getUsername());
         return AuthenticationResponse.builder()
                 .authenticationToken(token)
                 .refreshToken(refreshTokenRequest.getRefreshToken())
                 .expiresAt(String.valueOf(Date.from(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))))
-                .username(refreshTokenRequest.getUsername())
+                .userResponse(userResponse)
                 .build();
     }
 
