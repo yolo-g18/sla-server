@@ -1,5 +1,6 @@
 package com.g18.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.g18.model.RoomMemberId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
