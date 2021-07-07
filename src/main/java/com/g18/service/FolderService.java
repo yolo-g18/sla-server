@@ -10,7 +10,6 @@ import com.g18.model.FolderStudySetId;
 import com.g18.repository.FolderRepository;
 import com.g18.repository.StudySetRepository;
 import com.g18.repository.UserRepository;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -121,10 +120,12 @@ public class FolderService {
     }
 
     @Transactional
-    public List<ObjectNode> getFolderList(){
+    public List<ObjectNode> getFolderListOfUser(Long id){
 
-        // load all folders in database
-        List<Folder> folderList = folderRepository.findAll();
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
+
+        // load all folders of user
+        List<Folder> folderList = user.getFoldersOwn();
 
         if(folderList.isEmpty())
         {

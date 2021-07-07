@@ -32,9 +32,9 @@ public class FolderController {
         return folderService.getFolderByID(id);
     }
 
-    @GetMapping("/listFolders")
-    public List<ObjectNode> listAllFolders(){
-        return folderService.getFolderList();
+    @GetMapping("/getFolderListOfUser/{id}")
+    public List<ObjectNode> getFolderListOfUser(@PathVariable Long id){
+        return folderService.getFolderListOfUser(id);
     }
 
     @PutMapping("/addStudySetToFolder")

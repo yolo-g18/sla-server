@@ -93,12 +93,12 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(MemberNotFoundException.class)
+    @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<Object> handleMemberNotFoundException(
-            MemberNotFoundException ex, WebRequest request) {
+            UserNotFoundException ex, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("message", "Member not found");
+        body.put("message", "User not found");
 
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
