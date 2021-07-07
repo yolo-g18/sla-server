@@ -28,10 +28,9 @@ public class UserController {
         return authenticationResponse;
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Void> updateUserProfile (@PathVariable("id") long id
-            , @Valid  @RequestBody UserProfileDto userProfileDto) throws NotFoundException {
-    userService.save(id, userProfileDto);
+    @PutMapping("")
+    public ResponseEntity<Void> updateUserProfile (@Valid  @RequestBody UserProfileDto userProfileDto) throws NotFoundException {
+    userService.save(userProfileDto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

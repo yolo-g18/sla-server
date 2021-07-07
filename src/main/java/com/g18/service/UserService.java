@@ -23,11 +23,10 @@ public class UserService {
     private final AccountRepository accountRepository;
     private final AuthService authService;
 
-    public void save(Long id, UserProfileDto userProfileDto) throws NotFoundException{
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Not found user with id"));
-        Account account = accountRepository.findByUser(user)
-                .orElseThrow(() -> new NotFoundException("Not found accout with user id"));
+    public void save(UserProfileDto userProfileDto) throws NotFoundException{
+
+        Account account = authService.getCurrentAccount();
+        User user = account.getUser();
         if(authService.checkEmailExistence(userProfileDto.getEmail()) && !userProfileDto.getEmail().equals(user.getEmail())){
             throw new AccountException("Email is already taken");
         }
