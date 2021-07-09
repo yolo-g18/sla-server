@@ -145,7 +145,7 @@ public class FolderService {
             json.put("folder_id",folder.getId());
             json.put("title",folder.getTitle());
             json.put("color",folder.getColor().toString());
-            json.put("description",folder.getDescription());
+            json.put("numberOfSets",folder.getFolderStudySets().size());
             json.put("createdDate", formatter.format(folder.getCreatedDate()));
             objectNodeList.add(json);
         }
@@ -283,23 +283,6 @@ public class FolderService {
 
         return objectNodeList;
     }
-
-    public int CardinalityOfFolder(Long id){
-        // find that folder
-        Folder existingFolder = folderRepository.findById(id).orElseThrow(() -> new FolderNotFoundException());
-
-        // load all folderStudySets in database
-        List<FolderStudySet> folderStudySetList = existingFolder.getFolderStudySets();
-
-        if(folderStudySetList.isEmpty())
-        {
-            throw new NoDataFoundException();
-        }
-
-        return folderStudySetList.size();
-    }
-
-
 
 
     public boolean isCreatorOfFolder(Long id){

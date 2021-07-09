@@ -61,8 +61,5 @@ public class FolderController {
         return folderService.listColorForFolder();
     }
 
-    @GetMapping("/cardinalityOfFolder/{id}")
-    public int CardinalityOfFolder(@PathVariable Long id){
-        return folderService.CardinalityOfFolder(id);
-    }
+
 }
