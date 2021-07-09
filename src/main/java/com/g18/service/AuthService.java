@@ -171,6 +171,7 @@ public class AuthService {
                     .job(user.getJob())
                     .email(user.getEmail())
                     .bio(account.getUser().getBio())
+                    .major(account.getUser().getMajor())
                     .address(user.getAddress())
                     .schoolName(user.getSchoolName())
                     .createdAt(String.valueOf(account.getCreatedDate()))
