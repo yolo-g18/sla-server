@@ -1,17 +1,18 @@
 package com.g18.service;
 
 import com.g18.dto.CardDto;
-import com.g18.dto.StudySetResponse;
 import com.g18.entity.Card;
 import com.g18.entity.CardLearning;
 import com.g18.entity.StudySet;
 
+import com.g18.entity.User;
 import com.g18.repository.CardLearningRepository;
 import com.g18.repository.CardRepository;
 import com.g18.repository.StudySetRepository;
 import com.g18.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.expression.ExpressionException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -21,8 +22,6 @@ import lombok.AllArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
 
 @Service
 @AllArgsConstructor
@@ -62,7 +61,6 @@ public class CardService {
     }
 
     public String editCard(List<CardDto> request) {
-
         try{
             StudySet studySet = studySetRepository.findById(request.get(0).getStudySet()).orElse(null);
             for (CardDto cardDto: request) {
@@ -81,10 +79,18 @@ public class CardService {
     }
 
     public String deleteCard(Long id) {
-        cardRepository.deleteById(id);
-        return "delete Card successfully";
-    }
+        Card card = cardRepository.findById(id).orElseThrow(()->  new ExpressionException("Card not exist"));
+        User auth = authService.getCurrentAccount().getUser();
+        StudySet studySet = studySetRepository.findById(card.getStudySet().getId())
+                                                .orElseThrow(()->  new ExpressionException("Study Set not exist"));
 
+        if(auth.equals(studySet.getCreator())) {
+            cardRepository.deleteById(id);
+            return "delete Card successfully";
+        }else{
+            return "Not permitted";
+        }
+    }
 
     public String writeHint(CardDto cardDto) {
         try{

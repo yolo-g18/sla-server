@@ -1,5 +1,6 @@
 package com.g18.controller;
 
+import com.g18.dto.CardDto;
 import com.g18.dto.StudySetRequest;
 import com.g18.dto.StudySetResponse;
 import com.g18.entity.StudySet;
@@ -46,21 +47,6 @@ public class StudySetController {
 	public String deleteStudySet(@RequestParam(value="id") Long id) {
 		return studySetService.deleteStudySet(id);
 	}
-
-	@GetMapping("/learning")
-	public String learning(@RequestParam(value="id") Long id){
-		return studySetService.learningFlashCard(id);
-	}
-
-
-
-
-	
-	
-	
-	
-
-	    
 
 }
 

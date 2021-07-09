@@ -42,4 +42,6 @@ public class StudySetLearning {
 
     private Instant startDate;
     private Instant expectedDate;
+
+    private boolean isPublic;
 }

@@ -12,10 +12,10 @@ import java.util.List;
 public class StudySetResponse {
 
     private Long id;
-    private Long creator;
+    private String username;
     private String title;
     private String description;
     private String tag;
     private boolean isPublic;
-    private List<CardDto> cards;
+    private Integer numberOfCard;
 }

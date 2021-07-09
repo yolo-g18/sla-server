@@ -19,12 +19,6 @@ public class CardDto {
     private String front;
     private String back;
 
-    private int q; //quality
-    private double intervalTime;
-    private double eFactor;
     private String hint;
-    private Instant LearnedDate;
-    private Status status;
-    private String color;
 
 }

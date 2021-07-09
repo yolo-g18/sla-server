@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 
@@ -24,9 +26,7 @@ public class StudySet {
 	private String tag;
 	private boolean isPublic;
 
-
-
-//	@OneToMany(mappedBy = "studySet", cascade = CascadeType.ALL)
-//	private List<Card> cards;
+	@OneToMany(mappedBy = "studySet", orphanRemoval = true, cascade = CascadeType.ALL)
+	private List<Card> cards;
 
 }
