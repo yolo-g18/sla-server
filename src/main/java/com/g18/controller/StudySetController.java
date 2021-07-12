@@ -6,6 +6,7 @@ import com.g18.dto.StudySetResponse;
 import com.g18.entity.StudySet;
 import lombok.AllArgsConstructor;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.service.StudySetService;
+
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("api/studySet")
@@ -48,5 +51,9 @@ public class StudySetController {
 		return studySetService.deleteStudySet(id);
 	}
 
+	@GetMapping("/export")
+		public void exportToExcel(HttpServletResponse response, @RequestParam(value="id") Long id) throws IOException {
+		studySetService.exportStudySetToExcel(response, id);
+	}
 }
 
