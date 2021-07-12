@@ -1,22 +1,25 @@
 package com.g18.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import com.g18.dto.CardDto;
 import com.g18.dto.StudySetRequest;
 import com.g18.dto.StudySetResponse;
 
-import com.g18.entity.Card;
-import com.g18.entity.User;
-import com.g18.entity.StudySet;
+import com.g18.entity.*;
 
-import com.g18.repository.CardLearningRepository;
-import com.g18.repository.StudySetRepository;
-import com.g18.repository.CardRepository;
-import com.g18.repository.UserRepository;
+import com.g18.repository.*;
 
+import com.g18.utils.ExcelUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.ExpressionException;
 import org.springframework.http.HttpStatus;
@@ -25,6 +28,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AllArgsConstructor;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 
 @Service
 @AllArgsConstructor
@@ -46,7 +52,9 @@ public class StudySetService {
 
     @Autowired
     private CardLearningRepository cardLearningRepository;
-
+    
+    @Autowired
+    private ExcelUtils excelUtils;
 
 
     public String createStudySet(StudySetRequest request) {
@@ -141,12 +149,36 @@ public class StudySetService {
         return "share StudySet successfully";
     }
 
-    public String exportStudySet(StudySetRequest request){
+    public void exportStudySetToExcel(HttpServletResponse response, Long studySetId) throws IOException {
         // TODO Auto-generated method stub
-        return "export StudySet successfully";
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=StudySetExport.xlsx";
+        response.setHeader(headerKey, headerValue);
+
+        HashMap<Integer,String> hashMapRowName = new HashMap<>();
+        XSSFWorkbook workbook  = new XSSFWorkbook();
+        XSSFSheet sheet = workbook.createSheet("StudySet");
+        excelUtils.writeHeaderLine(workbook,sheet,hashMapRowName);
+        List<Card> cardList = studySetRepository.findById(studySetId).orElseThrow(()-> new ExpressionException("Not exist")).getCards();
+        writeDataLines(workbook, sheet, cardList);
+
+        ServletOutputStream outputStream = response.getOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+        outputStream.close();
+    }
+
+
+    public ResponseEntity getListByFolderId(Long folderId) {
+        return null;
+    }
+
+    public ResponseEntity getListByRoomId(Long roomId) {
+        return null;
     }
 
     private StudySetResponse setStudySetResponse(StudySet studySet){
+
         StudySetResponse studySetResponse = new StudySetResponse();
         studySetResponse.setId(studySet.getId());
         studySetResponse.setUsername(authService.getCurrentAccount().getUsername());
@@ -157,4 +189,22 @@ public class StudySetService {
         studySetResponse.setNumberOfCard(studySet.getCards().size());
         return studySetResponse;
     }
+
+    private void writeDataLines(XSSFWorkbook workbook,XSSFSheet sheet, List<Card> cardList) {
+        int rowCount = 1;
+        CellStyle style = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setFontHeight(14);
+        style.setFont(font);
+
+        for (Card card : cardList) {
+            Row row = sheet.createRow(rowCount++);
+            int columnCount = 0;
+
+            excelUtils.createCell(sheet, row, columnCount++, card.getFront(), style);
+            excelUtils.createCell(sheet, row, columnCount++, card.getBack(), style);
+        }
+    }
+
+
 }
