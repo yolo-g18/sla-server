@@ -34,6 +34,10 @@ public class Event {
     private Instant fromTime;
     private Instant toTime;
 
+//    private boolean isLearnEvent;
+
+
+
     @Enumerated(EnumType.STRING)
     private Color color;
 

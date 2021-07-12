@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -26,7 +27,7 @@ public class StudySet {
 
 
 
-//	@OneToMany(mappedBy = "studySet", cascade = CascadeType.ALL)
-//	private List<Card> cards;
+	@OneToMany(mappedBy = "studySet", cascade = CascadeType.ALL)
+	private List<Card> cards;
 
 }
