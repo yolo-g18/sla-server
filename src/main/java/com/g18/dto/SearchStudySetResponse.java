@@ -15,8 +15,7 @@ public class SearchStudySetResponse {
     private Long id;
     private String creator;
     private String title;
-    private List<CardDto> cards;
-
+    private List<Card> first4Cards;
     private int numberOfCards;
 
 }

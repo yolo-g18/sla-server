@@ -3,6 +3,7 @@ package com.g18.controller;
 import com.g18.dto.EventDto;
 import com.g18.dto.SearchFolderResponse;
 import com.g18.dto.SearchRoomResponse;
+import com.g18.dto.SearchStudySetResponse;
 import com.g18.entity.Event;
 import com.g18.entity.Folder;
 import com.g18.entity.Room;
@@ -21,6 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class SearchController {
     @Autowired
     SearchService searchService;
+
+    @GetMapping("/studySet")
+    Page<SearchStudySetResponse> searchStudySetByTitle(Pageable pageable, @RequestParam String keySearch){
+        return searchService.searchStudySetByTitle(pageable,keySearch);
+    }
 
     @GetMapping("/event")
     Page<EventDto> searchEvent(Pageable pageable, @RequestParam String keySearch){

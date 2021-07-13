@@ -1,6 +1,4 @@
 package com.g18.repository;
-
-import com.g18.entity.Folder;
 import com.g18.entity.Room;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

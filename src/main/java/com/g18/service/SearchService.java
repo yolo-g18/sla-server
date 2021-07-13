@@ -3,13 +3,9 @@ package com.g18.service;
 import com.g18.dto.EventDto;
 import com.g18.dto.SearchFolderResponse;
 import com.g18.dto.SearchRoomResponse;
-import com.g18.entity.Event;
-import com.g18.entity.Folder;
-import com.g18.entity.Room;
-import com.g18.entity.RoomFolder;
-import com.g18.repository.EventRepository;
-import com.g18.repository.FolderRepository;
-import com.g18.repository.RoomRepository;
+import com.g18.dto.SearchStudySetResponse;
+import com.g18.entity.*;
+import com.g18.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.data.domain.*;
@@ -30,6 +26,33 @@ public class SearchService {
 
     @Autowired
     private RoomRepository roomRepository;
+
+    @Autowired
+    private StudySetRepository studySetRepository;
+
+    @Autowired
+    private CardRepository cardRepository;
+
+
+    public Page<SearchStudySetResponse> searchStudySetByTitle(Pageable pageable, String keySearch) {
+        Page<StudySet> studySetPage =studySetRepository.findByTitleContainsAndIsPublicTrue(keySearch,pageable);
+        int totalElements = (int) studySetPage.getTotalElements();
+        return new PageImpl<SearchStudySetResponse>(
+                studySetPage.stream().map(studySet -> new SearchStudySetResponse(
+                          studySet.getId(),
+                        studySet.getCreator().getLastName() + " " + studySet.getCreator().getFirstName(),
+                        studySet.getTitle(),
+                        cardRepository.findTop4ByStudySetId(studySet.getId()),
+                        studySet.getCards().size()
+
+                        )
+                ).collect(Collectors.toList()), pageable, totalElements);
+    }
+
+
+
+
+
 
     public Page<EventDto> searchEvent(Pageable pageable,String nameSearch) {
         Page<Event> eventPage =eventRepository.findByNameContaining(nameSearch,pageable);
@@ -73,7 +96,9 @@ public class SearchService {
                                 room.getDescription(),
                                 room.getCreatedDate(),
                                 room.getUpdateDate(),
+                                //Error when find number of member (memberId and roomID)
                                 room.getRoomMembers().size(),
+                                //Error when find number of studyset (memberId and roomID)
                                 getTotalStudySetsInRoom(room)
                         )
                 ).collect(Collectors.toList()), pageable, totalElements);
