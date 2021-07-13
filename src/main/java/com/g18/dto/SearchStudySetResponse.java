@@ -18,4 +18,6 @@ public class SearchStudySetResponse {
     private List<CardDto> first4Cards;
     private int numberOfCards;
 
+
+
 }

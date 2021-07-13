@@ -47,12 +47,23 @@ public class SearchService {
                 ).collect(Collectors.toList()), pageable, totalElements);
     }
 
+    //Search list public Study set by tag
+    public Page<SearchStudySetResponse> searchStudySetByTag(Pageable pageable, String keySearch) {
+        Page<StudySet> studySetPage =studySetRepository.findByTagContainsAndIsPublicTrue(keySearch,pageable);
+        int totalElements = (int) studySetPage.getTotalElements();
+        return new PageImpl<SearchStudySetResponse>(
+                studySetPage.stream().map(studySet -> new SearchStudySetResponse(
+                                studySet.getId(),
+                                studySet.getCreator().getLastName() + " " + studySet.getCreator().getFirstName(),
+                                studySet.getTitle(),
+                                convertToCardDto(cardRepository.findTop4ByStudySetId(studySet.getId())),
+                                studySet.getCards().size()
+                        )
+                ).collect(Collectors.toList()), pageable, totalElements);
+    }
 
 
-
-
-
-    public Page<EventDto> searchEvent(Pageable pageable,String nameSearch) {
+    public Page<EventDto> searchEventByTitle(Pageable pageable, String nameSearch) {
         Page<Event> eventPage =eventRepository.findByNameContaining(nameSearch,pageable);
         int totalElements = (int) eventPage.getTotalElements();
         return new PageImpl<EventDto>(
@@ -63,7 +74,7 @@ public class SearchService {
                 ).collect(Collectors.toList()), pageable, totalElements);
     }
 
-    public Page<SearchFolderResponse> searchFolder(Pageable pageable, String titleSearch) {
+    public Page<SearchFolderResponse> searchFolderByTitle(Pageable pageable, String titleSearch) {
         Page<Folder> folderPage = folderRepository.findByTitleContaining(titleSearch,pageable);
         int totalElements = folderPage.getNumberOfElements();
         return new PageImpl<SearchFolderResponse>(
@@ -82,7 +93,7 @@ public class SearchService {
     }
 
 
-    public Page<SearchRoomResponse> searchRoom(Pageable pageable, String nameSearch) {
+    public Page<SearchRoomResponse> searchRoomByName(Pageable pageable, String nameSearch) {
         Page<Room> roomPage = roomRepository.findByNameContaining(nameSearch,pageable);
         int totalElements = roomPage.getNumberOfElements();
         return new PageImpl<SearchRoomResponse>(

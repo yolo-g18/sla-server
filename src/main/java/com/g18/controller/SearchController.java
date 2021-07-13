@@ -4,10 +4,6 @@ import com.g18.dto.EventDto;
 import com.g18.dto.SearchFolderResponse;
 import com.g18.dto.SearchRoomResponse;
 import com.g18.dto.SearchStudySetResponse;
-import com.g18.entity.Event;
-import com.g18.entity.Folder;
-import com.g18.entity.Room;
-import com.g18.service.EventService;
 import com.g18.service.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,24 +19,29 @@ public class SearchController {
     @Autowired
     SearchService searchService;
 
-    @GetMapping("/studySet")
+    @GetMapping("/studySet/tag")
+    Page<SearchStudySetResponse> searchStudySetByTag(Pageable pageable, @RequestParam String keySearch){
+        return searchService.searchStudySetByTag(pageable,keySearch);
+    }
+
+    @GetMapping("/studySet/title")
     Page<SearchStudySetResponse> searchStudySetByTitle(Pageable pageable, @RequestParam String keySearch){
         return searchService.searchStudySetByTitle(pageable,keySearch);
     }
 
     @GetMapping("/event")
     Page<EventDto> searchEvent(Pageable pageable, @RequestParam String keySearch){
-        return searchService.searchEvent(pageable,keySearch);
+        return searchService.searchEventByTitle(pageable,keySearch);
     }
 
     @GetMapping("/folder")
     Page<SearchFolderResponse> searchFolder(Pageable pageable, @RequestParam String keySearch){
-        return searchService.searchFolder(pageable ,keySearch);
+        return searchService.searchFolderByTitle(pageable ,keySearch);
     }
 
     @GetMapping("/room")
     Page<SearchRoomResponse> searchRoom(Pageable pageable, @RequestParam String keySearch){
-        return searchService.searchRoom(pageable ,keySearch);
+        return searchService.searchRoomByName(pageable ,keySearch);
     }
 
 }

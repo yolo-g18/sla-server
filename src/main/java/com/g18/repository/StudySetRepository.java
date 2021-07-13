@@ -10,5 +10,7 @@ import java.util.List;
 public interface StudySetRepository extends JpaRepository<StudySet,Long> {
     Page<StudySet> findByTitleContainsAndIsPublicTrue(String title, Pageable pageable);
     List<StudySet> findByCreatorId(Long id);
+    Page<StudySet> findByTagContainsAndIsPublicTrue(String tag, Pageable pageable);
+
 
 }
