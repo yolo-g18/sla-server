@@ -1,6 +1,7 @@
 package com.g18.service;
 
 import com.g18.dto.UserProfileDto;
+import com.g18.dto.UserResponse;
 import com.g18.entity.Account;
 import com.g18.entity.User;
 import com.g18.exceptions.AccountException;
@@ -9,6 +10,7 @@ import com.g18.repository.UserRepository;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -45,6 +47,31 @@ public class UserService {
 
         userRepository.save(user);
         accountRepository.save(account);
+    }
+
+    public UserResponse getUserByUsername(String username) {
+        Account account = accountRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User name not found"));
+        User user = account.getUser();
+        UserResponse userResponse = UserResponse.builder()
+                ._id(user.getId())
+                .username(account.getUsername())
+                .firstname(account.getUser().getFirstName())
+                .lastname(account.getUser().getLastName())
+                .avatar(user.getAvatar())
+                .job(user.getJob())
+                .email(user.getEmail())
+                .bio(account.getUser().getBio())
+                .major(account.getUser().getMajor())
+                .address(user.getAddress())
+                .schoolName(user.getSchoolName())
+                .createdAt(String.valueOf(account.getCreatedDate()))
+                .updatedAt(String.valueOf(account.getUpdateDate()))
+                .favourTimeFrom(String.valueOf(user.getFavourTimeFrom()))
+                .favourTimeTo(String.valueOf(user.getFavourTimeTo()))
+                .build();
+
+        return userResponse;
     }
 
 

@@ -28,6 +28,12 @@ public class UserController {
         return authenticationResponse;
     }
 
+    @GetMapping("/about/{username}")
+    public UserResponse getUserByUsername(@PathVariable String username) {
+        return userService.getUserByUsername(username);
+    }
+
+
     @PutMapping("")
     public ResponseEntity<Void> updateUserProfile (@Valid  @RequestBody UserProfileDto userProfileDto) throws NotFoundException {
     userService.save(userProfileDto);
