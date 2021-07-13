@@ -6,6 +6,7 @@ import com.g18.entity.CardLearning;
 import com.g18.entity.StudySet;
 
 import com.g18.entity.User;
+import com.g18.model.UserCardId;
 import com.g18.repository.CardLearningRepository;
 import com.g18.repository.CardRepository;
 import com.g18.repository.StudySetRepository;
@@ -85,7 +86,8 @@ public class CardService {
                                                 .orElseThrow(()->  new ExpressionException("Study Set not exist"));
 
         if(auth.equals(studySet.getCreator())) {
-            cardRepository.deleteById(id);
+            cardLearningRepository.deleteAllCardLearning(id);
+            cardRepository.delete(card);
             return "delete Card successfully";
         }else{
             return "Not permitted";
@@ -94,13 +96,21 @@ public class CardService {
 
     public String writeHint(CardDto cardDto) {
         try{
-            CardLearning cardLearning = cardLearningRepository.findById(cardDto.getId()).orElse(null);
+            User user = authService.getCurrentAccount().getUser();
+            UserCardId userCardId = new UserCardId();
+            userCardId.setUserId(user.getId());
+            userCardId.setCardId(cardDto.getId());
 
-            cardLearning.setHint(cardDto.getHint());
-            cardLearningRepository.save(cardLearning);
-            return "write Hint successfully";
+            CardLearning cardLearning = cardLearningRepository.getCardLearningBy(userCardId);
+            if(cardLearning!=null){
+                cardLearning.setHint(cardDto.getHint());
+                cardLearningRepository.save(cardLearning);
+                return "write Hint successfully";
+            }else{
+                return "CardLearning not exist";
+            }
         }catch (Exception e){
-                return "write Hint fail";
+            return "write Hint fail";
         }
     }
 
