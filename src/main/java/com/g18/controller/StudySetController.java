@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.service.StudySetService;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("api/studySet")
@@ -37,12 +38,12 @@ public class StudySetController {
     }
 	
 	@PostMapping("/create")
-	public String createRoom(@RequestBody StudySetRequest request){
+	public String createRoom(@Valid @RequestBody StudySetRequest request){
 		return studySetService.createStudySet(request);
 	}
 	
 	@PutMapping("/edit")
-	public String editStudySet(@RequestBody StudySetRequest request){
+	public String editStudySet(@Valid @RequestBody StudySetRequest request){
 		return studySetService.editStudySet(request);
 	}
 

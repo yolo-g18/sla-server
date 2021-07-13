@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.g18.dto.CardDto;
 import com.g18.dto.StudySetRequest;
 import com.g18.dto.StudySetResponse;
 
@@ -52,7 +51,7 @@ public class StudySetService {
 
     @Autowired
     private CardLearningRepository cardLearningRepository;
-    
+
     @Autowired
     private ExcelUtils excelUtils;
 
@@ -168,20 +167,13 @@ public class StudySetService {
         outputStream.close();
     }
 
-
-    public ResponseEntity getListByFolderId(Long folderId) {
-        return null;
-    }
-
-    public ResponseEntity getListByRoomId(Long roomId) {
-        return null;
-    }
-
     private StudySetResponse setStudySetResponse(StudySet studySet){
 
         StudySetResponse studySetResponse = new StudySetResponse();
-        studySetResponse.setId(studySet.getId());
-        studySetResponse.setUsername(authService.getCurrentAccount().getUsername());
+        studySetResponse.setStudySetId(studySet.getId());
+        User creator = userRepository.findById(studySet.getCreator().getId()).orElseThrow(()->new ExpressionException("User not exist"));
+        studySetResponse.setCreatorName(creator.getFirstName()+" "+creator.getLastName());
+        studySetResponse.setUserId(creator.getId());
         studySetResponse.setDescription(studySet.getDescription());
         studySetResponse.setTag(studySet.getTag());
         studySetResponse.setTitle(studySet.getTitle());

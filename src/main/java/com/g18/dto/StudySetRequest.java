@@ -17,12 +17,19 @@ import java.util.List;
 public class StudySetRequest {
 
     private Long id;
-    private Long creator;
+    @NotBlank(message = "Title is required")
+    @NotNull(message = "Title is required")
     private String title;
+
+    @NotBlank(message = "Description is required")
+    @NotNull(message = "Description is required")
     private String description;
+
     private String tag;
 
     @JsonProperty
     private boolean isPublic;
+
+    @Size(min = 2, message = "Must have at least 2 cards")
     private List<Card> cards;
 }

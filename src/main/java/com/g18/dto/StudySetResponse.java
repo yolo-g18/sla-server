@@ -11,11 +11,13 @@ import java.util.List;
 @NoArgsConstructor
 public class StudySetResponse {
 
-    private Long id;
-    private String username;
+    private Long studySetId;
+    private String creatorName;
+    private Long userId;
     private String title;
     private String description;
     private String tag;
     private boolean isPublic;
     private Integer numberOfCard;
+
 }
