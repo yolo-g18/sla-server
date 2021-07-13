@@ -1,9 +1,6 @@
 package com.g18.service;
 
-import com.g18.dto.EventDto;
-import com.g18.dto.SearchFolderResponse;
-import com.g18.dto.SearchRoomResponse;
-import com.g18.dto.SearchStudySetResponse;
+import com.g18.dto.*;
 import com.g18.entity.*;
 import com.g18.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +9,8 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 
@@ -42,9 +41,8 @@ public class SearchService {
                           studySet.getId(),
                         studySet.getCreator().getLastName() + " " + studySet.getCreator().getFirstName(),
                         studySet.getTitle(),
-                        cardRepository.findTop4ByStudySetId(studySet.getId()),
+                        convertToCardDto(cardRepository.findTop4ByStudySetId(studySet.getId())),
                         studySet.getCards().size()
-
                         )
                 ).collect(Collectors.toList()), pageable, totalElements);
     }
@@ -112,6 +110,19 @@ public class SearchService {
         }
         return total;
 
+    }
+
+    private List<CardDto> convertToCardDto(List<Card> cards){
+        List<CardDto> cardsDto = new ArrayList<>();
+        for (Card c : cards){
+            CardDto cDto = new CardDto();
+            cDto.setId(c.getId());
+            cDto.setFront(c.getFront());
+            cDto.setBack(c.getBack());
+            cDto.setStudySetID(c.getStudySet().getId());
+            cardsDto.add(cDto);
+        }
+        return cardsDto;
     }
 
 }
