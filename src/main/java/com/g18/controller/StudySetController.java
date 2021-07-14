@@ -53,8 +53,13 @@ public class StudySetController {
 	}
 
 	@GetMapping("/export")
-		public void exportToExcel(HttpServletResponse response, @RequestParam(value="id") Long id) throws IOException {
+	public void exportToExcel(HttpServletResponse response, @RequestParam(value="id") Long id) throws IOException {
 		studySetService.exportStudySetToExcel(response, id);
+	}
+
+	@GetMapping("/progress")
+	public ResponseEntity viewStudySetProgress(@RequestParam(value="userId") Long userId, @RequestParam(value="studySetId") Long studySetId){
+		return studySetService.getStudySetLearning(userId,studySetId);
 	}
 }
 

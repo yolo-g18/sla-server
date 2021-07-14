@@ -1,16 +1,22 @@
 package com.g18.service;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import com.g18.dto.StudySetLearningDto;
 import com.g18.dto.StudySetRequest;
 import com.g18.dto.StudySetResponse;
 
 import com.g18.entity.*;
 
+import com.g18.model.Color;
+import com.g18.model.Status;
+import com.g18.model.UserStudySetId;
 import com.g18.repository.*;
 
 import com.g18.utils.ExcelUtils;
@@ -48,10 +54,7 @@ public class StudySetService {
     private StudySetRepository studySetRepository;
 
     @Autowired
-    private CardRepository cardRepository;
-
-    @Autowired
-    private CardLearningRepository cardLearningRepository;
+    private StudySetLearningRepository studySetLearningRepository;
 
     @Autowired
     private ExcelUtils excelUtils;
@@ -83,11 +86,12 @@ public class StudySetService {
 
     }
 
-    public String deleteStudySet(Long id) {
-        StudySet studySet = studySetRepository.findById(id).orElse(null);
+    public String deleteStudySet(Long studySetId) {
+        StudySet studySet = studySetRepository.findById(studySetId).orElseThrow(() ->new ExpressionException("Study Set not exist"));
         User auth = authService.getCurrentAccount().getUser();
         if(studySet != null && auth.equals(studySet.getCreator())){
-            studySetRepository.deleteById(id);
+            studySetLearningRepository.deleteAllStudySetLearning(studySetId);
+            studySetRepository.deleteById(studySetId);
             return "delete StudySet successfully";
         }else{
             return "Not permitted";
@@ -121,12 +125,17 @@ public class StudySetService {
     }
 
     public ResponseEntity listStudySet() {
-        Long id = authService.getCurrentUser().getId();
+        User user = authService.getCurrentUser();
         try{
-            List<StudySet> studySetList = userRepository.findById(id).orElse(null).getStudySetsOwn();
+            List<StudySet> studySetList = userRepository.findById(user.getId()).orElse(null).getStudySetsOwn();
             List<StudySetResponse> responses = new ArrayList<>();
             for (StudySet studySet: studySetList) {
-                StudySetResponse studySetResponse = setStudySetResponse(studySet);
+                StudySetLearning studySetLearning = studySetLearningRepository.findStudySetLearningByStudySetAndUser(studySet,user);
+                double progress = 0;
+                if(studySetLearning != null) {
+                    progress = studySetLearning.getProgress();
+                }
+                StudySetResponse studySetResponse = setStudySetResponse(studySet, progress);
                 responses.add(studySetResponse);
             }
             return ResponseEntity.status(HttpStatus.CREATED).body(responses);
@@ -140,8 +149,12 @@ public class StudySetService {
 
         StudySet studySet = studySetRepository.findById(id)
                                     .orElseThrow(()->  new ExpressionException("Study Set not exist"));;
-
-        StudySetResponse studySetResponse = setStudySetResponse(studySet);
+        User user = authService.getCurrentAccount().getUser();
+        boolean isPublic = studySet.isPublic();
+        if(!isPublic && !user.equals(studySet.getCreator())){
+            return ResponseEntity.status(HttpStatus.OK).body("Not allowed");
+        }
+        StudySetResponse studySetResponse = setStudySetResponse(studySet, 0);
         return ResponseEntity.status(HttpStatus.CREATED).body(studySetResponse);
     }
 
@@ -169,7 +182,7 @@ public class StudySetService {
         outputStream.close();
     }
 
-    private StudySetResponse setStudySetResponse(StudySet studySet){
+    private StudySetResponse setStudySetResponse(StudySet studySet, double progress){
 
         StudySetResponse studySetResponse = new StudySetResponse();
         studySetResponse.setStudySetId(studySet.getId());
@@ -181,6 +194,7 @@ public class StudySetService {
         studySetResponse.setTitle(studySet.getTitle());
         studySetResponse.setPublic(studySet.isPublic());
         studySetResponse.setNumberOfCard(studySet.getCards().size());
+        studySetResponse.setProgress(progress);
         return studySetResponse;
     }
 
@@ -200,5 +214,38 @@ public class StudySetService {
         }
     }
 
+    public ResponseEntity getStudySetLearning(Long userId, Long studySetId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new ExpressionException("User not exist"));
+        StudySet studySet = studySetRepository.findById(studySetId).orElseThrow(() -> new ExpressionException("Study Set not exist"));
+        StudySetLearning studySetLearning = studySetLearningRepository.findStudySetLearningByStudySetAndUser(studySet, user);
 
+        if(studySetLearning != null){
+            boolean isPublic = studySetLearning.isPublic();
+            if(!isPublic && !user.equals(studySet.getCreator())) {
+                return ResponseEntity.status(HttpStatus.OK).body("Not allowed");
+            }
+            StudySetLearningDto response = new StudySetLearningDto();
+            String creatorName = studySet.getCreator().getFirstName() + " " + studySet.getCreator().getLastName();
+            response.setCreatorName(creatorName);
+            response.setStudySetId(studySetId);
+            response.setProgress(studySetLearning.getProgress());
+            response.setStatus(studySetLearning.getStatus());
+            response.setRating(studySetLearning.getRating());
+            response.setFeedback(studySetLearning.getFeedback());
+            response.setColor(studySetLearning.getColor());
+
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+            Date tempDate = Date.from(studySetLearning.getStartDate());
+            String formattedDate = formatter.format(tempDate);
+            response.setStartDate(formattedDate);
+
+            tempDate = Date.from(studySetLearning.getExpectedDate());
+            formattedDate = formatter.format(tempDate);
+            response.setExpectedDate(formattedDate);
+            response.setPublic(studySetLearning.isPublic());
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        }else{
+            return ResponseEntity.status(HttpStatus.OK).body("User has not started learning");
+        }
+    }
 }

@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -19,5 +18,6 @@ public class StudySetResponse {
     private String tag;
     private boolean isPublic;
     private Integer numberOfCard;
+    private double progress;
 
 }

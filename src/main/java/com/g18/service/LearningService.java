@@ -105,7 +105,7 @@ public class LearningService {
                     studySetLearning.setRating(0);
                     studySetLearning.setStartDate(Instant.now());
                     studySetLearning.setStatus(Status.LEARNING);
-                    studySetLearning.setPublic(true);
+                    studySetLearning.setPublic(studySet.isPublic());
 
                 } else {
                     StudySetLearning ssl = studySetLearningRepository.findStudySetLearningByStudySetAndUser(studySet, user);
