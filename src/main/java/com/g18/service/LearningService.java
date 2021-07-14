@@ -228,4 +228,25 @@ public class LearningService {
         cardLearningDto.setHint(cardLearning.getHint());
         return cardLearningDto;
     }
+
+    public ResponseEntity learningContinue(Long studySetId) {
+        User user = authService.getCurrentAccount().getUser();
+        List<CardLearningDto> response = new ArrayList<>();
+        StudySet studySet = studySetRepository.findById(studySetId).orElseThrow(()->new ExpressionException("Study Set not exist"));
+
+        List<Card> cardList = studySet.getCards();
+
+        for(Card card : cardList){
+            if(card.getStudySet().equals(studySet)){
+                for(CardLearning cardLearning: card.getCardLearningList()){
+                    if(cardLearning.getUser().equals(user)){
+                        CardLearningDto cardLearningDto = convertCardLearningToDTO(cardLearning);
+
+                        response.add(cardLearningDto);
+                    }
+                }
+            }
+        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
 }

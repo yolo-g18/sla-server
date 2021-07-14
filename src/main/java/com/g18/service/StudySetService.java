@@ -54,6 +54,9 @@ public class StudySetService {
     private StudySetRepository studySetRepository;
 
     @Autowired
+    private CardLearningRepository cardLearningRepository;
+
+    @Autowired
     private StudySetLearningRepository studySetLearningRepository;
 
     @Autowired
@@ -89,8 +92,8 @@ public class StudySetService {
     public String deleteStudySet(Long studySetId) {
         StudySet studySet = studySetRepository.findById(studySetId).orElseThrow(() ->new ExpressionException("Study Set not exist"));
         User auth = authService.getCurrentAccount().getUser();
-        if(studySet != null && auth.equals(studySet.getCreator())){
-            studySetLearningRepository.deleteAllStudySetLearning(studySetId);
+        //Check permission
+        if(auth.equals(studySet.getCreator())){
             studySetRepository.deleteById(studySetId);
             return "delete StudySet successfully";
         }else{

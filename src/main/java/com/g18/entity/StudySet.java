@@ -29,6 +29,14 @@ public class StudySet {
 	private boolean isPublic;
 
 	@OneToMany(mappedBy = "studySet", orphanRemoval = true, cascade = CascadeType.ALL)
-	private List<Card> cards;
+	private List<Card> cards; //List Card
 
+	@OneToMany(mappedBy = "studySet", orphanRemoval = true, cascade = CascadeType.ALL)
+	private List<StudySetLearning> studySetLearningList; //StudySetLearning
+
+	@OneToMany(mappedBy = "studySet", orphanRemoval = true, cascade = CascadeType.ALL)
+	private List<FolderStudySet> folderStudySetList; //folderStudySetList
+
+	@OneToMany(mappedBy = "studySet", orphanRemoval = true, cascade = CascadeType.ALL)
+	private List<RoomStudySet> roomStudySetList; //roomStudySetList
 }

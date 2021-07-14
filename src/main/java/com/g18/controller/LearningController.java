@@ -29,5 +29,10 @@ public class LearningController {
 	public ResponseEntity learnToday(){
 		return learningService.learningFlashCardToday();
 	}
+
+	@GetMapping("continue")
+	public ResponseEntity learnContinue(@RequestParam(value="studySetId") Long studySetId ){
+		return learningService.learningContinue(studySetId);
+	}
 }
 

@@ -45,13 +45,13 @@ public class User {
 	@OneToMany(mappedBy = "owner")
 	private List<Folder>  FoldersOwn; //list folders created
 
-	@OneToMany(mappedBy = "room")
+	@OneToMany(mappedBy = "member", orphanRemoval=true, cascade=CascadeType.ALL)
 	private List<RoomMember>  roomsJoin; //list rooms joined
 
-	@OneToMany(mappedBy = "studySet")
+	@OneToMany(mappedBy = "user", orphanRemoval=true, cascade=CascadeType.ALL)
 	private List<StudySetLearning>  studySetsLearning; //list study sets learning
 
-//	@OneToMany(mappedBy = "card", cascade = CascadeType.ALL)
-//	private List<CardLearning>  cardsLearning;
+	@OneToMany(mappedBy = "card", orphanRemoval=true, cascade = CascadeType.ALL)
+	private List<CardLearning>  cardsLearning; //list cardLearning
 
 }

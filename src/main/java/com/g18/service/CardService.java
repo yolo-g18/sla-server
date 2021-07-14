@@ -84,7 +84,6 @@ public class CardService {
 
         //Check permission
         if(auth.equals(studySet.getCreator())) {
-            cardLearningRepository.deleteAllCardLearning(id);
             cardRepository.delete(card);
             return "delete Card successfully";
         }else{

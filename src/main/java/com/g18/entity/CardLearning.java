@@ -23,12 +23,12 @@ public class CardLearning {
     @EmbeddedId
     private UserCardId userCardId;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @MapsId("userId")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "card_id")
     @MapsId("cardId")
     private Card card;
