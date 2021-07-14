@@ -1,6 +1,5 @@
 package com.g18.repository;
 
-import com.g18.dto.CardDto;
 import com.g18.entity.Card;
 import com.g18.entity.CardLearning;
 import com.g18.entity.User;
@@ -16,11 +15,13 @@ import java.util.List;
 public interface CardLearningRepository extends JpaRepository<CardLearning,Long>{
 
     @Query("SELECT new com.g18.entity.CardLearning(cl.userCardId,cl.user,cl.card,cl.q,cl.intervalTime,cl.eFactor, cl.repetitionNumber,cl.hint,cl.learnedDate,cl.status,cl.color) FROM CardLearning cl WHERE cl.userCardId=:userCardId")
-    CardLearning getCardLearningBy(@Param("userCardId") UserCardId userCardId);
-
-    List<CardLearning> findByUserAndLearnedDate(User user, Instant learnedDate);
+    CardLearning getCardLearningByUserCardId(@Param("userCardId") UserCardId userCardId);
 
     @Modifying
     @Query(value = "DELETE FROM sla_db.card_learning c WHERE c.card_id = :cardId", nativeQuery = true)
     void deleteAllCardLearning(@Param("cardId") Long cardId);
+
+    CardLearning findCardLearningByCardAndUser(Card card, User user);
+
+    List<CardLearning> findByUserAndLearnedDate(User user, Instant learnedDate);
 }

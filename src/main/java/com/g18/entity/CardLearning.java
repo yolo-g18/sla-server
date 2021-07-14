@@ -6,6 +6,8 @@ import com.g18.model.UserCardId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.Max;
@@ -21,12 +23,12 @@ public class CardLearning {
     @EmbeddedId
     private UserCardId userCardId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "user_id")
     @MapsId("userId")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "card_id")
     @MapsId("cardId")
     private Card card;
@@ -34,14 +36,14 @@ public class CardLearning {
     private int q; //quality
     private double intervalTime;
     private double eFactor;
+    private int repetitionNumber;
 
     private String hint;
-    private Instant LearnedDate;
+    private Instant learnedDate;
 
     @Enumerated(EnumType.STRING)
     private Status status;
 
     @Enumerated(EnumType.STRING)
     private Color color;
-
 }

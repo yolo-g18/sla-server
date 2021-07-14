@@ -1,6 +1,7 @@
 package com.g18.service;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,6 +69,7 @@ public class StudySetService {
             studySet.setTag(request.getTag());
             studySet.setTitle(request.getTitle());
             studySet.setPublic(request.isPublic());
+            studySet.setCreatedDate(Instant.now());
             List<Card> listCard = request.getCards();
             for (Card card: listCard) {
                 card.setStudySet(studySet);

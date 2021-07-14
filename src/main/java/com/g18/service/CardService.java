@@ -10,7 +10,6 @@ import com.g18.model.UserCardId;
 import com.g18.repository.CardLearningRepository;
 import com.g18.repository.CardRepository;
 import com.g18.repository.StudySetRepository;
-import com.g18.repository.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.ExpressionException;
@@ -33,9 +32,6 @@ public class CardService {
     private AuthService authService;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private StudySetRepository studySetRepository;
 
     @Autowired
@@ -46,7 +42,7 @@ public class CardService {
 
     public String createCard(List<CardDto> request) {
         try{
-            StudySet studySet = studySetRepository.findById(request.get(0).getStudySet()).orElse(null);
+            StudySet studySet = studySetRepository.findById(request.get(0).getStudySet()).orElseThrow(() -> new ExpressionException("Study Set not exist"));
             for (CardDto cardDto: request) {
                 Card card = new Card();
                 card.setStudySet(studySet);
@@ -63,7 +59,7 @@ public class CardService {
 
     public String editCard(List<CardDto> request) {
         try{
-            StudySet studySet = studySetRepository.findById(request.get(0).getStudySet()).orElse(null);
+            StudySet studySet = studySetRepository.findById(request.get(0).getStudySet()).orElseThrow(() -> new ExpressionException("Study Set not exist"));
             for (CardDto cardDto: request) {
                 Card card = new Card();
                 card.setId(cardDto.getId());
@@ -82,9 +78,11 @@ public class CardService {
     public String deleteCard(Long id) {
         Card card = cardRepository.findById(id).orElseThrow(()->  new ExpressionException("Card not exist"));
         User auth = authService.getCurrentAccount().getUser();
+
         StudySet studySet = studySetRepository.findById(card.getStudySet().getId())
                                                 .orElseThrow(()->  new ExpressionException("Study Set not exist"));
 
+        //Check permission
         if(auth.equals(studySet.getCreator())) {
             cardLearningRepository.deleteAllCardLearning(id);
             cardRepository.delete(card);
@@ -101,7 +99,7 @@ public class CardService {
             userCardId.setUserId(user.getId());
             userCardId.setCardId(cardDto.getId());
 
-            CardLearning cardLearning = cardLearningRepository.getCardLearningBy(userCardId);
+            CardLearning cardLearning = cardLearningRepository.getCardLearningByUserCardId(userCardId);
             if(cardLearning!=null){
                 cardLearning.setHint(cardDto.getHint());
                 cardLearningRepository.save(cardLearning);
@@ -115,7 +113,6 @@ public class CardService {
     }
 
     public ResponseEntity listCardByStudySet(Long id) {
-
         try{
             List<Card> cards = studySetRepository.findById(id).orElse(null).getCards();
             List<CardDto> responses = new ArrayList<>();
