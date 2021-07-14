@@ -13,14 +13,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import javax.security.auth.message.AuthException;
 import java.util.*;
-
-@RestControllerAdvice
 @Slf4j
+@EnableWebMvc
+@RestControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
+
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(final MethodArgumentNotValidException ex,
                                                                   final HttpHeaders headers,
@@ -40,6 +41,15 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, apiError, headers, HttpStatus.BAD_REQUEST, request);
     }
 
+
+    // handle wrong path website
+    @Override
+    protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        Map<String,String> responseBody = new HashMap<>();
+        responseBody.put("message","The URL you have reached is not in service at this time.");
+        return new ResponseEntity<Object>(responseBody,HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(AccountException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<Object> handleAccountException(AccountException ex, WebRequest req) {
@@ -49,6 +59,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         logger.info(ex.getMessage());
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
     }
+
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -70,6 +81,58 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
     }
 
+
+    // handle not found Room entity
+    @ExceptionHandler(RoomNotFoundException.class)
+    public ResponseEntity<Object> handleRoomNotFoundException(
+            RoomNotFoundException ex, WebRequest request) {
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("message", "Room not found");
+
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Object> handleMemberNotFoundException(
+            UserNotFoundException ex, WebRequest request) {
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("message", "User not found");
+
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(value = FolderNotFoundException.class)
+    public ResponseEntity<Object> handleFolderNotFoundException(
+            FolderNotFoundException ex, WebRequest request) {
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("message", "Folder not found");
+
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(StudySetNotFoundException.class)
+    public ResponseEntity<Object> handleStudySetNotFoundException(
+            StudySetNotFoundException ex, WebRequest request) {
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("message", "StudySet not found");
+
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+
+    // handle no data (ex: a list is empty)
+    @ExceptionHandler(NoDataFoundException.class)
+    public ResponseEntity<Object> handleNoDataFoundException(
+            NoDataFoundException ex, WebRequest request) {
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("message", "No data found");
+
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
 
 
 

@@ -6,4 +6,5 @@ import com.g18.entity.StudySet;
 
 public interface StudySetRepository extends JpaRepository<StudySet, Long>{
 
+
 }

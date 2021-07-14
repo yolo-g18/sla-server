@@ -1,6 +1,8 @@
 package com.g18.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 public class User {
 
 	@Id
@@ -24,12 +27,11 @@ public class User {
 	private String firstName;
 	private String lastName;
 
-	private Date dateOfBirth;
-	private Boolean gender;
 	private String schoolName;
 	private String job;
-	private String phone;
+	private String major;
 	private String avatar;
+	private String bio;
 
 	private Instant favourTimeFrom;
 	private Instant favourTimeTo;

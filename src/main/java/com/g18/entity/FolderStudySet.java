@@ -15,7 +15,7 @@ import java.time.Instant;
 public class FolderStudySet {
 
     @EmbeddedId
-    private FolderStudySetId userStudySetId;
+    private FolderStudySetId folderStudySetId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "folder_id")
