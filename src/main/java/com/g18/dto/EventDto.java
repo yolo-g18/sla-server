@@ -1,5 +1,6 @@
 package com.g18.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.g18.entity.User;
 import com.g18.model.Color;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,7 @@ public class EventDto {
     private String name;
     private String description;
     //check fromtime > to time
+    @JsonProperty
     private boolean isLearnEvent;
     private Instant fromTime;
     private Instant toTime;
