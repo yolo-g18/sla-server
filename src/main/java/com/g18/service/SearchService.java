@@ -45,7 +45,8 @@ public class SearchService {
                         findUserNameByUserId(studySet.getCreator().getId()),
                         studySet.getTitle(),
                         convertToCardDto(cardRepository.findTop4ByStudySetId(studySet.getId())),
-                        studySet.getCards().size()
+                        studySet.getCards().size(),
+                        studySet.getCreatedDate()
                         )
                 ).collect(Collectors.toList()), pageable, totalElements);
     }
@@ -60,7 +61,8 @@ public class SearchService {
                         findUserNameByUserId(studySet.getCreator().getId()),
                                 studySet.getTitle(),
                                 convertToCardDto(cardRepository.findTop4ByStudySetId(studySet.getId())),
-                                studySet.getCards().size()
+                                studySet.getCards().size(),
+                                studySet.getCreatedDate()
                         )
                 ).collect(Collectors.toList()), pageable, totalElements);
     }

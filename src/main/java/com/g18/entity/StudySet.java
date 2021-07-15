@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -23,6 +24,7 @@ public class StudySet {
 	private String title;
 	private String description;
 	private String tag;
+	private Instant createdDate;
 	private boolean isPublic;
 
 

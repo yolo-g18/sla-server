@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -17,6 +18,7 @@ public class SearchStudySetResponse {
     private String title;
     private List<CardDto> first4Cards;
     private int numberOfCards;
+    private Instant createdDate;
 
 
 
