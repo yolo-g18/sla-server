@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -23,4 +24,6 @@ public class Card {
 	private String front;
 	private String back;
 
+	@OneToMany(mappedBy = "card", orphanRemoval=true, cascade=CascadeType.ALL)
+	private List<CardLearning> cardLearningList; //list cardLearning
 }

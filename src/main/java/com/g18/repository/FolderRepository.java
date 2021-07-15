@@ -18,4 +18,5 @@ public interface FolderRepository extends JpaRepository<Folder,Long> {
     List<Folder> findByCreatorIdAndTitleContaining(@Param("creatorId")long creatorId,@Param("title")String title);
 
 
+
 }

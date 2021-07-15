@@ -53,7 +53,7 @@ public class User {
 	@OneToMany(mappedBy = "user", orphanRemoval=true, cascade=CascadeType.ALL)
 	private List<StudySetLearning>  studySetsLearning; //list study sets learning
 
-//	@OneToMany(mappedBy = "card", cascade = CascadeType.ALL)
-//	private List<CardLearning>  cardsLearning;
+	@OneToMany(mappedBy = "card", orphanRemoval=true, cascade = CascadeType.ALL)
+	private List<CardLearning>  cardsLearning; //list cardLearning
 
 }
