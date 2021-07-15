@@ -1,11 +1,14 @@
 package com.g18.controller;
 
+import com.g18.dto.CardQualityRequestUpdate;
 import com.g18.service.LearningService;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("api/learn")
@@ -21,8 +24,8 @@ public class LearningController {
 	}
 
 	@PutMapping("/update")
-	public ResponseEntity updateAfterLearn(@RequestParam(value="cardId") Long cardId, @RequestParam(value="q") Integer q){
-		return learningService.updateCardLearning(cardId,q);
+	public ResponseEntity updateAfterLearn(@Valid @RequestBody CardQualityRequestUpdate cardQualityRequestUpdate){
+		return learningService.updateCardLearning(cardQualityRequestUpdate);
 	}
 
 	@GetMapping("/today")
