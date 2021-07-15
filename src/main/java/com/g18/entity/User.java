@@ -1,6 +1,8 @@
 package com.g18.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 public class User {
 
 	@Id
@@ -24,12 +27,11 @@ public class User {
 	private String firstName;
 	private String lastName;
 
-	private Date dateOfBirth;
-	private Boolean gender;
 	private String schoolName;
 	private String job;
-	private String phone;
+	private String major;
 	private String avatar;
+	private String bio;
 
 	private Instant favourTimeFrom;
 	private Instant favourTimeTo;
@@ -45,10 +47,10 @@ public class User {
 	@OneToMany(mappedBy = "owner")
 	private List<Folder>  FoldersOwn; //list folders created
 
-	@OneToMany(mappedBy = "room")
+	@OneToMany(mappedBy = "member", orphanRemoval=true, cascade=CascadeType.ALL)
 	private List<RoomMember>  roomsJoin; //list rooms joined
 
-	@OneToMany(mappedBy = "studySet")
+	@OneToMany(mappedBy = "user", orphanRemoval=true, cascade=CascadeType.ALL)
 	private List<StudySetLearning>  studySetsLearning; //list study sets learning
 
 //	@OneToMany(mappedBy = "card", cascade = CascadeType.ALL)

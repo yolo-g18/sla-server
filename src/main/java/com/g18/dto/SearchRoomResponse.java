@@ -6,7 +6,9 @@ import java.time.Instant;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SearchRoomResponse {
+public class
+
+SearchRoomResponse {
     private Long id;
     private String owner;
     private String name;

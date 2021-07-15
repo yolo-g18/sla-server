@@ -1,14 +1,11 @@
 package com.g18.service;
 
+import com.g18.dto.SearchFolderResponse;
+import com.g18.dto.SearchRoomResponse;
 import com.g18.dto.SearchStudySetResponse;
 import com.g18.dto.StudySetLearningDto;
-import com.g18.entity.Account;
-import com.g18.entity.StudySet;
-import com.g18.entity.StudySetLearning;
-import com.g18.entity.User;
-import com.g18.repository.AccountRepository;
-import com.g18.repository.StudySetLearningRepository;
-import com.g18.repository.StudySetRepository;
+import com.g18.entity.*;
+import com.g18.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -29,6 +26,12 @@ public class LibraryService {
     private StudySetRepository studySetRepository;
     @Autowired
     private AccountRepository accountRepository;
+    @Autowired
+    private FolderRepository folderRepository;
+    @Autowired
+    private RoomRepository roomRepository;
+    @Autowired
+    private FolderStudySetRepository folderStudySetRepository;
 
 
     //get all study sets current user have created
@@ -64,18 +67,56 @@ public class LibraryService {
         }
         return result;
     }
+    //Get list folder created by a user and filter by title
+    public List<SearchFolderResponse> getFolderByCreatorIdAndTitle(long creatorId,String title){
+        List<SearchFolderResponse> result = new ArrayList<>();
+        List<Folder> folderList =  folderRepository.findByCreatorIdAndTitleContaining(creatorId,title);
+        for(Folder f : folderList){
+            SearchFolderResponse sfr = new SearchFolderResponse();
+            sfr.setId(f.getId());
+            sfr.setOwnerName(findUserNameByUserId(f.getOwner().getId()));
+            sfr.setTitle(f.getTitle());
+            sfr.setDescription(f.getDescription());
+            sfr.setCreatedDate(f.getCreatedDate());
+            sfr.setUpdateDate(f.getUpdateDate());
+            sfr.setColor(f.getColor());
+            sfr.setNumberOfStudySets(f.getFolderStudySets().size());
+            result.add(sfr);
+        }
+        return result;
+    }
+    //Get list room created by a user and filter by title
+    public List<SearchRoomResponse> getRoomByOwnerIDIdAndTitle(long ownerId, String name){
+        List<SearchRoomResponse> result = new ArrayList<>();
+        List<Room> roomList =  roomRepository.findByTitleAndOwnerId(ownerId,name);
+        for(Room r : roomList){
+            SearchRoomResponse srr = new SearchRoomResponse();
+            srr.setId(r.getId());
+            srr.setOwner(findUserNameByUserId(r.getOwner().getId()));
+            srr.setName(r.getName());
+            srr.setDescription(r.getDescription());
+            srr.setCreatedDate(r.getCreatedDate());
+            srr.setUpdateDate(r.getUpdateDate());
+            srr.setNumberOfMembers(r.getRoomMembers().size());
+            srr.setNumberOfStudySets(getTotalStudySetsInRoom(r));
+            result.add(srr);
+        }
+        return result;
+    }
 
 
-
-
-
-
-
-
-
-    //
     public String findUserNameByUserId(long uid){
         return accountRepository.findUserNameByUserId(uid);
+    }
+
+    private int getTotalStudySetsInRoom(Room room){
+        int total = 0;
+        total += room.getRoomStudySets().size();
+        for (RoomFolder rf : room.getRoomFolders()){
+            List<Long> listSSID = folderStudySetRepository.findNumberSSID(rf.getFolder().getId());
+            total += listSSID.size();
+        }
+        return total;
     }
 
 

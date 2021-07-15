@@ -32,6 +32,9 @@ public class SearchService {
     @Autowired
     private CardRepository cardRepository;
 
+    @Autowired
+    private AccountRepository accountRepository;
+
 
     public Page<SearchStudySetResponse> searchStudySetByTitle(Pageable pageable, String keySearch) {
         Page<StudySet> studySetPage =studySetRepository.findByTitleContainsAndIsPublicTrue(keySearch,pageable);
@@ -68,8 +71,8 @@ public class SearchService {
         int totalElements = (int) eventPage.getTotalElements();
         return new PageImpl<EventDto>(
                 eventPage.stream().map(event -> new EventDto(
-                        event.getId(),event.getUser().getId(),event.getName(),event.getDescription(),event.getFromTime(),
-                        event.getToTime(),event.getColor(),event.getCreatedTime(),event.getUpdateTime()
+                        event.getId(),event.getUser().getId(),event.getName(),event.getDescription(),event.isLearnEvent(),
+                        event.getFromTime(), event.getToTime(),event.getColor(),event.getCreatedTime(),event.getUpdateTime()
                         )
                 ).collect(Collectors.toList()), pageable, totalElements);
     }
@@ -81,7 +84,7 @@ public class SearchService {
                 folderPage.stream().map(
                         folder -> new SearchFolderResponse(
                                 folder.getId(),
-                                folder.getOwner().getLastName() + "" + folder.getOwner().getFirstName(),
+                                findUserNameByUserId(folder.getOwner().getId()),
                                 folder.getTitle(),
                                 folder.getDescription(),
                                 folder.getCreatedDate(),
@@ -100,7 +103,7 @@ public class SearchService {
                 roomPage.stream().map(
                         room -> new SearchRoomResponse(
                             room.getId(),
-                            room.getOwner().getLastName() + " " +room.getOwner().getFirstName(),
+                            findUserNameByUserId(room.getOwner().getId()),
                                 room.getName(),
                                 room.getDescription(),
                                 room.getCreatedDate(),
@@ -115,12 +118,18 @@ public class SearchService {
 
     private int getTotalStudySetsInRoom(Room room){
         int total = 0;
-        total += room.getRoomStudySets().size();
+//        total += room.getRoomStudySets().size();
+        System.out.println("Room's StudySet" + room.getRoomStudySets().size());
         for (RoomFolder rf : room.getRoomFolders()){
             total += rf.getFolder().getFolderStudySets().size();
         }
+        System.out.println("Folder StudySet " + total);
         return total;
 
+    }
+
+    public String findUserNameByUserId(long uid){
+        return accountRepository.findUserNameByUserId(uid);
     }
 
     private List<CardDto> convertToCardDto(List<Card> cards){

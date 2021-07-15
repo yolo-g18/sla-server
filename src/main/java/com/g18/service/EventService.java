@@ -7,6 +7,7 @@ import com.g18.dto.EventDto;
 import com.g18.entity.Event;
 import com.g18.entity.User;
 import com.g18.exceptions.AccountException;
+import com.g18.model.Color;
 import com.g18.repository.EventRepository;
 import com.g18.repository.UserRepository;
 import com.g18.service.IS.IEventService;
@@ -17,6 +18,7 @@ import org.springframework.expression.ExpressionException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -39,13 +41,34 @@ public class EventService implements IEventService {
     private AuthService authService;
 
     @Override
-    public EventDto save(EventDto eventDto) {
+    public String save(EventDto eventDto) {
         User user = authService.getCurrentUser();
         Event event =  eventConverter.toEntity(eventDto);
         event.setUser(user);
         event = eventRepository.save(event);
-        return eventConverter.toDto(event);
+        return "Create event successfully";
     }
+
+//    @Override
+//    public String save(EventDto eventDto) {
+//        User user = authService.getCurrentUser();
+//        Event event =  new Event();
+//        event.setUser(authService.getCurrentUser());
+//        event.setName(eventDto.getName());
+//        event.setDescription(eventDto.getDescription());
+//        event.setCreatedTime(Instant.now());
+//        event.setUpdateTime(eventDto.getUpdateTime());
+//        event.setFromTime(eventDto.getFromTime());
+//        event.setToTime(eventDto.getToTime());
+//        event.setColor(eventDto.getColor());
+//        System.out.println("From Time: " + eventDto.getFromTime());
+//        System.out.println("To Time: " + eventDto.getToTime());
+//
+//        event = eventRepository.save(event);
+//
+//        return "Create event successfully";
+//    }
+
 
     @Override
     public EventDto update(EventDto eventDto) {
@@ -64,18 +87,6 @@ public class EventService implements IEventService {
             eventRepository.deleteById(item);
         }
     }
-
-//    @Override
-//    public List<EventDto> findEventBetweenDate() {
-//        List<EventDto> results = new ArrayList<>();
-//        List<Event> events = eventRepository.findAll();
-//        for (Event item : events) {
-//            EventDto eventDto = eventConverter.toDto(item);
-//            results.add(eventDto);
-//            log.error(eventDto.getName() + " /| ");
-//        }
-//        return results;
-//    }
 
     @Override
     public List<EventDto> getAllBetweenDates(String from,String to) {

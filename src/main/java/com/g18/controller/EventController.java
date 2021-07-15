@@ -3,6 +3,8 @@ package com.g18.controller;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.dto.EventDto;
 import com.g18.dto.SearchStudySetResponse;
+import com.g18.entity.Event;
+import com.g18.repository.EventRepository;
 import com.g18.service.EventService;
 import com.g18.service.IS.IEventService;
 import javassist.NotFoundException;
@@ -18,17 +20,26 @@ import java.util.List;
 public class EventController {
     @Autowired
     private IEventService eventService;
+    @Autowired
+    private EventRepository eventRepository;
+
+    @Autowired
+    private EventService es;
+
     //Get event in a range of time
     @GetMapping(value = "event")
     public List<EventDto> showEvent(@RequestParam("from") String from,@RequestParam("to") String to){
         return eventService.getAllBetweenDates(from,to);
     }
+
+
     //Create event
     @PostMapping(value = "event")
     public ResponseEntity<String> createEvent(@Valid @RequestBody EventDto eventDto) {
          eventService.save(eventDto);
          return new ResponseEntity<>("Create Event Successful", HttpStatus.CREATED);
     }
+
     //Update event
     @PutMapping(value = "event/{id}")
     public ResponseEntity<String> updateEvent(@RequestBody EventDto eventDto,@PathVariable("id") String id_raw) throws NotFoundException {

@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -21,8 +22,8 @@ public class SearchFolderResponse {
     private String ownerName;
     private String title;
     private String description;
-    private Date createdDate;
-    private Date updateDate;
+    private Instant createdDate;
+    private Instant updateDate;
     private Color color;
     private int numberOfStudySets; //list study sets in folder
 }

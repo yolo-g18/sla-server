@@ -20,6 +20,7 @@ public class EventConverter {
         event.setColor(eventDto.getColor());
         event.setCreatedTime(eventDto.getCreatedTime());
         event.setUpdateTime(eventDto.getUpdateTime());
+        event.setLearnEvent(eventDto.isLearnEvent());
         event.setUser(authService.getCurrentUser());
         return event;
     }
@@ -34,6 +35,7 @@ public class EventConverter {
         eventDto.setColor(event.getColor());
         eventDto.setCreatedTime(event.getCreatedTime());
         eventDto.setUpdateTime(event.getUpdateTime());
+        eventDto.setLearnEvent(event.isLearnEvent());
         eventDto.setUserId(event.getId());
         return eventDto;
     }
@@ -47,6 +49,7 @@ public class EventConverter {
         event.setColor(eventDto.getColor());
         event.setCreatedTime(eventDto.getCreatedTime());
         event.setUpdateTime(eventDto.getUpdateTime());
+        event.setLearnEvent(eventDto.isLearnEvent());
         event.setUser(authService.getCurrentUser());
         return event;
     }

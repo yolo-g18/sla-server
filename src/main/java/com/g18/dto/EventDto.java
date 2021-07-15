@@ -11,30 +11,22 @@ import javax.validation.constraints.NotNull;
 import java.time.Instant;
 
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 public class EventDto {
     private Long id;
     private Long userId;
     @NotNull(message = "Name is required")
-    @NotBlank(message = "Name is required")
+    @NotBlank(message = "Name must not be blank")
     private String name;
     private String description;
+    //check fromtime > to time
+    private boolean isLearnEvent;
     private Instant fromTime;
     private Instant toTime;
+
     private Color color;
     private Instant createdTime;
     private Instant updateTime;
-
-    public EventDto(Long id, Long userId, String name, String description, Instant fromTime, Instant toTime, Color color, Instant createdTime, Instant updateTime) {
-        this.id = id;
-        this.userId = userId;
-        this.name = name;
-        this.description = description;
-        this.fromTime = fromTime;
-        this.toTime = toTime;
-        this.color = color;
-        this.createdTime = createdTime;
-        this.updateTime = updateTime;
-    }
 
 }
