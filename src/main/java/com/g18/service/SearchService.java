@@ -4,11 +4,9 @@ import com.g18.dto.*;
 import com.g18.entity.*;
 import com.g18.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -134,10 +132,10 @@ public class SearchService {
         return accountRepository.findUserNameByUserId(uid);
     }
 
-    private List<CardDto> convertToCardDto(List<Card> cards){
-        List<CardDto> cardsDto = new ArrayList<>();
+    private List<CardSearchResponse> convertToCardDto(List<Card> cards){
+        List<CardSearchResponse> cardsDto = new ArrayList<>();
         for (Card c : cards){
-            CardDto cDto = new CardDto();
+            CardSearchResponse cDto = new CardSearchResponse();
             cDto.setId(c.getId());
             cDto.setFront(c.getFront());
             cDto.setBack(c.getBack());

@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class StudySetLearningDto {
+public class StudySetLearningResponse {
     private Long studySetId;
     private String studySetName;
     private String ssDescription;

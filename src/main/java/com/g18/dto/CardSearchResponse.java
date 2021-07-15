@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CardDto {
+public class CardSearchResponse {
     private Long id;
     private Long studySetID;
     private String front;

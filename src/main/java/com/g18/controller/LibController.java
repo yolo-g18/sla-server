@@ -3,14 +3,11 @@ package com.g18.controller;
 import com.g18.dto.SearchFolderResponse;
 import com.g18.dto.SearchRoomResponse;
 import com.g18.dto.SearchStudySetResponse;
-import com.g18.dto.StudySetLearningDto;
+import com.g18.dto.StudySetLearningResponse;
 import com.g18.service.LibraryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -20,7 +17,7 @@ public class LibController {
     private LibraryService libraryService;
 
     @GetMapping("ss/learning")
-    List<StudySetLearningDto> getStudySetsLearning(){
+    List<StudySetLearningResponse> getStudySetsLearning(){
         return libraryService.getLearningStudySets();
     }
     @GetMapping("ss/created")

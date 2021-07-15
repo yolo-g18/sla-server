@@ -3,18 +3,14 @@ package com.g18.service;
 import com.g18.dto.SearchFolderResponse;
 import com.g18.dto.SearchRoomResponse;
 import com.g18.dto.SearchStudySetResponse;
-import com.g18.dto.StudySetLearningDto;
+import com.g18.dto.StudySetLearningResponse;
 import com.g18.entity.*;
 import com.g18.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class LibraryService {
@@ -35,12 +31,12 @@ public class LibraryService {
 
 
     //get all study sets current user have created
-    public List<StudySetLearningDto> getLearningStudySets(){
-        List<StudySetLearningDto> results = new ArrayList<>();
+    public List<StudySetLearningResponse> getLearningStudySets(){
+        List<StudySetLearningResponse> results = new ArrayList<>();
         User currentUser = authService.getCurrentUser();
         List<StudySetLearning> listLearningSS = studySetLearningRepository.findStudySetLearningByUserId(currentUser.getId());
         for(StudySetLearning ssl : listLearningSS){
-            StudySetLearningDto sslDto = new StudySetLearningDto();
+            StudySetLearningResponse sslDto = new StudySetLearningResponse();
             sslDto.setStudySetId(ssl.getStudySet().getId());
             sslDto.setStudySetName(ssl.getStudySet().getTitle());
             sslDto.setSsDescription(ssl.getStudySet().getDescription());
