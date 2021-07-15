@@ -20,7 +20,7 @@ public class LearningController {
 		return learningService.learningFlashCardByStudySet(id);
 	}
 
-	@PostMapping("/update")
+	@PutMapping("/update")
 	public ResponseEntity updateAfterLearn(@RequestParam(value="cardId") Long cardId, @RequestParam(value="q") Integer q){
 		return learningService.updateCardLearning(cardId,q);
 	}
