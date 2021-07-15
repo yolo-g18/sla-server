@@ -42,7 +42,7 @@ public class SearchService {
         return new PageImpl<SearchStudySetResponse>(
                 studySetPage.stream().map(studySet -> new SearchStudySetResponse(
                           studySet.getId(),
-                        studySet.getCreator().getLastName() + " " + studySet.getCreator().getFirstName(),
+                        findUserNameByUserId(studySet.getCreator().getId()),
                         studySet.getTitle(),
                         convertToCardDto(cardRepository.findTop4ByStudySetId(studySet.getId())),
                         studySet.getCards().size()
@@ -57,7 +57,7 @@ public class SearchService {
         return new PageImpl<SearchStudySetResponse>(
                 studySetPage.stream().map(studySet -> new SearchStudySetResponse(
                                 studySet.getId(),
-                                studySet.getCreator().getLastName() + " " + studySet.getCreator().getFirstName(),
+                        findUserNameByUserId(studySet.getCreator().getId()),
                                 studySet.getTitle(),
                                 convertToCardDto(cardRepository.findTop4ByStudySetId(studySet.getId())),
                                 studySet.getCards().size()
