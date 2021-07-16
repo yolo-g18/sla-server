@@ -20,6 +20,7 @@ public class LibController {
     List<StudySetLearningResponse> getStudySetsLearning(){
         return libraryService.getLearningStudySets();
     }
+
     @GetMapping("ss/created")
     List<SearchStudySetResponse> getCreatedStudySet(@RequestParam long userId){
         return libraryService.getStudySetCreatedByUserId(userId);

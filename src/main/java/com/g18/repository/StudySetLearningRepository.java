@@ -10,4 +10,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface StudySetLearningRepository extends JpaRepository<StudySetLearning, Long>{
     List<StudySetLearning> findStudySetLearningByUserId(Long userId);
     StudySetLearning findStudySetLearningByStudySetAndUser(StudySet studySet, User user);
+    List<StudySetLearning> findTop4StudySetLearningByUserId(Long userId);
 }

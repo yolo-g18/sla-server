@@ -28,6 +28,8 @@ public class LibraryService {
     private RoomRepository roomRepository;
     @Autowired
     private FolderStudySetRepository folderStudySetRepository;
+    @Autowired
+    private CardRepository cardRepository;
 
 
     //get all study sets current user have created
@@ -38,12 +40,14 @@ public class LibraryService {
         for(StudySetLearning ssl : listLearningSS){
             StudySetLearningResponse sslDto = new StudySetLearningResponse();
             sslDto.setStudySetId(ssl.getStudySet().getId());
+            sslDto.setUserID(ssl.getUser().getId());
             sslDto.setStudySetName(ssl.getStudySet().getTitle());
             sslDto.setSsDescription(ssl.getStudySet().getDescription());
             sslDto.setColor(ssl.getColor());
             sslDto.setProgress(ssl.getProgress());
             sslDto.setRating(ssl.getRating());
             sslDto.setStatus(ssl.getStatus());
+            sslDto.setNumberOfCards(cardRepository.countNumberCardBySSID(ssl.getStudySet().getId()));
             results.add(sslDto);
         }
         return results;
@@ -59,6 +63,7 @@ public class LibraryService {
             sssr.setCreator(findUserNameByUserId(currentUser.getId()));
             sssr.setNumberOfCards(ss.getCards().size());
             sssr.setTitle(ss.getTitle());
+            sssr.setTag(ss.getTag());
             result.add(sssr);
         }
         return result;

@@ -43,6 +43,7 @@ public class SearchService {
                         findUserNameByUserId(studySet.getCreator().getId()),
                         studySet.getTitle(),
                         convertToCardDto(cardRepository.findTop4ByStudySetId(studySet.getId())),
+                        studySet.getTag(),
                         studySet.getCards().size(),
                         studySet.getCreatedDate()
                         )
@@ -59,6 +60,7 @@ public class SearchService {
                         findUserNameByUserId(studySet.getCreator().getId()),
                                 studySet.getTitle(),
                                 convertToCardDto(cardRepository.findTop4ByStudySetId(studySet.getId())),
+                                studySet.getTag(),
                                 studySet.getCards().size(),
                                 studySet.getCreatedDate()
                         )

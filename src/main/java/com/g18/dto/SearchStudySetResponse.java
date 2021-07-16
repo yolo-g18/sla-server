@@ -15,6 +15,7 @@ public class SearchStudySetResponse {
     private String creator;
     private String title;
     private List<CardSearchResponse> first4Cards;
+    private String tag;
     private int numberOfCards;
     private Instant createdDate;
 

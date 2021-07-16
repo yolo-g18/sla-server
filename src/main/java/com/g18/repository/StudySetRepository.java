@@ -14,6 +14,8 @@ public interface StudySetRepository extends JpaRepository<StudySet,Long> {
 
     Page<StudySet> findByTagContainsAndIsPublicTrue(String tag, Pageable pageable);
 
+    List<StudySet> findTop4ByCreatorIdOrderByIdDesc(Long id);
+
 
 
 }

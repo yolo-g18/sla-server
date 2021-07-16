@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StudySetLearningResponse {
+    private Long userID;
     private Long studySetId;
     private String studySetName;
     private String ssDescription;
@@ -16,4 +17,5 @@ public class StudySetLearningResponse {
     private Status status;
     private double rating;
     private Color color;
+    private int numberOfCards;
 }
