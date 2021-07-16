@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-
 @RestController
+@RequestMapping("api")
 public class EventController {
     @Autowired
     private IEventService eventService;
@@ -27,21 +27,21 @@ public class EventController {
     private EventService es;
 
     //Get event in a range of time
-    @GetMapping(value = "event")
+    @GetMapping(value = "/event")
     public List<EventDto> showEvent(@RequestParam("from") String from,@RequestParam("to") String to){
         return eventService.getAllBetweenDates(from,to);
     }
 
 
     //Create event
-    @PostMapping(value = "event")
+    @PostMapping(value = "/event")
     public ResponseEntity<String> createEvent(@Valid @RequestBody EventDto eventDto) {
          eventService.save(eventDto);
          return new ResponseEntity<>("Create Event Successful", HttpStatus.CREATED);
     }
 
     //Update event
-    @PutMapping(value = "event/{id}")
+    @PutMapping(value = "/event/{id}")
     public ResponseEntity<String> updateEvent(@RequestBody EventDto eventDto,@PathVariable("id") String id_raw) throws NotFoundException {
         try{
             long id = Long.parseLong(id_raw);
@@ -54,7 +54,7 @@ public class EventController {
 
     }
     //Delete event
-    @DeleteMapping(value = "event")
+    @DeleteMapping(value = "/event")
     public ResponseEntity<String> deleteEvent ( @RequestBody long[] ids){
         try {
             eventService.delete(ids);

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("Search")
+@RequestMapping("api/search")
 public class SearchController {
     @Autowired
     SearchService searchService;
@@ -50,11 +50,6 @@ public class SearchController {
     @GetMapping("/room")
     Page<SearchRoomResponse> searchRoom(Pageable pageable, @RequestParam String keySearch){
         return searchService.searchRoomByName(pageable ,keySearch);
-    }
-
-    @GetMapping("/hey")
-    ResponseEntity<String> as(){
-        return new ResponseEntity<>("Update Event Successful", HttpStatus.OK);
     }
 
 }
