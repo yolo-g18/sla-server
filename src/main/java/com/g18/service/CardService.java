@@ -92,15 +92,11 @@ public class CardService {
 
     public String editCard(List<CardDto> request) {
         try{
-            StudySet studySet = studySetRepository.findById(request.get(0).getStudySet()).orElseThrow(() -> new ExpressionException("Study Set not exist"));
             for (CardDto cardDto: request) {
-                Card card = new Card();
-                card.setId(cardDto.getId());
-                card.setStudySet(studySet);
+                Card card = cardRepository.findById(cardDto.getId()).orElseThrow(() -> new ExpressionException("Card not exist"));
                 card.setBack(cardDto.getBack());
                 card.setFront(cardDto.getFront());
-
-                cardRepository.saveAndFlush(card);
+                cardRepository.save(card);
             }
             return "edit Card successfully";
         }catch (Exception e){
