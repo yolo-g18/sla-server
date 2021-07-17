@@ -72,15 +72,16 @@ public class RoomService {
     }
 
     @Transactional
-    public List<ObjectNode> getRoomList(){
+    public List<ObjectNode> getRoomListOfUser(Long id){
 
-         // load all rooms in database
-         List<Room> roomList = roomRepository.findAll();
+         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
+
+         // load all rooms of user
+         List<Room> roomList = user.getRoomsOwn();
 
          if(roomList.isEmpty()){
              throw new NoDataFoundException(); // not found room
          }
-
 
          // json load all rooms to client
          List<ObjectNode> objectNodeList = new ArrayList<>();
@@ -95,6 +96,7 @@ public class RoomService {
              json.put("room_id",room.getId());
              json.put("name",room.getName());
              json.put("description",room.getDescription());
+             json.put("numberOfMembers",room.getRoomMembers().size());
              json.put("createdDate", formatter.format(room.getCreatedDate()));
              objectNodeList.add(json);
         }

@@ -21,9 +21,9 @@ public class RoomController {
     public String createRoom(@RequestBody ObjectNode json){ return roomService.saveRoom(json);
     }
 
-    @GetMapping("/listRooms")
-    public List<ObjectNode> findAllRooms(){
-        return roomService.getRoomList();
+    @GetMapping("/getRoomListOfUser/{id}")
+    public List<ObjectNode> findAllRooms(@PathVariable Long id){
+        return roomService.getRoomListOfUser(id);
     }
 
 

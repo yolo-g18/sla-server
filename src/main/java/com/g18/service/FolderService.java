@@ -7,9 +7,7 @@ import com.g18.exceptions.*;
 import com.g18.model.Color;
 import com.g18.model.FolderStudySetId;
 
-import com.g18.repository.FolderRepository;
-import com.g18.repository.StudySetRepository;
-import com.g18.repository.UserRepository;
+import com.g18.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +16,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -40,6 +39,12 @@ public class FolderService {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private AccountRepository accountRepository;
+
+    @Autowired
+    private StudySetLearningRepository studySetLearningRepository;
 
     @Transactional
     public String saveFolder(ObjectNode json){
@@ -98,14 +103,24 @@ public class FolderService {
         return "edit Folder successfully";
     }
 
+    @Transactional
+    private String getUserNameOfCreator(Long creator_id){
 
+        List<Account> accountList = accountRepository.findAll();
+
+        // find account of folder's creator
+        Account acc = accountList.stream().filter( account -> account.getUser().getId().equals(creator_id))
+                .findAny().orElse(null);
+
+        return acc.getUsername();
+    }
 
     @Transactional
     public ObjectNode getFolderByID(Long id){
 
         // find a specific folder
         Folder existingFolder = folderRepository.findById(id).orElseThrow(() -> new FolderNotFoundException());
-
+        Long foderOwner_id = existingFolder.getOwner().getId();
         // create a json
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode json = mapper.createObjectNode();
@@ -115,6 +130,8 @@ public class FolderService {
         json.put("color",existingFolder.getColor().toString());
         json.put("description",existingFolder.getDescription());
         json.put("createdDate", formatter.format(existingFolder.getCreatedDate()));
+        json.put("creatorUserName",getUserNameOfCreator(foderOwner_id));
+
 
         return json;
     }
@@ -250,6 +267,24 @@ public class FolderService {
         return "remove StudySet from Folder successfully";
     }
 
+    private String getColorOfStudySetLearning(Long studySet_id){
+
+        // get user logined
+        User currenUserLogined = authService.getCurrentUser();
+
+        // get user's color when learning set
+        List<StudySetLearning> studySetLearningList = studySetLearningRepository.findAll();
+        StudySetLearning setLearning = studySetLearningList.stream().
+                filter(studySetLearning -> studySetLearning.getUserStudySetId().getStudySetId().equals(studySet_id)
+                && studySetLearning.getUserStudySetId().getUserId().equals(currenUserLogined.getId()))
+                .findAny().orElse(null);
+
+        if(null == setLearning)
+              return "";
+
+        return setLearning.getColor().toString();
+    }
+
     @Transactional
     public List<ObjectNode> getFolderStudySetList(Long id){
 
@@ -277,7 +312,13 @@ public class FolderService {
             json.put("studySet_id",folderStudySet.getFolderStudySetId().getStudySetId());
             json.put("title", folderStudySet.getStudySet().getTitle());
             json.put("description",folderStudySet.getStudySet().getDescription());
+            json.put("tags",folderStudySet.getStudySet().getTag());
             json.put("createdDate", formatter.format(folderStudySet.getCreatedDate()));
+            json.put("numberOfCards",folderStudySet.getStudySet().getCards().size());
+            Long studySetOwner_id = folderStudySet.getStudySet().getCreator().getId();
+            json.put("creatorName",getUserNameOfCreator(studySetOwner_id));
+            String color = getColorOfStudySetLearning(folderStudySet.getFolderStudySetId().getStudySetId());
+            json.put("color",color);
             objectNodeList.add(json);
         }
 
@@ -306,10 +347,8 @@ public class FolderService {
         }
     }
 
-    public Color[] listColorForFolder(){
-
-
-        return Color.values();
-
+    public String[] listColorForFolder(){
+        return Arrays.toString(Color.values()).
+                replaceAll("^.|.$", "").split(", ");
     }
 }

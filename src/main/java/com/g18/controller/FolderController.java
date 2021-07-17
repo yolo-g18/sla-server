@@ -57,7 +57,7 @@ public class FolderController {
     }
 
     @GetMapping("/getColorFolder")
-    public Color[] getColorFolder(){
+    public String[] getColorFolder(){
         return folderService.listColorForFolder();
     }
 
