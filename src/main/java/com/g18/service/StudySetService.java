@@ -141,7 +141,7 @@ public class StudySetService {
                 StudySetResponse studySetResponse = setStudySetResponse(studySet, progress);
                 responses.add(studySetResponse);
             }
-            return ResponseEntity.status(HttpStatus.CREATED).body(responses);
+            return ResponseEntity.status(HttpStatus.OK).body(responses);
         }catch(Exception e){
             log.info(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -155,10 +155,10 @@ public class StudySetService {
         User user = authService.getCurrentAccount().getUser();
         boolean isPublic = studySet.isPublic();
         if(!isPublic && !user.equals(studySet.getCreator())){
-            return ResponseEntity.status(HttpStatus.OK).body("Not allowed");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not allowed");
         }
         StudySetResponse studySetResponse = setStudySetResponse(studySet, 0);
-        return ResponseEntity.status(HttpStatus.CREATED).body(studySetResponse);
+        return ResponseEntity.status(HttpStatus.OK).body(studySetResponse);
     }
 
     public String shareStudySetBy(StudySetRequest request) {
@@ -225,7 +225,7 @@ public class StudySetService {
         if(studySetLearning != null){
             boolean isPublic = studySetLearning.isPublic();
             if(!isPublic && !user.equals(studySet.getCreator())) {
-                return ResponseEntity.status(HttpStatus.OK).body("Not allowed");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not allowed");
             }
             StudySetLearningDto response = new StudySetLearningDto();
             String creatorName = studySet.getCreator().getFirstName() + " " + studySet.getCreator().getLastName();
@@ -246,9 +246,9 @@ public class StudySetService {
             formattedDate = formatter.format(tempDate);
             response.setExpectedDate(formattedDate);
             response.setPublic(studySetLearning.isPublic());
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         }else{
-            return ResponseEntity.status(HttpStatus.OK).body("User has not started learning");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User has not started learning");
         }
     }
 }
