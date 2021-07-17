@@ -48,6 +48,7 @@ public class LibraryService {
             sslDto.setRating(ssl.getRating());
             sslDto.setStatus(ssl.getStatus());
             sslDto.setNumberOfCards(cardRepository.countNumberCardBySSID(ssl.getStudySet().getId()));
+            sslDto.setUserName(findUserNameByUserId(ssl.getUser().getId()));
             results.add(sslDto);
         }
         return results;

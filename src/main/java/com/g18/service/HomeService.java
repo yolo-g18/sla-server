@@ -37,11 +37,7 @@ public class HomeService {
             StudySetLearningResponse sslDto = new StudySetLearningResponse();
             sslDto.setStudySetId(ssl.getStudySet().getId());
             sslDto.setUserID(ssl.getUser().getId());
-            sslDto.setUserFullname(userRepository.findById(sslDto.getUserID())
-                    .orElseThrow(() -> new UserNotFoundException()).getFirstName()
-                    + " "
-                    + userRepository.findById(sslDto.getUserID())
-                    .orElseThrow(() -> new UserNotFoundException()).getLastName());
+            sslDto.setUserName(findUserNameByUserId(ssl.getUser().getId()));
             sslDto.setStudySetName(ssl.getStudySet().getTitle());
             sslDto.setSsDescription(ssl.getStudySet().getDescription());
             sslDto.setColor(ssl.getColor());

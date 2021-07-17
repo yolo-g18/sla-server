@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class StudySetLearningResponse {
     private Long userID;
-    private String userFullname;
+    private String userName;
     private Long studySetId;
     private String studySetName;
     private String ssDescription;
