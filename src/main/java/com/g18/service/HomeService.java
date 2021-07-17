@@ -5,10 +5,8 @@ import com.g18.dto.StudySetLearningResponse;
 import com.g18.entity.StudySet;
 import com.g18.entity.StudySetLearning;
 import com.g18.entity.User;
-import com.g18.repository.AccountRepository;
-import com.g18.repository.CardRepository;
-import com.g18.repository.StudySetLearningRepository;
-import com.g18.repository.StudySetRepository;
+import com.g18.exceptions.UserNotFoundException;
+import com.g18.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +25,8 @@ public class HomeService {
     private StudySetRepository studySetRepository;
     @Autowired
     private AccountRepository accountRepository;
+    @Autowired
+    private UserRepository userRepository;
 
 
     public List<StudySetLearningResponse> getTop4LearningStudySets(){
@@ -37,6 +37,11 @@ public class HomeService {
             StudySetLearningResponse sslDto = new StudySetLearningResponse();
             sslDto.setStudySetId(ssl.getStudySet().getId());
             sslDto.setUserID(ssl.getUser().getId());
+            sslDto.setUserFullname(userRepository.findById(sslDto.getUserID())
+                    .orElseThrow(() -> new UserNotFoundException()).getFirstName()
+                    + " "
+                    + userRepository.findById(sslDto.getUserID())
+                    .orElseThrow(() -> new UserNotFoundException()).getLastName());
             sslDto.setStudySetName(ssl.getStudySet().getTitle());
             sslDto.setSsDescription(ssl.getStudySet().getDescription());
             sslDto.setColor(ssl.getColor());
