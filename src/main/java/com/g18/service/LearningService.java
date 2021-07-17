@@ -2,6 +2,7 @@ package com.g18.service;
 
 
 import com.g18.dto.CardLearningDto;
+import com.g18.dto.CardQualityRequestUpdate;
 import com.g18.entity.*;
 
 import com.g18.model.Status;
@@ -149,10 +150,10 @@ public class LearningService {
         }
     }
 
-    public ResponseEntity updateCardLearning(Long cardId, Integer quality) {
+    public ResponseEntity updateCardLearning(CardQualityRequestUpdate cardQualityRequestUpdate) {
         try{
             User user = authService.getCurrentUser();
-            Card card = cardRepository.findById(cardId).orElseThrow(() -> new ExpressionException("Card not exist"));
+            Card card = cardRepository.findById(cardQualityRequestUpdate.getCardId()).orElseThrow(() -> new ExpressionException("Card not exist"));
 
             //Get cardLearning to update
             CardLearning cardLearning = cardLearningRepository.findCardLearningByCardAndUser(card,user);
@@ -165,7 +166,7 @@ public class LearningService {
                 Status status;
 
                 //If quality >=3, update interval, eFactor, repetitionNumber, status
-                if(quality >= 3){
+                if(cardQualityRequestUpdate.getQ() >= 3){
                     status = Status.REVIEW;
                     if(repetitionNumber == 0){
                         interval = 1;
@@ -174,7 +175,7 @@ public class LearningService {
                     }else{
                         interval = interval * eFactor;
                     }
-                    eFactor = eFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+                    eFactor = eFactor + (0.1 - (5 - cardQualityRequestUpdate.getQ()) * (0.08 + (5 - cardQualityRequestUpdate.getQ()) * 0.02));
                     if(eFactor < 1.3){
                         eFactor = 1.3;
                     }
@@ -199,7 +200,7 @@ public class LearningService {
                 Instant learnDateUpdate = learnDate.plus(intervalRounding.intValue(), ChronoUnit.DAYS);
 
                 //Update CardLearning DB
-                cardLearning.setQ(quality);
+                cardLearning.setQ(cardQualityRequestUpdate.getQ());
                 cardLearning.setLearnedDate(learnDateUpdate);
                 cardLearning.setIntervalTime(intervalRounding.intValue());
                 cardLearning.setEFactor(eFactor);

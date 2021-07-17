@@ -9,7 +9,7 @@ import java.util.List;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import java.util.List;
+
 
 @Data
 @AllArgsConstructor
@@ -34,6 +34,7 @@ public class StudySet {
 
 	@OneToMany(mappedBy = "studySet", orphanRemoval = true, cascade = CascadeType.ALL)
 	private List<StudySetLearning> studySetLearningList; //StudySetLearning
+
 
 	@OneToMany(mappedBy = "studySet", orphanRemoval = true, cascade = CascadeType.ALL)
 	private List<FolderStudySet> folderStudySetList; //folderStudySetList
