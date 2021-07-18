@@ -108,7 +108,7 @@ public class LearningService {
                     studySetLearning.setStudySet(studySet);
                     studySetLearning.setUser(user);
                     studySetLearning.setColor(null);
-                    studySetLearning.setExpectedDate(Instant.now());
+                    studySetLearning.setExpectedDate(null);
                     studySetLearning.setFeedback(null);
                     studySetLearning.setProgress(0);
                     studySetLearning.setRating(0);
@@ -266,6 +266,9 @@ public class LearningService {
                         double progress = studySetLearning.getProgress();
                         int numberOfCard = studySet.getCards().size();
                         progress = progress + 1.0/numberOfCard;
+                        if(progress == 1){
+                            studySetLearning.setExpectedDate(Instant.now());
+                        }
                         studySetLearning.setProgress(progress);
                         studySetLearningRepository.save(studySetLearning);
                     }
@@ -279,6 +282,9 @@ public class LearningService {
                         StudySet studySet = studySetRepository.findById(card.getStudySet().getId()).orElseThrow(()-> new ExpressionException("Study Set not exist"));
                         StudySetLearning studySetLearning = studySetLearningRepository.findStudySetLearningByStudySetAndUser(studySet, user);
                         double progress = studySetLearning.getProgress();
+                        if(progress == 1){
+                            studySetLearning.setExpectedDate(null);
+                        }
                         int numberOfCard = studySet.getCards().size();
                         progress = progress - 1.0/numberOfCard;
                         studySetLearning.setProgress(progress);
