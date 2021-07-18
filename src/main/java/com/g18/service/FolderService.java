@@ -282,6 +282,9 @@ public class FolderService {
         if(null == setLearning)
               return "";
 
+        if(null == setLearning.getColor())
+             return "";
+
         return setLearning.getColor().toString();
     }
 
