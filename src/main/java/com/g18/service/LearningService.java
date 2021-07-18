@@ -268,6 +268,7 @@ public class LearningService {
                         progress = progress + 1.0/numberOfCard;
                         if(progress == 1){
                             studySetLearning.setExpectedDate(Instant.now());
+                            studySetLearning.setStatus(Status.FINISHED);
                         }
                         studySetLearning.setProgress(progress);
                         studySetLearningRepository.save(studySetLearning);
@@ -284,6 +285,7 @@ public class LearningService {
                         double progress = studySetLearning.getProgress();
                         if(progress == 1){
                             studySetLearning.setExpectedDate(null);
+                            studySetLearning.setStatus(Status.REVIEW);
                         }
                         int numberOfCard = studySet.getCards().size();
                         progress = progress - 1.0/numberOfCard;
