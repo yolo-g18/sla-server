@@ -79,14 +79,14 @@ public class RoomService {
          // load all rooms of user
          List<Room> roomList = user.getRoomsOwn();
 
-         if(roomList.isEmpty()){
-             throw new NoDataFoundException(); // not found room
-         }
-
          // json load all rooms to client
          List<ObjectNode> objectNodeList = new ArrayList<>();
 
-         // helper create objectnode
+        if(roomList.isEmpty()){
+            return objectNodeList;
+        }
+
+        // helper create objectnode
          ObjectMapper mapper;
 
          // load all room to json list
