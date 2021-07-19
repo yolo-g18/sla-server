@@ -144,13 +144,13 @@ public class FolderService {
         // load all folders of user
         List<Folder> folderList = user.getFoldersOwn();
 
-        if(folderList.isEmpty())
-        {
-            throw new NoDataFoundException();
-        }
-
         // json load all rooms to client
         List<ObjectNode> objectNodeList = new ArrayList<>();
+
+        if(folderList.isEmpty())
+        {
+          return objectNodeList;
+        }
 
         // helper create objectnode
         ObjectMapper mapper;
