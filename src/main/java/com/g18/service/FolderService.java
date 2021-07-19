@@ -313,10 +313,11 @@ public class FolderService {
         // load all folderStudySets in database
         List<FolderStudySet> folderStudySetList = existingFolder.getFolderStudySets();
 
-
-
         // json load all roomStudySets to client
         List<ObjectNode> objectNodeList = new ArrayList<>();
+
+        if(folderStudySetList.isEmpty())
+                 return objectNodeList;
 
         // helper create objectnode
         ObjectMapper mapper;
