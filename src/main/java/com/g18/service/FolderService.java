@@ -185,6 +185,8 @@ public class FolderService {
     @Transactional
     public String addStudySetToFolder(ObjectNode json){
 
+        String messageError = "cancel adding";
+
         Long folder_id = null,studySet_id = null;
 
         // parsing id of folder
@@ -206,11 +208,24 @@ public class FolderService {
         }
 
         // find that folder
-        Folder existingFolder = folderRepository.findById(folder_id).
+       Folder existingFolder = folderRepository.findById(folder_id).
                 orElseThrow(() -> new FolderNotFoundException());
+
         // find that studySet
-        StudySet existingStudySet = studySetRepository.findById(studySet_id).
-                orElseThrow(() -> new StudySetNotFoundException());
+       StudySet existingStudySet = studySetRepository.findById(studySet_id).
+             orElseThrow(() -> new StudySetNotFoundException());
+
+       // check for SS exist in room
+        Long finalStudySet_id = studySet_id;
+        Long finalFolder_id = folder_id;
+        FolderStudySet temp = existingFolder.getFolderStudySets().stream().filter(
+                folderStudySet -> folderStudySet.getFolderStudySetId().getStudySetId().equals(finalStudySet_id)
+                && folderStudySet.getFolderStudySetId().getFolderId().equals(finalFolder_id)
+        ).findAny().orElse(null);
+
+        // SS existed in folder
+        if(null != temp)
+            return messageError;
 
         //create id of folderStudySet
         FolderStudySetId folderStudySetId = new FolderStudySetId();
@@ -226,6 +241,7 @@ public class FolderService {
         folderStudySet.setStudySet(existingStudySet);
         folderStudySet.setFolder(existingFolder);
         folderStudySet.setCreatedDate(Instant.now());
+
 
         // add relationship folderStudySet
         existingFolder.getFolderStudySets().add(folderStudySet);

@@ -34,5 +34,10 @@ public class Folder {
 	@OneToMany(mappedBy = "folder",orphanRemoval=true, cascade=CascadeType.ALL)
 	private List<FolderStudySet> folderStudySets; //list study sets in folder
 
-
+	@Override
+	public String toString() {
+		return "Folder{" +
+				"id=" + id +
+				'}';
+	}
 }

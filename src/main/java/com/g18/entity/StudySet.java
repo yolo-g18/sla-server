@@ -3,6 +3,7 @@ package com.g18.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.Instant;
 import java.util.List;
@@ -41,4 +42,11 @@ public class StudySet {
 
 	@OneToMany(mappedBy = "studySet", orphanRemoval = true, cascade = CascadeType.ALL)
 	private List<RoomStudySet> roomStudySetList; //roomStudySetList
+
+	@Override
+	public String toString() {
+		return "StudySet{" +
+				"id=" + id +
+				'}';
+	}
 }
