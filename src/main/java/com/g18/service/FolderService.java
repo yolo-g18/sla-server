@@ -313,10 +313,7 @@ public class FolderService {
         // load all folderStudySets in database
         List<FolderStudySet> folderStudySetList = existingFolder.getFolderStudySets();
 
-        if(folderStudySetList.isEmpty())
-        {
-            throw new NoDataFoundException();
-        }
+
 
         // json load all roomStudySets to client
         List<ObjectNode> objectNodeList = new ArrayList<>();
