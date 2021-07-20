@@ -1,11 +1,12 @@
 package com.g18.repository;
 
+import com.g18.dto.CardLearningDto;
 import com.g18.entity.Card;
 import com.g18.entity.CardLearning;
 import com.g18.entity.User;
 import com.g18.model.UserCardId;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -21,5 +22,11 @@ public interface CardLearningRepository extends JpaRepository<CardLearning,Long>
 
     List<CardLearning> findByUserAndLearnedDate(User user, Instant learnedDate);
 
-    List<CardLearning> findTop20ByUserOrderByLearnedDate(User user);
+    @Query("SELECT new com.g18.dto.CardLearningDto(cl.user.id, c.id, c.studySet.id, c.front, c.back, cl.hint, cl.color) FROM Card c\n" +
+            "INNER JOIN CardLearning cl ON c.id = cl.card.id  WHERE cl.user.id = :userId AND c.studySet.id = :studySetId ORDER BY cl.learnedDate ASC")
+    List<CardLearningDto> getListCardLearningOrderByLearnedDate(@Param("userId")Long userId, @Param("studySetId")Long studySetId);
+
+    @Query("SELECT new com.g18.dto.CardLearningDto(cl.user.id, c.id, c.studySet.id, c.front, c.back, cl.hint, cl.color) FROM Card c\n" +
+        "INNER JOIN CardLearning cl ON c.id = cl.card.id  WHERE cl.user.id = :userId AND c.studySet.id = :studySetId ORDER BY cl.learnedDate ASC")
+    List<CardLearningDto> getTopCardLearning(@Param("userId")Long userId, @Param("studySetId")Long studySetId, Pageable pageable);
 }

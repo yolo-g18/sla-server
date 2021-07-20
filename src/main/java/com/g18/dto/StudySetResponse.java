@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
+
 
 @Data
 @AllArgsConstructor
@@ -19,5 +21,6 @@ public class StudySetResponse {
     private boolean isPublic;
     private Integer numberOfCard;
     private double progress;
+    private Instant createdDate;
 
 }
