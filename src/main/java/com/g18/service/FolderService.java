@@ -7,9 +7,7 @@ import com.g18.exceptions.*;
 import com.g18.model.Color;
 import com.g18.model.FolderStudySetId;
 
-import com.g18.repository.FolderRepository;
-import com.g18.repository.StudySetRepository;
-import com.g18.repository.UserRepository;
+import com.g18.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +38,12 @@ public class FolderService {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private AccountRepository accountRepository;
+
+    @Autowired
+    private StudySetLearningRepository studySetLearningRepository;
 
     @Transactional
     public String saveFolder(ObjectNode json){
@@ -127,13 +131,13 @@ public class FolderService {
         // load all folders of user
         List<Folder> folderList = user.getFoldersOwn();
 
-        if(folderList.isEmpty())
-        {
-            throw new NoDataFoundException();
-        }
-
         // json load all rooms to client
         List<ObjectNode> objectNodeList = new ArrayList<>();
+
+        if(folderList.isEmpty())
+        {
+            return objectNodeList;
+        }
 
         // helper create objectnode
         ObjectMapper mapper;
@@ -168,6 +172,8 @@ public class FolderService {
     @Transactional
     public String addStudySetToFolder(ObjectNode json){
 
+        String messageError = "cancel adding";
+
         Long folder_id = null,studySet_id = null;
 
         // parsing id of folder
@@ -191,9 +197,22 @@ public class FolderService {
         // find that folder
         Folder existingFolder = folderRepository.findById(folder_id).
                 orElseThrow(() -> new FolderNotFoundException());
+
         // find that studySet
         StudySet existingStudySet = studySetRepository.findById(studySet_id).
                 orElseThrow(() -> new StudySetNotFoundException());
+
+        // check for SS exist in room
+        Long finalStudySet_id = studySet_id;
+        Long finalFolder_id = folder_id;
+        FolderStudySet temp = existingFolder.getFolderStudySets().stream().filter(
+                folderStudySet -> folderStudySet.getFolderStudySetId().getStudySetId().equals(finalStudySet_id)
+                        && folderStudySet.getFolderStudySetId().getFolderId().equals(finalFolder_id)
+        ).findAny().orElse(null);
+
+        // SS existed in folder
+        if(null != temp)
+            return messageError;
 
         //create id of folderStudySet
         FolderStudySetId folderStudySetId = new FolderStudySetId();
@@ -210,6 +229,7 @@ public class FolderService {
         folderStudySet.setFolder(existingFolder);
         folderStudySet.setCreatedDate(Instant.now());
 
+
         // add relationship folderStudySet
         existingFolder.getFolderStudySets().add(folderStudySet);
 
@@ -217,7 +237,6 @@ public class FolderService {
 
         return "add StudySet to Folder successfully";
     }
-
     @Transactional
     public String deleteStudySetFromFolder(Long folder_id,Long studySet_id){
 
@@ -251,6 +270,39 @@ public class FolderService {
     }
 
     @Transactional
+    private String getUserNameOfCreator(Long creator_id){
+
+        List<Account> accountList = accountRepository.findAll();
+
+        // find account of folder's creator
+        Account acc = accountList.stream().filter( account -> account.getUser().getId().equals(creator_id))
+                .findAny().orElse(null);
+
+        return acc.getUsername();
+    }
+
+    private String getColorOfStudySetLearning(Long studySet_id){
+
+        // get user logined
+        User currenUserLogined = authService.getCurrentUser();
+
+        // get user's color when learning set
+        List<StudySetLearning> studySetLearningList = studySetLearningRepository.findAll();
+        StudySetLearning setLearning = studySetLearningList.stream().
+                filter(studySetLearning -> studySetLearning.getUserStudySetId().getStudySetId().equals(studySet_id)
+                        && studySetLearning.getUserStudySetId().getUserId().equals(currenUserLogined.getId()))
+                .findAny().orElse(null);
+
+        if(null == setLearning)
+            return "";
+
+        if(null == setLearning.getColor())
+            return "";
+
+        return setLearning.getColor().toString();
+    }
+
+    @Transactional
     public List<ObjectNode> getFolderStudySetList(Long id){
 
         // find that folder
@@ -259,13 +311,11 @@ public class FolderService {
         // load all folderStudySets in database
         List<FolderStudySet> folderStudySetList = existingFolder.getFolderStudySets();
 
-        if(folderStudySetList.isEmpty())
-        {
-            throw new NoDataFoundException();
-        }
-
         // json load all roomStudySets to client
         List<ObjectNode> objectNodeList = new ArrayList<>();
+
+        if(folderStudySetList.isEmpty())
+             return objectNodeList;
 
         // helper create objectnode
         ObjectMapper mapper;
@@ -277,13 +327,18 @@ public class FolderService {
             json.put("studySet_id",folderStudySet.getFolderStudySetId().getStudySetId());
             json.put("title", folderStudySet.getStudySet().getTitle());
             json.put("description",folderStudySet.getStudySet().getDescription());
+            json.put("tags",folderStudySet.getStudySet().getTag());
             json.put("createdDate", formatter.format(folderStudySet.getCreatedDate()));
+            json.put("numberOfCards",folderStudySet.getStudySet().getCards().size());
+            Long studySetOwner_id = folderStudySet.getStudySet().getCreator().getId();
+            json.put("creatorName",getUserNameOfCreator(studySetOwner_id));
+            String color = getColorOfStudySetLearning(folderStudySet.getFolderStudySetId().getStudySetId());
+            json.put("color",color);
             objectNodeList.add(json);
         }
 
         return objectNodeList;
     }
-
 
     public boolean isCreatorOfFolder(Long id){
 

@@ -41,4 +41,11 @@ public class StudySet {
 
 	@OneToMany(mappedBy = "studySet", orphanRemoval = true, cascade = CascadeType.ALL)
 	private List<RoomStudySet> roomStudySetList; //roomStudySetList
+
+	@Override
+	public String toString() {
+		return "StudySet{" +
+				"id=" + id +
+				'}';
+	}
 }
