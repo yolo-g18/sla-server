@@ -203,7 +203,7 @@ public class LearningService {
             log.info("learningFlashCardByStudySet Exception: "+e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(responses);
+        return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
 
     public ResponseEntity learningFlashCardToday() {
@@ -222,7 +222,7 @@ public class LearningService {
 
                 responses.add(cardLearningDto);
             }
-            return ResponseEntity.status(HttpStatus.CREATED).body(responses);
+            return ResponseEntity.status(HttpStatus.OK).body(responses);
         }catch (Exception e){
             log.info("learningFlashCardToday Exception: "+e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -401,7 +401,7 @@ public class LearningService {
 
         List<CardLearningDto> response = cardLearningRepository.getTopCardLearning(user.getId(), studySetId,top20);
         if(response != null){
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
     }
@@ -411,7 +411,7 @@ public class LearningService {
 
         List<CardLearningDto> response = cardLearningRepository.getListCardLearningOrderByLearnedDate(user.getId(), studySetId);
         if(response != null){
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
     }
