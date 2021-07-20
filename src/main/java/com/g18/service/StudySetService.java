@@ -148,9 +148,9 @@ public class StudySetService {
         }
     }
 
-    public ResponseEntity viewStudySetBy(Long id) {
+    public ResponseEntity viewStudySetBy(Long studySetid) {
 
-        StudySet studySet = studySetRepository.findById(id)
+        StudySet studySet = studySetRepository.findById(studySetid)
                                     .orElseThrow(()->  new ExpressionException("Study Set not exist"));;
         User user = authService.getCurrentAccount().getUser();
         boolean isPublic = studySet.isPublic();
@@ -198,6 +198,7 @@ public class StudySetService {
         studySetResponse.setPublic(studySet.isPublic());
         studySetResponse.setNumberOfCard(studySet.getCards().size());
         studySetResponse.setProgress(progress);
+        studySetResponse.setCreatedDate(studySet.getCreatedDate());
         return studySetResponse;
     }
 
