@@ -28,4 +28,11 @@ public class FolderStudySet {
     private StudySet studySet;
 
     private Instant createdDate;
+
+    @Override
+    public String toString() {
+        return "FolderStudySet{" +
+                "folderStudySetId=" + folderStudySetId +
+                '}';
+    }
 }
