@@ -399,11 +399,20 @@ public class LearningService {
         User user = authService.getCurrentAccount().getUser();
         Pageable top20 = PageRequest.of(0,20);
 
-        List<CardLearningDto> response = cardLearningRepository.getTop20CardLearning(user.getId(), studySetId,top20);
+        List<CardLearningDto> response = cardLearningRepository.getTopCardLearning(user.getId(), studySetId,top20);
         if(response != null){
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
+    }
 
+    public ResponseEntity getListCardLearningOrderByLearnedDate(Long studySetId) {
+        User user = authService.getCurrentAccount().getUser();
+
+        List<CardLearningDto> response = cardLearningRepository.getListCardLearningOrderByLearnedDate(user.getId(), studySetId);
+        if(response != null){
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
     }
 }
