@@ -1,9 +1,6 @@
 package com.g18.controller;
 
-import com.g18.dto.EventDto;
-import com.g18.dto.SearchFolderResponse;
-import com.g18.dto.SearchRoomResponse;
-import com.g18.dto.SearchStudySetResponse;
+import com.g18.dto.*;
 import com.g18.entity.Event;
 import com.g18.repository.EventRepository;
 import com.g18.service.SearchService;
@@ -50,6 +47,10 @@ public class SearchController {
     @GetMapping("/room")
     Page<SearchRoomResponse> searchRoom(Pageable pageable, @RequestParam String keySearch){
         return searchService.searchRoomByName(pageable ,keySearch);
+    }
+    @GetMapping("/user")
+    Page<SearchUserResponse> searchUser(Pageable pageable, @RequestParam String keySearch){
+        return searchService.searchUserByUsername(pageable ,keySearch);
     }
 
 }

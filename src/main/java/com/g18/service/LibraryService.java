@@ -64,6 +64,7 @@ public class LibraryService {
             sssr.setCreator(findUserNameByUserId(currentUser.getId()));
             sssr.setNumberOfCards(ss.getCards().size());
             sssr.setTitle(ss.getTitle());
+            sssr.setDescription(ss.getDescription());
             sssr.setCreatedDate(ss.getCreatedDate());
             sssr.setTag(ss.getTag());
             result.add(sssr);
