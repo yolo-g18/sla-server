@@ -14,6 +14,9 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.expression.ExpressionException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -394,22 +397,13 @@ public class LearningService {
 
     public ResponseEntity learningContinue(Long studySetId) {
         User user = authService.getCurrentAccount().getUser();
-        List<CardLearningDto> response = new ArrayList<>();
-        StudySet studySet = studySetRepository.findById(studySetId).orElseThrow(()->new ExpressionException("Study Set not exist"));
+        Pageable top20 = PageRequest.of(0,20);
 
-        List<Card> cardList = studySet.getCards();
-
-        for(Card card : cardList){
-            if(card.getStudySet().equals(studySet)){
-                for(CardLearning cardLearning: card.getCardLearningList()){
-                    if(cardLearning.getUser().equals(user)){
-                        CardLearningDto cardLearningDto = convertCardLearningToDTO(cardLearning);
-
-                        response.add(cardLearningDto);
-                    }
-                }
-            }
+        List<CardLearningDto> response = cardLearningRepository.getTop20CardLearning(user.getId(), studySetId,top20);
+        if(response != null){
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
+
     }
 }

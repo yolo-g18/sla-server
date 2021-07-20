@@ -20,4 +20,13 @@ public class CardLearningDto {
     private String hint;
     private Color color;
 
+    public CardLearningDto(Long userId, Long cardId, Long studySetId, String front, String back, String hint, String color) {
+        this.userId = userId;
+        this.cardId = cardId;
+        this.studySetId = studySetId;
+        this.front = front;
+        this.back = back;
+        this.hint = hint;
+        this.color = Color.valueOf(color);
+    }
 }
