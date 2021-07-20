@@ -98,8 +98,22 @@ public class SearchService {
                         )
                 ).collect(Collectors.toList()), pageable, totalElements);
     }
+    //Search user by username and paging
+    public Page<SearchUserResponse> searchUserByUsername(Pageable pageable, String username) {
+        Page<Account> accountPage = accountRepository.findByUsernameContains(username,pageable);
+        int totalElements = accountPage.getNumberOfElements();
+        return new PageImpl<SearchUserResponse>(
+                accountPage.stream().map(
+                        account -> new SearchUserResponse(
+                                account.getUsername(),
+                                account.getUser().getAvatar(),
+                                account.getUser().getAvatar(),
+                                account.getUser().getStudySetsOwn().size()
+                        )
+                ).collect(Collectors.toList()), pageable, totalElements);
+    }
 
-
+    // Search room by name and paging
     public Page<SearchRoomResponse> searchRoomByName(Pageable pageable, String nameSearch) {
         Page<Room> roomPage = roomRepository.findByNameContaining(nameSearch,pageable);
         int totalElements = roomPage.getNumberOfElements();

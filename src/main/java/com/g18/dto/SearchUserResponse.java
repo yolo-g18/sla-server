@@ -8,8 +8,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SearchUserResponse {
-    private Long id;
     private String username;
-    private int numberStudySetOwn;
     private String avatar;
+    private String bio;
+    private int numberStudySetOwn;
+
 }
