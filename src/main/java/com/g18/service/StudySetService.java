@@ -48,6 +48,9 @@ public class StudySetService {
     private AuthService authService;
 
     @Autowired
+    private AccountRepository accountRepository;
+
+    @Autowired
     private UserRepository userRepository;
 
     @Autowired
@@ -148,9 +151,9 @@ public class StudySetService {
         }
     }
 
-    public ResponseEntity viewStudySetBy(Long studySetid) {
+    public ResponseEntity viewStudySetBy(Long studySetId) {
 
-        StudySet studySet = studySetRepository.findById(studySetid)
+        StudySet studySet = studySetRepository.findById(studySetId)
                                     .orElseThrow(()->  new ExpressionException("Study Set not exist"));;
         User user = authService.getCurrentAccount().getUser();
         boolean isPublic = studySet.isPublic();
@@ -189,9 +192,8 @@ public class StudySetService {
 
         StudySetResponse studySetResponse = new StudySetResponse();
         studySetResponse.setStudySetId(studySet.getId());
-        User creator = userRepository.findById(studySet.getCreator().getId()).orElseThrow(()->new ExpressionException("User not exist"));
-        studySetResponse.setCreatorName(creator.getFirstName()+" "+creator.getLastName());
-        studySetResponse.setUserId(creator.getId());
+        String creatorName = accountRepository.findUserNameByUserId(studySet.getCreator().getId());
+        studySetResponse.setCreatorName(creatorName);
         studySetResponse.setDescription(studySet.getDescription());
         studySetResponse.setTag(studySet.getTag());
         studySetResponse.setTitle(studySet.getTitle());

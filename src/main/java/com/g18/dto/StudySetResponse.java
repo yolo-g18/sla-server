@@ -14,7 +14,6 @@ public class StudySetResponse {
 
     private Long studySetId;
     private String creatorName;
-    private Long userId;
     private String title;
     private String description;
     private String tag;
