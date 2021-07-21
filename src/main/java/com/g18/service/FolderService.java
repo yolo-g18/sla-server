@@ -119,6 +119,7 @@ public class FolderService {
         json.put("color",existingFolder.getColor().toString());
         json.put("description",existingFolder.getDescription());
         json.put("createdDate", formatter.format(existingFolder.getCreatedDate()));
+        json.put("creatorUserName",getUserNameOfCreator(existingFolder.getOwner().getId()));
 
         return json;
     }
@@ -269,7 +270,6 @@ public class FolderService {
         return "remove StudySet from Folder successfully";
     }
 
-    @Transactional
     private String getUserNameOfCreator(Long creator_id){
 
         List<Account> accountList = accountRepository.findAll();
