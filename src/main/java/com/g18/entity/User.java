@@ -38,6 +38,9 @@ public class User {
 	private String email;
 	private String address;
 
+	@OneToMany(mappedBy = "user", orphanRemoval=true, cascade=CascadeType.ALL)
+	private List<Noti> notis;
+
 	@OneToMany(mappedBy = "creator")
 	private List<StudySet>  studySetsOwn; //list study sets created
 
