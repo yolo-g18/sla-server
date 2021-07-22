@@ -81,7 +81,7 @@ public class LearningService {
                     cardLearning.setCard(card);
                     cardLearning.setUser(user);
 
-                    Instant now = Instant.now().truncatedTo(ChronoUnit.DAYS);
+                    Instant now = Instant.now().truncatedTo(ChronoUnit.HOURS);
                     cardLearning.setLearnedDate(now);
 
                     cardLearning.setColor(null);
@@ -212,9 +212,10 @@ public class LearningService {
 
         try{
             User user = authService.getCurrentUser();
-            Instant now = Instant.now().truncatedTo(ChronoUnit.DAYS);
+            //Set today
+            Instant today = Instant.now().atZone(ZoneId.systemDefault()).withHour(7).toInstant().truncatedTo(ChronoUnit.DAYS);
 
-            List<CardLearning> cardLearningList = cardLearningRepository.findByUserAndLearnedDate(user,now);
+            List<CardLearning> cardLearningList = cardLearningRepository.findByUserAndLearnedDate(user,today);
 
             for(CardLearning cardLearning : cardLearningList){
 

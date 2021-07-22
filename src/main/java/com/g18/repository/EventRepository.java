@@ -21,5 +21,7 @@ public interface EventRepository extends JpaRepository<Event,Long> {
 
     @Query(value = "SELECT * FROM sla_db.event WHERE user_id = :userId AND to_time LIKE :date% ORDER BY to_time DESC",nativeQuery = true)
     List<Event> getListEventByUserIdAndDate(@Param("userId") Long userId, @Param("date") String  date);
+
+    List<Event> findEventByToTimeBefore(Instant toTime);
 }
 

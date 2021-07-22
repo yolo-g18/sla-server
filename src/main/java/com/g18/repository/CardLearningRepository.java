@@ -29,4 +29,6 @@ public interface CardLearningRepository extends JpaRepository<CardLearning,Long>
     @Query("SELECT new com.g18.dto.CardLearningDto(cl.user.id, c.id, c.studySet.id, c.front, c.back, cl.hint, cl.color) FROM Card c\n" +
         "INNER JOIN CardLearning cl ON c.id = cl.card.id  WHERE cl.user.id = :userId AND c.studySet.id = :studySetId ORDER BY cl.learnedDate ASC")
     List<CardLearningDto> getTopCardLearning(@Param("userId")Long userId, @Param("studySetId")Long studySetId, Pageable pageable);
+
+    List<CardLearning> findCardLearningByLearnedDateBefore(Instant learnedDate);
 }

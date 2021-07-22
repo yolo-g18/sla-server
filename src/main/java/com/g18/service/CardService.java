@@ -70,7 +70,7 @@ public class CardService {
                     cardLearning.setCard(card);
                     cardLearning.setUser(user);
 
-                    Instant now = Instant.now().truncatedTo(ChronoUnit.DAYS);
+                    Instant now = Instant.now().truncatedTo(ChronoUnit.HOURS);
                     cardLearning.setLearnedDate(now);
 
                     cardLearning.setColor(null);
