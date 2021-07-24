@@ -169,9 +169,7 @@ public class LearningService {
 
                         eventLearning.setColor(null);
 
-                        String dayOfWeek = now.atZone(ZoneId.systemDefault()).getDayOfWeek().toString();
-
-                        eventLearning.setName("Learning event on " + dayOfWeek);
+                        eventLearning.setName("Review " + studySet.getTitle());
                         eventLearning.setCreatedTime(now);
                         eventLearning.setUpdateTime(now);
                         eventLearning.setLearnEvent(true);
@@ -191,9 +189,7 @@ public class LearningService {
 
                     eventLearning.setColor(null);
 
-                    String dayOfWeek = now.atZone(ZoneId.systemDefault()).getDayOfWeek().toString();
-
-                    eventLearning.setName("Learning event on " + dayOfWeek);
+                    eventLearning.setName("Review " + studySet.getTitle());
                     eventLearning.setCreatedTime(now);
                     eventLearning.setUpdateTime(now);
                     eventRepository.save(eventLearning);
@@ -344,9 +340,7 @@ public class LearningService {
 
                         eventLearning.setColor(null);
 
-                        String dayOfWeek = now.atZone(ZoneId.systemDefault()).getDayOfWeek().toString();
-
-                        eventLearning.setName("Learning event on " + dayOfWeek);
+                        eventLearning.setName("Review " + card.getStudySet().getTitle());
                         eventLearning.setCreatedTime(now);
                         eventLearning.setUpdateTime(now);
                         eventLearning.setLearnEvent(true);
@@ -366,9 +360,7 @@ public class LearningService {
 
                     eventLearning.setColor(null);
 
-                    String dayOfWeek = now.atZone(ZoneId.systemDefault()).getDayOfWeek().toString();
-
-                    eventLearning.setName("Learning event on " + dayOfWeek);
+                    eventLearning.setName("Review " + card.getStudySet().getTitle());
                     eventLearning.setCreatedTime(now);
                     eventLearning.setUpdateTime(now);
                     eventRepository.save(eventLearning);
