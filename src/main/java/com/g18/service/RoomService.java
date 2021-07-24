@@ -293,6 +293,8 @@ public class RoomService {
     @Transactional
     public String addFolderToRoom(ObjectNode json){
 
+        String messageError = "cancel adding";
+
         Long room_id = null,folder_id = null;
 
         // parsing id of room
@@ -327,6 +329,18 @@ public class RoomService {
         Folder folder = folderRepository.findById(folder_id).orElseThrow(() -> new FolderNotFoundException());
         // find specific room
         Room room = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
+
+        // check for SS exist in room
+        Long finalFolder_id = folder_id;
+        Long finalRoom_id = room_id;
+        RoomFolder temp = room.getRoomFolders().stream().filter(
+                roomFolder -> roomFolder.getRoomFolderId().getFolderId().equals(finalFolder_id)
+                        && roomFolder.getRoomFolderId().getRoomId().equals(finalRoom_id)
+        ).findAny().orElse(null);
+
+        // folder existed in room
+        if(null != temp)
+            return messageError;
 
         RoomFolder roomFolder = new RoomFolder();
 
@@ -382,6 +396,8 @@ public class RoomService {
     @Transactional
     public String addStudySetToRoom(ObjectNode json){
 
+        String messageError = "cancel adding";
+
         Long room_id = null,studySet_id = null;
 
         // parsing if of room
@@ -418,6 +434,18 @@ public class RoomService {
 
         // find specific studySet
         StudySet studySet = studySetRepository.findById(studySet_id).orElseThrow(() -> new StudySetNotFoundException());
+
+        // check for SS exist in room
+        Long finalStudySet_id = studySet_id;
+        Long finalRoom_id = room_id;
+        RoomStudySet temp = room.getRoomStudySets().stream().filter(
+                roomStudySet -> roomStudySet.getRoomStudySetId().getStudySetId().equals(finalStudySet_id)
+                        && roomStudySet.getRoomStudySetId().getRoomId().equals(finalRoom_id)
+        ).findAny().orElse(null);
+
+        // SS existed in folder
+        if(null != temp)
+            return messageError;
 
         RoomStudySet roomStudySet = new RoomStudySet();
 

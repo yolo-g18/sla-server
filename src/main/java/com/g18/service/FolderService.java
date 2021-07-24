@@ -209,7 +209,7 @@ public class FolderService {
         StudySet existingStudySet = studySetRepository.findById(studySet_id).
                 orElseThrow(() -> new StudySetNotFoundException());
 
-        // check for SS exist in room
+        // check for SS exist in folder
         Long finalStudySet_id = studySet_id;
         Long finalFolder_id = folder_id;
         FolderStudySet temp = existingFolder.getFolderStudySets().stream().filter(
