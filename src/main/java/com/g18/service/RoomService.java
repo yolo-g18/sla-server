@@ -38,6 +38,9 @@ public class RoomService {
     private UserService userService;
 
     @Autowired
+    private StudySetService studySetService;
+
+    @Autowired
     private UserRepository userRepository;
 
     @Autowired
@@ -152,7 +155,9 @@ public class RoomService {
         json.put("createdDate", formatter.format(existingRoom.getCreatedDate()));
         json.put("ownerName",userService.getUserNameOfCreator(existingRoom.getOwner().getId()));
         json.put("setNumbers",listIdOfSetsInRoom(id).size());
+        json.put("folderNumbers",existingRoom.getRoomFolders().size());
         return json;
+
     }
 
     @Transactional
@@ -474,12 +479,12 @@ public class RoomService {
         // load all roomMembers in database
         List<RoomMember> roomMemberList = existingRoom.getRoomMembers();
 
-        if(roomMemberList.isEmpty()){
-            throw new NoDataFoundException(); // not found roomMembers
-        }
-
         // json load all roomMembers to client
         List<ObjectNode> objectNodeList = new ArrayList<>();
+
+        if(roomMemberList.isEmpty()){
+            return objectNodeList;
+        }
 
         // helper create objectnode
         ObjectMapper mapper;
@@ -504,17 +509,15 @@ public class RoomService {
         // find specific room
         Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
 
-
         // load all roomFolders in database
         List<RoomFolder> roomFolderList = existingRoom.getRoomFolders();
 
-        if(roomFolderList.isEmpty()){
-            throw new NoDataFoundException(); // not found roomFolders
-        }
-
-
         // json load all roomFolders to client
         List<ObjectNode> objectNodeList = new ArrayList<>();
+
+        if(roomFolderList.isEmpty()){
+           return objectNodeList;
+        }
 
         // helper create objectnode
         ObjectMapper mapper;
@@ -525,7 +528,8 @@ public class RoomService {
             ObjectNode json = mapper.createObjectNode();
             json.put("folder_id",roomFolder.getRoomFolderId().getFolderId());
             json.put("title", roomFolder.getFolder().getTitle());
-            json.put("description",roomFolder.getFolder().getDescription());
+            json.put("color",roomFolder.getFolder().getColor().toString());
+            json.put("numberOfSets",roomFolder.getFolder().getFolderStudySets().size());
             json.put("createdDate", formatter.format(roomFolder.getCreatedDate()));
             objectNodeList.add(json);
         }
@@ -539,17 +543,15 @@ public class RoomService {
         // find specific room
         Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
 
-
         // load all roomStudySets in database
         List<RoomStudySet> roomStudySetList = existingRoom.getRoomStudySets();
-
-        if(roomStudySetList.isEmpty()){
-            throw new NoDataFoundException(); // not found roomStudySets
-        }
 
         // json load all roomStudySets to client
         List<ObjectNode> objectNodeList = new ArrayList<>();
 
+        if(roomStudySetList.isEmpty()){
+           return objectNodeList;
+        }
         // helper create objectnode
         ObjectMapper mapper;
 
@@ -559,8 +561,15 @@ public class RoomService {
             ObjectNode json = mapper.createObjectNode();
             json.put("studySet_id",roomStudySet.getRoomStudySetId().getStudySetId());
             json.put("title", roomStudySet.getStudySet().getTitle());
+            json.put("tags",roomStudySet.getStudySet().getTag());
             json.put("description",roomStudySet.getStudySet().getDescription());
             json.put("createdDate", formatter.format(roomStudySet.getCreatedDate()));
+            json.put("numberOfCards",roomStudySet.getStudySet().getCards().size());
+            Long studySetOwner_id = roomStudySet.getStudySet().getCreator().getId();
+            json.put("creatorName",userService.getUserNameOfCreator(studySetOwner_id));
+            String color = studySetService.getColorOfStudySetLearning(
+                    roomStudySet.getRoomStudySetId().getStudySetId());
+            json.put("color",color);
             objectNodeList.add(json);
         }
 
