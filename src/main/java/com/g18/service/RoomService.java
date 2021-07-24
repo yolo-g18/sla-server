@@ -34,6 +34,9 @@ public class RoomService {
     private AuthService authService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private UserRepository userRepository;
 
     @Autowired
@@ -118,7 +121,8 @@ public class RoomService {
         json.put("name",existingRoom.getName());
         json.put("description",existingRoom.getDescription());
         json.put("createdDate", formatter.format(existingRoom.getCreatedDate()));
-
+        json.put("ownerName",userService.getUserNameOfCreator(existingRoom.getOwner().getId()));
+        json.put("setNumbers",existingRoom.getRoomStudySets().size());
         return json;
     }
 

@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 
 
 @Service
@@ -74,7 +75,16 @@ public class UserService {
         return userResponse;
     }
 
+    public String getUserNameOfCreator(Long creator_id){
 
+        List<Account> accountList = accountRepository.findAll();
+
+        // find account of creator
+        Account acc = accountList.stream().filter( account -> account.getUser().getId().equals(creator_id))
+                .findAny().orElse(null);
+
+        return acc.getUsername();
+    }
 
 
 }
