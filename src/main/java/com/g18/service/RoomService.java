@@ -19,6 +19,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -107,6 +108,34 @@ public class RoomService {
         return objectNodeList;
     }
 
+
+    public HashSet<Long> listIdOfSetsInRoom(Long id){
+
+        HashSet<Long> hashSet = new HashSet<>();
+
+        // find a specific room
+        Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
+
+        // count set in room
+        for (RoomStudySet roomStudySet : existingRoom.getRoomStudySets())
+        {
+            hashSet.add(roomStudySet.getRoomStudySetId().getStudySetId());
+        }
+
+        // count set in folder included in room
+        for(RoomFolder roomFolder : existingRoom.getRoomFolders())
+        {
+            Folder folder = folderRepository.findById(roomFolder.getRoomFolderId().getFolderId()).
+                    orElseThrow(() -> new FolderNotFoundException());
+
+            for(FolderStudySet folderStudySet : folder.getFolderStudySets()){
+                hashSet.add(folderStudySet.getFolderStudySetId().getStudySetId());
+            }
+        }
+
+        return hashSet;
+    }
+
     @Transactional
     public ObjectNode getRoomByID(Long id){
 
@@ -122,7 +151,7 @@ public class RoomService {
         json.put("description",existingRoom.getDescription());
         json.put("createdDate", formatter.format(existingRoom.getCreatedDate()));
         json.put("ownerName",userService.getUserNameOfCreator(existingRoom.getOwner().getId()));
-        json.put("setNumbers",existingRoom.getRoomStudySets().size());
+        json.put("setNumbers",listIdOfSetsInRoom(id).size());
         return json;
     }
 
