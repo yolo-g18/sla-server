@@ -340,8 +340,12 @@ public class FolderService {
 
     public Color[] listColorForFolder(){
 
-
         return Color.values();
 
+    }
+
+    @Transactional
+    public Long getMaxId(){
+        return folderRepository.getMaxId();
     }
 }

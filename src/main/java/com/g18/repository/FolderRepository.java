@@ -17,6 +17,7 @@ public interface FolderRepository extends JpaRepository<Folder,Long> {
     @Query(value = "SELECT * FROM folder where title like CONCAT('%',:title,'%') and creator_id = :creatorId",nativeQuery = true)
     List<Folder> findByCreatorIdAndTitleContaining(@Param("creatorId")long creatorId,@Param("title")String title);
 
-
+    @Query(value = "SELECT max(folder.id) FROM folder",nativeQuery = true)
+    Long getMaxId();
 
 }
