@@ -371,7 +371,7 @@ public class LearningService {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Card for learning has not been created");
             }
         }catch(Exception e){
-            log.info("updateCardLearning Exception: "+e.getMessage());
+            log.info("updateCardLearning Exception: "+e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }

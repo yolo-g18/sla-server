@@ -19,7 +19,7 @@ public interface EventRepository extends JpaRepository<Event,Long> {
 
     Page<Event> findByNameContaining(String name,Pageable pageable);
 
-    @Query(value = "SELECT * FROM sla_db.event WHERE user_id = :userId AND to_time LIKE :date% ORDER BY to_time DESC",nativeQuery = true)
+    @Query(value = "SELECT * FROM sla_db.event WHERE user_id = :userId AND is_learn_event = 1 and to_time LIKE :date% ORDER BY to_time DESC",nativeQuery = true)
     List<Event> getListEventByUserIdAndDate(@Param("userId") Long userId, @Param("date") String  date);
 
     List<Event> findEventByToTimeBefore(Instant toTime);
