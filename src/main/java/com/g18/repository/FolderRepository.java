@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 public interface FolderRepository extends JpaRepository<Folder,Long> {
     Page<Folder> findByTitleContaining(String title, Pageable pageable);
-    @Query(value = "SELECT * FROM sla_db.folder where title like CONCAT('%',:title,'%') and creator_id = :creatorId",nativeQuery = true)
+    @Query(value = "SELECT * FROM folder where title like CONCAT('%',:title,'%') and creator_id = :creatorId",nativeQuery = true)
     List<Folder> findByCreatorIdAndTitleContaining(@Param("creatorId")long creatorId,@Param("title")String title);
 
 

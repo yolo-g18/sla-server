@@ -125,7 +125,7 @@ public class FolderService {
         json.put("color",existingFolder.getColor().toString());
         json.put("description",existingFolder.getDescription());
         json.put("createdDate", formatter.format(existingFolder.getCreatedDate()));
-        json.put("creatorUserName",userService.getUserNameOfCreator(existingFolder.getOwner().getId()));
+        json.put("creatorUserName",userService.getUserNameOfPerson(existingFolder.getOwner().getId()));
 
         return json;
     }
@@ -307,7 +307,7 @@ public class FolderService {
             json.put("createdDate", formatter.format(folderStudySet.getCreatedDate()));
             json.put("numberOfCards",folderStudySet.getStudySet().getCards().size());
             Long studySetOwner_id = folderStudySet.getStudySet().getCreator().getId();
-            json.put("creatorName",userService.getUserNameOfCreator(studySetOwner_id));
+            json.put("creatorName",userService.getUserNameOfPerson(studySetOwner_id));
             String color = studySetService.getColorOfStudySetLearning(
                     folderStudySet.getFolderStudySetId().getStudySetId());
             json.put("color",color);

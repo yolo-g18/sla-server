@@ -75,7 +75,7 @@ public class UserService {
         return userResponse;
     }
 
-    public String getUserNameOfCreator(Long creator_id){
+    public String getUserNameOfPerson(Long creator_id){
 
         List<Account> accountList = accountRepository.findAll();
 

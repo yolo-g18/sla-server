@@ -153,7 +153,7 @@ public class RoomService {
         json.put("name",existingRoom.getName());
         json.put("description",existingRoom.getDescription());
         json.put("createdDate", formatter.format(existingRoom.getCreatedDate()));
-        json.put("ownerName",userService.getUserNameOfCreator(existingRoom.getOwner().getId()));
+        json.put("ownerName",userService.getUserNameOfPerson(existingRoom.getOwner().getId()));
         json.put("setNumbers",listIdOfSetsInRoom(id).size());
         json.put("folderNumbers",existingRoom.getRoomFolders().size());
         return json;
@@ -522,9 +522,9 @@ public class RoomService {
             mapper =  new ObjectMapper();
             ObjectNode json = mapper.createObjectNode();
             json.put("member_id",roomMember.getRoomMemberId().getMemberId());
-            json.put("name",roomMember.getMember().getFirstName()+" "
-                    +roomMember.getMember().getLastName());
-            json.put("enrolledDate", formatter.format(roomMember.getEnrolledDate()));
+            json.put("userName",userService.getUserNameOfPerson(roomMember.getMember().getId()));
+
+
             objectNodeList.add(json);
         }
 
@@ -594,7 +594,7 @@ public class RoomService {
             json.put("createdDate", formatter.format(roomStudySet.getCreatedDate()));
             json.put("numberOfCards",roomStudySet.getStudySet().getCards().size());
             Long studySetOwner_id = roomStudySet.getStudySet().getCreator().getId();
-            json.put("creatorName",userService.getUserNameOfCreator(studySetOwner_id));
+            json.put("creatorName",userService.getUserNameOfPerson(studySetOwner_id));
             String color = studySetService.getColorOfStudySetLearning(
                     roomStudySet.getRoomStudySetId().getStudySetId());
             json.put("color",color);
