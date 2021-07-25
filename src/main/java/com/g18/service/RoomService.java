@@ -161,6 +161,24 @@ public class RoomService {
     }
 
     @Transactional
+    public String removeAllMemberRoom(Long id){
+
+        // verify room's permisson
+        if(isCreatorOfRoom(id) == false)
+            return "You are not creator of Room, You don't have permisson!!!";
+
+        // find that specific room
+        Room room = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
+
+        room.getRoomMembers().clear();
+
+        roomRepository.saveAndFlush(room);
+
+        return "remove all members successfully";
+    }
+
+
+    @Transactional
     public String deleteRoom(Long id){
 
         // verify room's permisson
@@ -171,6 +189,7 @@ public class RoomService {
 
         return "remove room successfully";
     }
+
 
     @Transactional
     public String editRoom(ObjectNode json){
