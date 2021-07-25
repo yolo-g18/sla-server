@@ -94,7 +94,7 @@ public class RoomController {
         return roomService.isMemberOfRoom(id);
     }
 
-    @GetMapping("/removeAllMemberOfRoom/{id}")
+    @DeleteMapping("/removeAllMemberOfRoom/{id}")
     public String removeAllMember(@PathVariable Long id){
         return roomService.removeAllMemberRoom(id);
     }
