@@ -33,6 +33,9 @@ public class SearchService {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private FolderStudySetRepository folderStudySetRepository;
+
 
     public Page<SearchStudySetResponse> searchStudySetByTitle(Pageable pageable, String keySearch) {
         Page<StudySet> studySetPage =studySetRepository.findByTitleContainsAndIsPublicTrue(keySearch,pageable);
@@ -76,7 +79,7 @@ public class SearchService {
         return new PageImpl<EventDto>(
                 eventPage.stream().map(event -> new EventDto(
                         event.getId(),event.getUser().getId(),event.getName(),event.getDescription(),event.isLearnEvent(),
-                        event.getFromTime(), event.getToTime(),event.getColor(),event.getCreatedTime(),event.getUpdateTime()
+                        event.getFromTime().toString(), event.getToTime().toString(),event.getColor(),event.getCreatedTime().toString(),event.getUpdateTime().toString()
                         )
                 ).collect(Collectors.toList()), pageable, totalElements);
     }
@@ -135,15 +138,11 @@ public class SearchService {
     }
 
     private int getTotalStudySetsInRoom(Room room){
-        int total = 0;
-//        total += room.getRoomStudySets().size();
-        System.out.println("Room's StudySet" + room.getRoomStudySets().size());
-        for (RoomFolder rf : room.getRoomFolders()){
-            total += rf.getFolder().getFolderStudySets().size();
-        }
-        System.out.println("Folder StudySet " + total);
-        return total;
-
+       List<Long> ssid = folderStudySetRepository.findNumberSSID("folder_id = 1 or folder_id = 2" +"folde =1");
+       for (Long s : ssid){
+           System.out.println("SSID: " + s);
+       }
+    return ssid.size();
     }
 
     public String findUserNameByUserId(long uid){

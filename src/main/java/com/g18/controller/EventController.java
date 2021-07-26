@@ -29,7 +29,7 @@ public class EventController {
     //Get event in a range of time
     @GetMapping(value = "/event")
     public List<EventDto> showEvent(@RequestParam("from") String from,@RequestParam("to") String to){
-        return eventService.getAllBetweenDates(from,to);
+        return eventService.getAllBetweenDates("2021-07-15 15:13:50.979535","2018-09-14 01:41:02.363000");
     }
 
 
@@ -46,10 +46,9 @@ public class EventController {
         try{
             long id = Long.parseLong(id_raw);
             eventDto.setId(id);
-            eventService.update(eventDto);
-            return new ResponseEntity<>("Update Event Successful", HttpStatus.OK);
+            return new ResponseEntity<>(eventService.update(eventDto), HttpStatus.OK);
         }catch (Exception e){
-            throw new NotFoundException("Event not found");
+            throw new NotFoundException(e.toString());
         }
 
     }

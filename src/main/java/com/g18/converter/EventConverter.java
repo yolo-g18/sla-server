@@ -6,6 +6,8 @@ import com.g18.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+
 @Component
 public class EventConverter {
     @Autowired
@@ -15,11 +17,11 @@ public class EventConverter {
         event.setId(eventDto.getId());
         event.setName(eventDto.getName());
         event.setDescription(eventDto.getDescription());
-        event.setFromTime(eventDto.getFromTime());
-        event.setToTime(eventDto.getToTime());
+        event.setFromTime(Instant.parse(eventDto.getFromTime()));
+        event.setToTime(Instant.parse(eventDto.getToTime()));
         event.setColor(eventDto.getColor());
-        event.setCreatedTime(eventDto.getCreatedTime());
-        event.setUpdateTime(eventDto.getUpdateTime());
+        event.setCreatedTime(Instant.parse(eventDto.getCreatedTime()));
+        event.setUpdateTime(Instant.parse(eventDto.getUpdateTime()));
         event.setLearnEvent(eventDto.isLearnEvent());
         event.setUser(authService.getCurrentUser());
         return event;
@@ -30,11 +32,11 @@ public class EventConverter {
         eventDto.setId(event.getId());
         eventDto.setName(event.getName());
         eventDto.setDescription(event.getDescription());
-        eventDto.setFromTime(event.getFromTime());
-        eventDto.setToTime(event.getToTime());
+        eventDto.setFromTime(event.getFromTime().toString());
+        eventDto.setToTime(event.getToTime().toString());
         eventDto.setColor(event.getColor());
-        eventDto.setCreatedTime(event.getCreatedTime());
-        eventDto.setUpdateTime(event.getUpdateTime());
+        eventDto.setCreatedTime(event.getCreatedTime().toString());
+        eventDto.setUpdateTime(event.getUpdateTime().toString());
         eventDto.setLearnEvent(event.isLearnEvent());
         eventDto.setUserId(event.getId());
         return eventDto;
@@ -44,11 +46,11 @@ public class EventConverter {
         event.setId(eventDto.getId());
         event.setName(eventDto.getName());
         event.setDescription(eventDto.getDescription());
-        event.setFromTime(eventDto.getFromTime());
-        event.setToTime(eventDto.getToTime());
+        event.setFromTime(Instant.parse(eventDto.getFromTime()));
+        event.setToTime(Instant.parse(eventDto.getToTime()));
         event.setColor(eventDto.getColor());
-        event.setCreatedTime(eventDto.getCreatedTime());
-        event.setUpdateTime(eventDto.getUpdateTime());
+        event.setCreatedTime(Instant.parse(eventDto.getCreatedTime()));
+        event.setUpdateTime(Instant.parse(eventDto.getUpdateTime()));
         event.setLearnEvent(eventDto.isLearnEvent());
         event.setUser(authService.getCurrentUser());
         return event;

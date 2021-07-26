@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
@@ -20,6 +22,8 @@ public class SearchFolderResponse {
 
     private Long id;
     private String ownerName;
+    @NotBlank(message = "Folder's title is required")
+    @NotNull(message = "Folder's title is required")
     private String title;
     private String description;
     private Instant createdDate;
