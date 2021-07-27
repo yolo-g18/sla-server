@@ -1,23 +1,21 @@
 package com.g18.service;
-
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.dto.NotificationDto;
-import com.g18.entity.Folder;
 import com.g18.entity.Notification;
 import com.g18.entity.User;
-import com.g18.model.Color;
 import com.g18.repository.NotificationRepository;
 import com.g18.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-public class NotiService {
+public class NotificationService {
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -59,18 +57,17 @@ public class NotiService {
         }
         return "Remove notification successfully";
     }
-
-    public List<NotificationDto> getTop20(){
-        List<Notification> listNoti = notificationRepository.findTop20ByUserIdOrderByCreatedTimeDesc(1L);
-        List<NotificationDto> listDto = new ArrayList<>();
-        for (Notification noti : listNoti){
-            NotificationDto notiDto = new NotificationDto();
-            notiDto.setNotiId(noti.getId());
-            notiDto.setTitle(noti.getTitle());
-            noti.setDescription(noti.getDescription());
-            listDto.add(notiDto);
-        }
-        return listDto;
+    //get top 20 notifications and paging
+    public Page<NotificationDto> getNotification(Long userId, Pageable pageable){
+        Page<Notification> notiPage = notificationRepository.findByUserIdOrderByCreatedTimeDesc(userId,pageable);
+        int totalElements = (int) notiPage.getTotalElements();
+        return new PageImpl<NotificationDto>(
+                notiPage.stream().map(notification -> new NotificationDto(
+                                notification.getId(),notification.getTitle(),notification.getDescription(),
+                                notification.getType(),notification.getLink(),String.valueOf(notification.getCreatedTime()),
+                                String.valueOf(notification.getTimeTrigger()),notification.isRead()
+                        )
+                ).collect(Collectors.toList()), pageable, totalElements);
     }
 
 

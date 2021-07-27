@@ -3,11 +3,15 @@ package com.g18.controller;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.dto.NotificationDto;
 import com.g18.dto.SearchStudySetResponse;
+import com.g18.entity.Notification;
+import com.g18.entity.User;
+import com.g18.service.AuthService;
 import com.g18.service.EmailSenderService;
-import com.g18.service.NotiService;
+import com.g18.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,19 +23,21 @@ import java.util.List;
 @RequestMapping("api/notify")
 public class NotificationController {
     @Autowired
-    private NotiService notiService;
+    private NotificationService notificationService;
     @Autowired
     private EmailSenderService emailSenderService;
+    @Autowired
+    private AuthService authService;
 
 
 
     @PostMapping("/create")
-    public String createNoti(@RequestBody ObjectNode json){ return notiService.saveNotification(json);}
+    public String createNoti(@RequestBody ObjectNode json){ return notificationService.saveNotification(json);}
     //Delete event
     @DeleteMapping(value = "/delete")
     public ResponseEntity<String> deleteEvent (@RequestBody long[] ids){
         try {
-            notiService.deleteNotification(ids);
+            notificationService.deleteNotification(ids);
         }catch (Exception e){
             return new ResponseEntity<>("Not found Event", HttpStatus.NOT_FOUND);
         }
@@ -40,14 +46,15 @@ public class NotificationController {
     }
     //Get top 20 notification
     @GetMapping("/get")
-    List<NotificationDto> getNoti(){
-        return notiService.getTop20();
+    Page<NotificationDto> getNoti(@PageableDefault(size = 20) Pageable pageable){
+        User currentUser = authService.getCurrentUser();
+        return notificationService.getNotification(currentUser.getId(),pageable);
     }
 
     @GetMapping("/sendEmail")
     String sendEmail() throws MessagingException {
         emailSenderService.sendEmailWithAttachment("congvinh9d@gmail.com",
-                "Dear CV\n",
+                "Dear CV\n<h1>Test send email</h1>",
                 "This email has attachment test again",
                 "C:\\Users\\congv\\OneDrive\\Máy tính\\Capture.PNG");
         return "sent email";
