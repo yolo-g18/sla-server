@@ -138,9 +138,10 @@ public class AuthService {
                 .orElseThrow(() -> new NotFoundException("Account not found with name " + loginRequest.getUsername()));
         UserResponse userResponse = getUserResponseByCurrentAccount(account);
         Optional<RefreshToken> refreshToken = refreshTokenService.getRefreshTokenByAccountId(account.getId());
-        if(refreshToken.isPresent()) {
-            refreshTokenService.deleteRefreshTokenByAccountId(account.getId());
-        }
+        //nen xoa
+//        if(refreshToken.isPresent()) {
+//            refreshTokenService.deleteRefreshTokenByAccountId(account.getId());
+//        }
 
         Authentication authenticate = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
@@ -206,6 +207,23 @@ public class AuthService {
     public boolean isLoggedIn() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return !(authentication instanceof AnonymousAuthenticationToken) && authentication.isAuthenticated();
+    }
+
+    public void changePassword (String newPassword, String reNewPassword, String oldPassword) {
+
+        Account account = getCurrentAccount();
+        if(account.getPassword() != passwordEncoder.encode(oldPassword)) {
+            throw new AccountException("Wrong Password, Please enter again!");
+        } else {
+            if(newPassword != reNewPassword) {
+                throw new AccountException("Password not match");
+            } else {
+                account.setPassword(passwordEncoder.encode((newPassword)));
+                accountRepository.save(account);
+            }
+
+        }
+
     }
 
 

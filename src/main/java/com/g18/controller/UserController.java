@@ -40,8 +40,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
-
+    @PutMapping("/change_password")
     @GetMapping("/lib")
     public ResponseEntity<String> getUserLib() {
         return new ResponseEntity<>("my lib", HttpStatus.OK);

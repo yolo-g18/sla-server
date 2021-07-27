@@ -48,10 +48,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
 
-            log.error(String.valueOf(jwtProvider.validateToken(jwt)));
-            log.error(String.valueOf("AA: " + StringUtils.hasText(jwt)));
-        }else {
-
         }
 
         filterChain.doFilter(request, response);
