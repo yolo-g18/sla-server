@@ -37,7 +37,7 @@ public class HomeService {
             sslDto.setStudySetId(ssl.getStudySet().getId());
             sslDto.setUserID(ssl.getUser().getId());
 
-            sslDto.setOwner(findUserNameByUserId(studySetRepository.findCreatorIdById(1L)));
+            sslDto.setOwner(findUserNameByUserId(studySetRepository.findCreatorIdById(ssl.getStudySet().getId())));
 
             sslDto.setStudySetName(ssl.getStudySet().getTitle());
             sslDto.setSsDescription(ssl.getStudySet().getDescription());

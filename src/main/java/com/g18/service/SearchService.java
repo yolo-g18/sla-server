@@ -79,7 +79,8 @@ public class SearchService {
         return new PageImpl<EventDto>(
                 eventPage.stream().map(event -> new EventDto(
                         event.getId(),event.getUser().getId(),event.getName(),event.getDescription(),event.isLearnEvent(),
-                        event.getFromTime().toString(), event.getToTime().toString(),event.getColor(),event.getCreatedTime().toString(),event.getUpdateTime().toString()
+                        String.valueOf(event.getFromTime()), String.valueOf(event.getToTime()),
+                        event.getColor(),String.valueOf(event.getCreatedTime()),String.valueOf(event.getUpdateTime())
                         )
                 ).collect(Collectors.toList()), pageable, totalElements);
     }

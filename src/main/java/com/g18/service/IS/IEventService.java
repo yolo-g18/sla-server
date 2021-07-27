@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface IEventService {
     String save(EventDto eventDto);
-    String update(EventDto eventDto);
+    EventDto update(EventDto eventDto);
     void delete(long[] ids);
     List<EventDto> getAllBetweenDates(String from, String to);
 

@@ -43,40 +43,21 @@ public class EventService implements IEventService {
     @Override
     public String save(EventDto eventDto) {
         User user = authService.getCurrentUser();
-        Event event = new Event();
+        Event event =  eventConverter.toEntity(eventDto);
         event.setUser(user);
-        event.setCreatedTime(Instant.now());
-        event.setUpdateTime(Instant.now());
-        event.setLearnEvent(eventDto.isLearnEvent());
-        event.setColor(eventDto.getColor());
-        event.setDescription(eventDto.getDescription());
-        event.setName(eventDto.getName());
-        event.setFromTime(Instant.parse(eventDto.getFromTime()));
-        event.setToTime(Instant.parse(eventDto.getToTime()));
-        eventRepository.save(event);
-        return "Create event successfully !";
+        event = eventRepository.save(event);
+        return "Create event successfully";
     }
 
-
     @Override
-    public String update(EventDto eventDto) {
+    public EventDto update(EventDto eventDto) {
         Event oldEvent = eventRepository.findById(eventDto.getId()).orElseThrow(()
                 ->  new ExpressionException("Lỗi ko tìm thấy")) ;
-        Event newEvent = new Event();
+        Event newEvent = eventConverter.toEntity(eventDto,oldEvent);
         User user = authService.getCurrentUser();
-        oldEvent.setUpdateTime(Instant.now());
-        oldEvent.setLearnEvent(eventDto.isLearnEvent());
-        oldEvent.setColor(eventDto.getColor());
-        oldEvent.setDescription(eventDto.getDescription());
-        oldEvent.setName(eventDto.getName());
-        oldEvent.setFromTime(Instant.parse(eventDto.getFromTime()));
-        oldEvent.setToTime(Instant.parse(eventDto.getToTime()));
-        eventRepository.save(oldEvent);
-//        Event newEvent = eventConverter.toEntity(eventDto,oldEvent);
-//        User user = authService.getCurrentUser();
-//        newEvent.setUser(user);
-//        newEvent = eventRepository.save(newEvent);
-        return "Update event successfully !";
+        newEvent.setUser(user);
+        newEvent = eventRepository.save(newEvent);
+        return eventConverter.toDto(newEvent);
     }
 
     @Override

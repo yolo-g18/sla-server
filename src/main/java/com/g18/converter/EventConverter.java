@@ -32,11 +32,11 @@ public class EventConverter {
         eventDto.setId(event.getId());
         eventDto.setName(event.getName());
         eventDto.setDescription(event.getDescription());
-        eventDto.setFromTime(event.getFromTime().toString());
-        eventDto.setToTime(event.getToTime().toString());
+        eventDto.setFromTime(String.valueOf(event.getFromTime()));
+        eventDto.setToTime(String.valueOf(event.getToTime()));
         eventDto.setColor(event.getColor());
-        eventDto.setCreatedTime(event.getCreatedTime().toString());
-        eventDto.setUpdateTime(event.getUpdateTime().toString());
+        eventDto.setCreatedTime(String.valueOf(event.getCreatedTime()));
+        eventDto.setUpdateTime(String.valueOf(event.getUpdateTime()));
         eventDto.setLearnEvent(event.isLearnEvent());
         eventDto.setUserId(event.getId());
         return eventDto;

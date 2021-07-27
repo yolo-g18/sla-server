@@ -21,9 +21,7 @@ public class EventDto {
     private Long userId;
     @NotNull(message = "Name is required")
     @NotBlank(message = "Name must not be blank")
-    @Size(min = 5, max = 100, message = "Event must be between 5 and 100 characters")
     private String name;
-    @Size(max = 500, message = "Description must less than characters")
     private String description;
     //check fromtime > to time
     @JsonProperty
