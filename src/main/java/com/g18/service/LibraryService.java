@@ -48,7 +48,7 @@ public class LibraryService {
             sslDto.setRating(ssl.getRating());
             sslDto.setStatus(ssl.getStatus());
             sslDto.setNumberOfCards(cardRepository.countNumberCardBySSID(ssl.getStudySet().getId()));
-            sslDto.setUserName(findUserNameByUserId(ssl.getUser().getId()));
+            sslDto.setOwner(findUserNameByUserId(ssl.getUser().getId()));
             results.add(sslDto);
         }
         return results;
@@ -113,12 +113,12 @@ public class LibraryService {
         return accountRepository.findUserNameByUserId(uid);
     }
 
-    private int getTotalStudySetsInRoom(Room room){
+    public int getTotalStudySetsInRoom(Room room){
         int total = 0;
-        total += room.getRoomStudySets().size();
-        for (RoomFolder rf : room.getRoomFolders()){
-            List<Long> listSSID = folderStudySetRepository.findNumberSSID(rf.getFolder().getId());
-            total += listSSID.size();
+        System.out.println("RoomID:" + room.getId());
+        List<Long> listSSID= folderStudySetRepository.findNumberSSID("2 or folder_id = 1 or folder_id = 3");
+        for (Long ssid : listSSID){
+            System.out.println("SSID: " + ssid);
         }
         return total;
     }
