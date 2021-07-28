@@ -46,7 +46,7 @@ public class NotificationController {
     }
     //Get top 20 notification
     @GetMapping("/get")
-    Page<NotificationDto> getNoti(@PageableDefault(size = 2) Pageable pageable){
+    Page<NotificationDto> getNoti(@PageableDefault(size = 20) Pageable pageable){
         User currentUser = authService.getCurrentUser();
         return notificationService.getNotification(currentUser.getId(),pageable);
     }
