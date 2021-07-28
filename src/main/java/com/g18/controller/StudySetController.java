@@ -61,5 +61,10 @@ public class StudySetController {
 	public ResponseEntity viewStudySetProgress(@RequestParam(value="userId") Long userId, @RequestParam(value="studySetId") Long studySetId){
 		return studySetService.getStudySetLearning(userId,studySetId);
 	}
+
+	@GetMapping("/listProgressByStudySet")
+	public ResponseEntity getListProgressByStudySet(@RequestParam(value="id") Long request){
+		return studySetService.getListProgressByStudySet(request);
+	}
 }
 
