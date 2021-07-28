@@ -111,7 +111,7 @@ public class SearchService {
                         account -> new SearchUserResponse(
                                 account.getUsername(),
                                 account.getUser().getAvatar(),
-                                account.getUser().getAvatar(),
+                                account.getUser().getBio(),
                                 account.getUser().getStudySetsOwn().size()
                         )
                 ).collect(Collectors.toList()), pageable, totalElements);
