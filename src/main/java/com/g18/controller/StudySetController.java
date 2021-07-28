@@ -38,17 +38,17 @@ public class StudySetController {
     }
 	
 	@PostMapping("/create")
-	public String createRoom(@Valid @RequestBody StudySetRequest request){
+	public ResponseEntity createStudySet(@Valid @RequestBody StudySetRequest request){
 		return studySetService.createStudySet(request);
 	}
 	
 	@PutMapping("/edit")
-	public String editStudySet(@Valid @RequestBody StudySetRequest request){
+	public ResponseEntity editStudySet(@Valid @RequestBody StudySetRequest request){
 		return studySetService.editStudySet(request);
 	}
 
 	@DeleteMapping("/delete")
-	public String deleteStudySet(@RequestParam(value="id") Long id) {
+	public ResponseEntity deleteStudySet(@RequestParam(value="id") Long id) {
 		return studySetService.deleteStudySet(id);
 	}
 

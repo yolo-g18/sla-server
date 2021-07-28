@@ -66,7 +66,7 @@ public class StudySetService {
     private ExcelUtils excelUtils;
 
 
-    public String createStudySet(StudySetRequest request) {
+    public ResponseEntity createStudySet(StudySetRequest request) {
     	Long userId = authService.getCurrentAccount().getUser().getId();
 
         try{
@@ -84,27 +84,27 @@ public class StudySetService {
                 card.setStudySet(studySet);
             }
             studySet.setCards(listCard);
-            return studySetRepository.save(studySet).getId().toString();
+            Long id = studySetRepository.save(studySet).getId();
+            return ResponseEntity.status(HttpStatus.CREATED).body(id);
         }catch (Exception e){
             log.info(e.getMessage());
-            return "add Study Set fail";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Add Study Set fail");
         }
-
     }
 
-    public String deleteStudySet(Long studySetId) {
+    public ResponseEntity deleteStudySet(Long studySetId) {
         StudySet studySet = studySetRepository.findById(studySetId).orElseThrow(() ->new ExpressionException("Study Set not exist"));
         User auth = authService.getCurrentAccount().getUser();
         //Check permission
         if(auth.equals(studySet.getCreator())){
             studySetRepository.deleteById(studySetId);
-            return "delete StudySet successfully";
+            return ResponseEntity.status(HttpStatus.OK).body("Delete StudySet successfully");
         }else{
-            return "Not permitted";
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not permitted");
         }
     }
 
-    public String editStudySet(StudySetRequest request) {
+    public ResponseEntity editStudySet(StudySetRequest request) {
         Long userId = authService.getCurrentAccount().getUser().getId();
 
         try{
@@ -119,14 +119,13 @@ public class StudySetService {
                 studySet.setPublic(request.isPublic());
 
                 studySetRepository.save(studySet);
-                return "update StudySet successfully";
+                return ResponseEntity.status(HttpStatus.OK).body("update StudySet successfully");
             }else{
-                return "Not permitted";
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not permitted");
             }
-
         }catch (Exception e){
             log.info(e.getMessage());
-            return "update Study Set fail";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("update Study Set fail");
         }
     }
 
@@ -162,11 +161,6 @@ public class StudySetService {
         }
         StudySetResponse studySetResponse = setStudySetResponse(studySet, 0);
         return ResponseEntity.status(HttpStatus.OK).body(studySetResponse);
-    }
-
-    public String shareStudySetBy(StudySetRequest request) {
-        // TODO Auto-generated method stub
-        return "share StudySet successfully";
     }
 
     public void exportStudySetToExcel(HttpServletResponse response, Long studySetId) throws IOException {
