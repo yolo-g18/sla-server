@@ -74,7 +74,7 @@ public class SearchService {
 
 
     public Page<EventDto> searchEventByTitle(Pageable pageable, String nameSearch) {
-        Page<Event> eventPage =eventRepository.findByNameContaining(nameSearch,pageable);
+        Page<Event> eventPage = eventRepository.findByNameContaining(nameSearch,pageable);
         int totalElements = (int) eventPage.getTotalElements();
         return new PageImpl<EventDto>(
                 eventPage.stream().map(event -> new EventDto(
@@ -87,7 +87,7 @@ public class SearchService {
 
     public Page<SearchFolderResponse> searchFolderByTitle(Pageable pageable, String titleSearch) {
         Page<Folder> folderPage = folderRepository.findByTitleContaining(titleSearch,pageable);
-        int totalElements = folderPage.getNumberOfElements();
+        int totalElements = (int) folderPage.getTotalElements();
         return new PageImpl<SearchFolderResponse>(
                 folderPage.stream().map(
                         folder -> new SearchFolderResponse(
@@ -105,7 +105,7 @@ public class SearchService {
     //Search user by username and paging
     public Page<SearchUserResponse> searchUserByUsername(Pageable pageable, String username) {
         Page<Account> accountPage = accountRepository.findByUsernameContains(username,pageable);
-        int totalElements = accountPage.getNumberOfElements();
+        int totalElements = (int) accountPage.getTotalElements();
         return new PageImpl<SearchUserResponse>(
                 accountPage.stream().map(
                         account -> new SearchUserResponse(
@@ -120,7 +120,7 @@ public class SearchService {
     // Search room by name and paging
     public Page<SearchRoomResponse> searchRoomByName(Pageable pageable, String nameSearch) {
         Page<Room> roomPage = roomRepository.findByNameContaining(nameSearch,pageable);
-        int totalElements = roomPage.getNumberOfElements();
+        int totalElements = (int) roomPage.getTotalElements();
         return new PageImpl<SearchRoomResponse>(
                 roomPage.stream().map(
                         room -> new SearchRoomResponse(
