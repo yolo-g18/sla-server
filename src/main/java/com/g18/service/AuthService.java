@@ -139,10 +139,9 @@ public class AuthService {
         UserResponse userResponse = getUserResponseByCurrentAccount(account);
         Optional<RefreshToken> refreshToken = refreshTokenService.getRefreshTokenByAccountId(account.getId());
         //nen xoa
-//        if(refreshToken.isPresent()) {
-//            refreshTokenService.deleteRefreshTokenByAccountId(account.getId());
-//        }
-
+        if(refreshToken.isPresent()) {
+            refreshTokenService.deleteRefreshTokenByAccountId(account.getId());
+        }
         Authentication authenticate = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authenticate);
