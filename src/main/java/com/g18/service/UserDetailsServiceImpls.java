@@ -14,7 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -22,18 +24,25 @@ import java.util.Optional;
 public class UserDetailsServiceImpls implements UserDetailsService {
     public final AccountRepository accountRepository;
 
+    private Collection<? extends GrantedAuthority> authorities;
+
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<Account> accountOptional = accountRepository.findByUsername(username);
         Account account = accountOptional.orElseThrow(() -> new UsernameNotFoundException("No account found" +
                 " with username: " + username));
+
+        List<GrantedAuthority> authorities = account.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+                .collect(Collectors.toList());
+
         return new org.springframework.security.core.userdetails.User(account.getUsername(), account.getPassword(),
                 account.isActive(), true, true,
-                true, getAuthorities("USER"));
+                true, authorities);
     }
 
-    private Collection<? extends GrantedAuthority> getAuthorities(String role) {
-        return Collections.singletonList(new SimpleGrantedAuthority(role));
+    private Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
     }
 }
