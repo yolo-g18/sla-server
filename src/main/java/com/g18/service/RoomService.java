@@ -375,6 +375,30 @@ public class RoomService {
     }
 
     @Transactional
+    public String deleteRoomInvitation(Long room_id,Long user_id){
+
+        // find that room
+        Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
+        // find that member
+        User existingMember = userRepository.findById(user_id).orElseThrow(() -> new UserNotFoundException());
+
+        // find roomInvitation in roomInvitationList of a room
+        RoomInvitation roomInvitation =existingRoom.getRoomInvitations().stream().filter(
+                room_Invitation ->
+                        room_Invitation.getRoomInvitationId().getUserId().equals(user_id) &&
+                                room_Invitation.getRoomInvitationId().getRoomId().equals(room_id)
+
+        ).findAny().orElse(null);
+
+        // remove relationship roomIvitation
+        existingRoom.getRoomInvitations().remove(roomInvitation);
+
+        roomRepository.saveAndFlush(existingRoom);
+
+        return "remove User from Invitation successfully";
+    }
+
+    @Transactional
     public String deleteMemberFromRoom(Long room_id,Long member_id){
 
         // verify room's permisson

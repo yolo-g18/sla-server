@@ -106,4 +106,10 @@ public class RoomController {
     @PutMapping("/inviteUserToRoom")
     public String inviteUserToRoom(@RequestBody ObjectNode json){
         return  roomService.inviteUserToRoom(json);}
+
+    @DeleteMapping("/deleteRoomInvitation/{room_id}/{user_id}")
+    public String deleteRoomInvitation(@PathVariable Long room_id, @PathVariable Long user_id){
+        return roomService.deleteRoomInvitation(room_id,user_id);
+    }
+
 }
