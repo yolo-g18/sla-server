@@ -731,6 +731,39 @@ public class RoomService {
     }
 
     @Transactional
+    public List<ObjectNode> getRoomRequestAttendList(Long id){
+
+        // find specific room
+        Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
+
+        // load all roomRequestAttend
+        List<RoomRequestAttend> roomRequestAttendList = existingRoom.getRoomRequestAttends();
+
+        // json load all to client
+        List<ObjectNode> objectNodeList = new ArrayList<>();
+
+        if(roomRequestAttendList.isEmpty()){
+            return objectNodeList;
+        }
+
+        // helper create objectnode
+        ObjectMapper mapper;
+
+        // load all to json list
+        for (RoomRequestAttend roomRequestAttend: roomRequestAttendList) {
+            mapper =  new ObjectMapper();
+            ObjectNode json = mapper.createObjectNode();
+            json.put("user_id",roomRequestAttend.getRoomRequestAttendId().getUserId());
+            json.put("userName",userService.getUserNameOfPerson(roomRequestAttend.getUser().getId()));
+
+
+            objectNodeList.add(json);
+        }
+
+        return objectNodeList;
+    }
+
+    @Transactional
     public List<ObjectNode> getRoomFolderList(Long id){
 
         // find specific room

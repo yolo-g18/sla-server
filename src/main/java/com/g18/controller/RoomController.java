@@ -121,4 +121,9 @@ public class RoomController {
     public List<ObjectNode> listInvitationsOfRoom(@PathVariable Long id){
         return roomService.getRoomInvitaionList(id);
     }
+
+    @GetMapping("/listRoomRequestAttend/{id}")
+    public List<ObjectNode> listRoomRequestAttend(@PathVariable Long id){
+        return roomService.getRoomRequestAttendList(id);
+    }
 }
