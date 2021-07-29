@@ -39,7 +39,7 @@ public class SearchService {
     @Autowired
     private RoomService roomService;
 
-
+    //search study set by title and paging
     public Page<SearchStudySetResponse> searchStudySetByTitle(Pageable pageable, String keySearch) {
         Page<StudySet> studySetPage =studySetRepository.findByTitleContainsAndIsPublicTrue(keySearch,pageable);
         int totalElements = (int) studySetPage.getTotalElements();
@@ -75,7 +75,7 @@ public class SearchService {
                 ).collect(Collectors.toList()), pageable, totalElements);
     }
 
-
+    //search event and pagin
     public Page<EventDto> searchEventByTitle(Pageable pageable, String nameSearch) {
         Page<Event> eventPage = eventRepository.findByNameContaining(nameSearch,pageable);
         int totalElements = (int) eventPage.getTotalElements();
@@ -87,7 +87,7 @@ public class SearchService {
                         )
                 ).collect(Collectors.toList()), pageable, totalElements);
     }
-
+    //search folder and paging
     public Page<SearchFolderResponse> searchFolderByTitle(Pageable pageable, String titleSearch) {
         Page<Folder> folderPage = folderRepository.findByTitleContaining(titleSearch,pageable);
         int totalElements = (int) folderPage.getTotalElements();
