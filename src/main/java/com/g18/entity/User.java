@@ -39,7 +39,10 @@ public class User {
 	private String address;
 
 	@OneToMany(mappedBy = "user", orphanRemoval=true, cascade=CascadeType.ALL)
-	private List<Noti> notis;
+	private List<Notification> notis;
+
+	@OneToMany(mappedBy = "user", orphanRemoval=true, cascade=CascadeType.ALL)
+	private List<Report> reports;
 
 	@OneToMany(mappedBy = "creator")
 	private List<StudySet>  studySetsOwn; //list study sets created
@@ -56,7 +59,7 @@ public class User {
 	@OneToMany(mappedBy = "user", orphanRemoval=true, cascade=CascadeType.ALL)
 	private List<StudySetLearning>  studySetsLearning; //list study sets learning
 
-	@OneToMany(mappedBy = "card", orphanRemoval=true, cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "user", orphanRemoval=true, cascade = CascadeType.ALL)
 	private List<CardLearning>  cardsLearning; //list cardLearning
 
 }

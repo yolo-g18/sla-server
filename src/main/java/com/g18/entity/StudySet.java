@@ -33,6 +33,9 @@ public class StudySet {
 	private List<Card> cards; //List Card
 
 	@OneToMany(mappedBy = "studySet", orphanRemoval = true, cascade = CascadeType.ALL)
+	private List<Report> reports; //List report
+
+	@OneToMany(mappedBy = "studySet", orphanRemoval = true, cascade = CascadeType.ALL)
 	private List<StudySetLearning> studySetLearningList; //StudySetLearning
 
 
