@@ -116,4 +116,9 @@ public class RoomController {
     public String deleteRoomRequestAttend(@PathVariable Long room_id, @PathVariable Long user_id){
         return roomService.deleteRoomRequestAttend(room_id,user_id);
     }
+
+    @GetMapping("/listRoomInvitations/{id}")
+    public List<ObjectNode> listInvitationsOfRoom(@PathVariable Long id){
+        return roomService.getRoomInvitaionList(id);
+    }
 }
