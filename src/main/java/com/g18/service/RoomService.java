@@ -395,7 +395,31 @@ public class RoomService {
 
         roomRepository.saveAndFlush(existingRoom);
 
-        return "remove User from Invitation successfully";
+        return "remove roomInvitation successfully";
+    }
+
+    @Transactional
+    public String deleteRoomRequestAttend(Long room_id,Long user_id){
+
+        // find that room
+        Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
+        // find that member
+        User existingMember = userRepository.findById(user_id).orElseThrow(() -> new UserNotFoundException());
+
+        // find roomRequestAttend in roomRequestAttendList of a room
+        RoomRequestAttend roomRequestAttend = existingRoom.getRoomRequestAttends().stream().filter(
+                requestAttend ->
+                        requestAttend.getRoomRequestAttendId().getUserId().equals(user_id) &&
+                                requestAttend.getRoomRequestAttendId().getRoomId().equals(room_id)
+
+        ).findAny().orElse(null);
+
+        // remove relationship roomRequestAttend
+        existingRoom.getRoomRequestAttends().remove(roomRequestAttend);
+
+        roomRepository.saveAndFlush(existingRoom);
+
+        return "remove roomRequestAttend successfully";
     }
 
     @Transactional

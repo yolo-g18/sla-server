@@ -112,4 +112,8 @@ public class RoomController {
         return roomService.deleteRoomInvitation(room_id,user_id);
     }
 
+    @DeleteMapping("/deleteRoomRequestAttend/{room_id}/{user_id}")
+    public String deleteRoomRequestAttend(@PathVariable Long room_id, @PathVariable Long user_id){
+        return roomService.deleteRoomRequestAttend(room_id,user_id);
+    }
 }
