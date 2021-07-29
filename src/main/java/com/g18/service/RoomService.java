@@ -6,6 +6,7 @@ import com.g18.entity.*;
 import com.g18.exceptions.*;
 import com.g18.model.RoomFolderId;
 import com.g18.model.RoomMemberId;
+import com.g18.model.RoomRequestAttendId;
 import com.g18.model.RoomStudySetId;
 import com.g18.repository.FolderRepository;
 import com.g18.repository.RoomRepository;
@@ -218,6 +219,56 @@ public class RoomService {
         roomRepository.save(existingRoom);
 
         return "edit Room successfully";
+    }
+
+    @Transactional
+    public String requestAttendRoom(ObjectNode json){
+
+        Long room_id = null,user_id = null;
+
+        // parsing id of room
+        try {
+
+            room_id = Long.parseLong(json.get("room_id").asText());
+
+        }catch (Exception e){
+            System.out.printf(e.getMessage());
+        }
+
+        // parsing id of person
+        try {
+
+            user_id = Long.parseLong(json.get("user_id").asText());
+
+        }catch (Exception e){
+            System.out.printf(e.getMessage());
+        }
+
+        // find that room
+        Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
+        // find that user
+        User existingUser = userRepository.findById(user_id).orElseThrow(() -> new UserNotFoundException());
+
+        //create id of roomRequestAttend
+        RoomRequestAttendId roomRequestAttendId = new RoomRequestAttendId();
+
+        roomRequestAttendId.setRoomId(room_id);
+        roomRequestAttendId.setUserId(user_id);
+
+        RoomRequestAttend roomRequestAttend = new RoomRequestAttend();
+
+        // set attributes form roomRequestAttend
+        roomRequestAttend.setRoomRequestAttendId(roomRequestAttendId);
+        roomRequestAttend.setUser(existingUser);
+        roomRequestAttend.setRoom(existingRoom);
+        roomRequestAttend.setRequestedDate(Instant.now());
+
+        // add relationship roomRequestAttend
+        existingRoom.getRoomRequestAttends().add(roomRequestAttend);
+
+        roomRepository.saveAndFlush(existingRoom);
+
+        return "send request successfully";
     }
 
     @Transactional

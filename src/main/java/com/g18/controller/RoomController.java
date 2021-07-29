@@ -99,4 +99,7 @@ public class RoomController {
         return roomService.removeAllMemberRoom(id);
     }
 
+    @PutMapping("/requestAttendRoom")
+    public String requestAttendRoom(@RequestBody ObjectNode json){
+        return  roomService.requestAttendRoom(json);}
 }
