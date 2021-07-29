@@ -722,7 +722,7 @@ public class RoomService {
             ObjectNode json = mapper.createObjectNode();
             json.put("user_id",roomInvitation.getRoomInvitationId().getUserId());
             json.put("userName",userService.getUserNameOfPerson(roomInvitation.getUser().getId()));
-
+            json.put("time",formatter.format(roomInvitation.getInvitedDate()));
 
             objectNodeList.add(json);
         }
@@ -755,7 +755,7 @@ public class RoomService {
             ObjectNode json = mapper.createObjectNode();
             json.put("user_id",roomRequestAttend.getRoomRequestAttendId().getUserId());
             json.put("userName",userService.getUserNameOfPerson(roomRequestAttend.getUser().getId()));
-
+            json.put("time",formatter.format(roomRequestAttend.getRequestedDate()));
 
             objectNodeList.add(json);
         }
