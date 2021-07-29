@@ -25,5 +25,4 @@ public class Report {
     private StudySet studySet;
 
     private String content;
-
 }
