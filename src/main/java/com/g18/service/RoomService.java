@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.entity.*;
 import com.g18.exceptions.*;
-import com.g18.model.RoomFolderId;
-import com.g18.model.RoomMemberId;
-import com.g18.model.RoomRequestAttendId;
-import com.g18.model.RoomStudySetId;
+import com.g18.model.*;
 import com.g18.repository.FolderRepository;
 import com.g18.repository.RoomRepository;
 import com.g18.repository.StudySetRepository;
@@ -270,6 +267,57 @@ public class RoomService {
 
         return "send request successfully";
     }
+
+    @Transactional
+    public String inviteUserToRoom(ObjectNode json){
+
+        Long room_id = null,user_id = null;
+
+        // parsing id of room
+        try {
+
+            room_id = Long.parseLong(json.get("room_id").asText());
+
+        }catch (Exception e){
+            System.out.printf(e.getMessage());
+        }
+
+        // parsing id of person
+        try {
+
+            user_id = Long.parseLong(json.get("user_id").asText());
+
+        }catch (Exception e){
+            System.out.printf(e.getMessage());
+        }
+
+        // find that room
+        Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
+        // find that user
+        User existingUser = userRepository.findById(user_id).orElseThrow(() -> new UserNotFoundException());
+
+        //create id of roomInvitationId
+        RoomInvitationId roomInvitationId = new RoomInvitationId();
+
+        roomInvitationId.setRoomId(room_id);
+        roomInvitationId.setUserId(user_id);
+
+        RoomInvitation roomInvitation = new RoomInvitation();
+
+        // set attributes form roomInvitation
+        roomInvitation.setRoomInvitationId(roomInvitationId);
+        roomInvitation.setUser(existingUser);
+        roomInvitation.setRoom(existingRoom);
+        roomInvitation.setInvitedDate(Instant.now());
+
+        // add relationship roomInvitation
+        existingRoom.getRoomInvitations().add(roomInvitation);
+
+        roomRepository.saveAndFlush(existingRoom);
+
+        return "invite user successfully";
+    }
+
 
     @Transactional
     public String addMemberToRoom(ObjectNode json){

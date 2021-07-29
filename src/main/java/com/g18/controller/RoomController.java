@@ -102,4 +102,8 @@ public class RoomController {
     @PutMapping("/requestAttendRoom")
     public String requestAttendRoom(@RequestBody ObjectNode json){
         return  roomService.requestAttendRoom(json);}
+
+    @PutMapping("/inviteUserToRoom")
+    public String inviteUserToRoom(@RequestBody ObjectNode json){
+        return  roomService.inviteUserToRoom(json);}
 }
