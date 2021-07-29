@@ -19,6 +19,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -585,4 +586,30 @@ public class RoomService {
         }
     }
 
+    public HashSet<Long> listIdOfSetsInRoom(Long id){
+
+        HashSet<Long> hashSet = new HashSet<>();
+
+        // find a specific room
+        Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
+
+        // count set in room
+        for (RoomStudySet roomStudySet : existingRoom.getRoomStudySets())
+        {
+            hashSet.add(roomStudySet.getRoomStudySetId().getStudySetId());
+        }
+
+        // count set in folder included in room
+        for(RoomFolder roomFolder : existingRoom.getRoomFolders())
+        {
+            Folder folder = folderRepository.findById(roomFolder.getRoomFolderId().getFolderId()).
+                    orElseThrow(() -> new FolderNotFoundException());
+
+            for(FolderStudySet folderStudySet : folder.getFolderStudySets()){
+                hashSet.add(folderStudySet.getFolderStudySetId().getStudySetId());
+            }
+        }
+
+        return hashSet;
+    }
 }

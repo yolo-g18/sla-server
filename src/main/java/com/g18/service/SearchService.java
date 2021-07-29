@@ -36,6 +36,9 @@ public class SearchService {
     @Autowired
     private FolderStudySetRepository folderStudySetRepository;
 
+    @Autowired
+    private RoomService roomService;
+
 
     public Page<SearchStudySetResponse> searchStudySetByTitle(Pageable pageable, String keySearch) {
         Page<StudySet> studySetPage =studySetRepository.findByTitleContainsAndIsPublicTrue(keySearch,pageable);
@@ -133,18 +136,26 @@ public class SearchService {
                                 //Error when find number of member (memberId and roomID)
                                 room.getRoomMembers().size(),
                                 //Error when find number of studyset (memberId and roomID)
-                                getTotalStudySetsInRoom(room)
+                                roomService.listIdOfSetsInRoom(room.getId()).size()
                         )
                 ).collect(Collectors.toList()), pageable, totalElements);
     }
 
-    private int getTotalStudySetsInRoom(Room room){
-       List<Long> ssid = folderStudySetRepository.findNumberSSID("folder_id = 1 or folder_id = 2" +"folde =1");
-       for (Long s : ssid){
-           System.out.println("SSID: " + s);
-       }
-    return ssid.size();
+    //search list user by username
+    public List<SearchUserResponse> getAllUserByUsername(String username){
+        List<Account> accounts = accountRepository.findByUsernameContaining(username);
+        List<SearchUserResponse> listResponse = new ArrayList<>();
+        for (Account acc : accounts){
+            SearchUserResponse accResponse = new SearchUserResponse();
+            accResponse.setUsername(acc.getUsername());
+            accResponse.setAvatar(acc.getUser().getAvatar());
+            accResponse.setBio(acc.getUser().getBio());
+            accResponse.setNumberStudySetOwn(acc.getUser().getStudySetsOwn().size());
+            listResponse.add(accResponse);
+        }
+        return listResponse;
     }
+
 
     public String findUserNameByUserId(long uid){
         return accountRepository.findUserNameByUserId(uid);

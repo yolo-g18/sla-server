@@ -25,4 +25,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     Page<Account> findByUsernameContains(String userName, Pageable pageable);
 
+    List<Account> findByUsernameContaining(String username);
+
 }
