@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import com.g18.dto.ProgressResponse;
 import com.g18.dto.StudySetLearningDto;
 import com.g18.dto.StudySetRequest;
 import com.g18.dto.StudySetResponse;
@@ -252,6 +253,16 @@ public class StudySetService {
             return ResponseEntity.status(HttpStatus.OK).body(response);
         }else{
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User has not started learning");
+        }
+    }
+
+    public ResponseEntity getListProgressByStudySet(Long studySetId) {
+        List<ProgressResponse> responses = studySetLearningRepository.getListProgressByStudySet(studySetId);
+
+        if(responses != null){
+            return ResponseEntity.status(HttpStatus.OK).body(responses);
+        }else{
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found.");
         }
     }
 }
