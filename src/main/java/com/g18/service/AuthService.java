@@ -183,31 +183,35 @@ public class AuthService {
         if(refreshToken.isPresent()) {
             refreshTokenService.deleteRefreshTokenByAccountId(account.getId());
         }
-        Authentication authenticate = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authenticate);
-        String token = jwtProvider.generateToken(authenticate);
+        try {
+            Authentication authenticate = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+            SecurityContextHolder.getContext().setAuthentication(authenticate);
+            String token = jwtProvider.generateToken(authenticate);
 
-        log.error(String.valueOf(Date.from(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))));
+            log.error(String.valueOf(Date.from(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))));
 
-        UserResponse userResponse = getUserResponseByCurrentAccount(getCurrentAccount());
+            UserResponse userResponse = getUserResponseByCurrentAccount(getCurrentAccount());
 
 
-        org.springframework.security.core.userdetails.User userDetails
-                = (org.springframework.security.core.userdetails.User) SecurityContextHolder
-                .getContext().getAuthentication().getPrincipal();
+            org.springframework.security.core.userdetails.User userDetails
+                    = (org.springframework.security.core.userdetails.User) SecurityContextHolder
+                    .getContext().getAuthentication().getPrincipal();
 
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
+            List<String> roles = userDetails.getAuthorities().stream()
+                    .map(item -> item.getAuthority())
+                    .collect(Collectors.toList());
 
-        return AuthenticationResponse.builder()
-                .authenticationToken(token)
-                .refreshToken(refreshTokenService.generateRefreshToken(loginRequest.getUsername()).getToken())
-                .expiresAt(String.valueOf(Date.from(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))))
-                .userResponse(userResponse)
-                .roles(roles)
-                .build();
+            return AuthenticationResponse.builder()
+                    .authenticationToken(token)
+                    .refreshToken(refreshTokenService.generateRefreshToken(loginRequest.getUsername()).getToken())
+                    .expiresAt(String.valueOf(Date.from(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))))
+                    .userResponse(userResponse)
+                    .roles(roles)
+                    .build();
+        }catch (Exception ex) {
+            throw new AccountException("Incorrect password.");
+        }
     }
 
     public UserResponse getUserResponseByCurrentAccount(Account account) {

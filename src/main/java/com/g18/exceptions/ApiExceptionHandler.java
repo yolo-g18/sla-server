@@ -53,10 +53,10 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(AccountException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Object> handleAccountException(AccountException ex, WebRequest req) {
         final ApiError apiError = new ApiError();
-        apiError.setStatus(HttpStatus.CONFLICT.value());
+        apiError.setStatus(HttpStatus.BAD_REQUEST.value());
         apiError.setMessage(ex.getMessage());
         logger.info(ex.getMessage());
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
