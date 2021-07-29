@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import com.g18.dto.ProgressResponse;
 import com.g18.dto.StudySetLearningDto;
 import com.g18.dto.StudySetRequest;
 import com.g18.dto.StudySetResponse;
@@ -46,6 +47,9 @@ public class StudySetService {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private AccountRepository accountRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -148,9 +152,9 @@ public class StudySetService {
         }
     }
 
-    public ResponseEntity viewStudySetBy(Long id) {
+    public ResponseEntity viewStudySetBy(Long studySetId) {
 
-        StudySet studySet = studySetRepository.findById(id)
+        StudySet studySet = studySetRepository.findById(studySetId)
                                     .orElseThrow(()->  new ExpressionException("Study Set not exist"));;
         User user = authService.getCurrentAccount().getUser();
         boolean isPublic = studySet.isPublic();
@@ -189,15 +193,15 @@ public class StudySetService {
 
         StudySetResponse studySetResponse = new StudySetResponse();
         studySetResponse.setStudySetId(studySet.getId());
-        User creator = userRepository.findById(studySet.getCreator().getId()).orElseThrow(()->new ExpressionException("User not exist"));
-        studySetResponse.setCreatorName(creator.getFirstName()+" "+creator.getLastName());
-        studySetResponse.setUserId(creator.getId());
+        String creatorName = accountRepository.findUserNameByUserId(studySet.getCreator().getId());
+        studySetResponse.setCreatorName(creatorName);
         studySetResponse.setDescription(studySet.getDescription());
         studySetResponse.setTag(studySet.getTag());
         studySetResponse.setTitle(studySet.getTitle());
         studySetResponse.setPublic(studySet.isPublic());
         studySetResponse.setNumberOfCard(studySet.getCards().size());
         studySetResponse.setProgress(progress);
+        studySetResponse.setCreatedDate(studySet.getCreatedDate());
         return studySetResponse;
     }
 
@@ -249,6 +253,16 @@ public class StudySetService {
             return ResponseEntity.status(HttpStatus.OK).body(response);
         }else{
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User has not started learning");
+        }
+    }
+
+    public ResponseEntity getListProgressByStudySet(Long studySetId) {
+        List<ProgressResponse> responses = studySetLearningRepository.getListProgressByStudySet(studySetId);
+
+        if(responses != null){
+            return ResponseEntity.status(HttpStatus.OK).body(responses);
+        }else{
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found.");
         }
     }
 }

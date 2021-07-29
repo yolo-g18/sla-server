@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,5 +19,9 @@ public interface EventRepository extends JpaRepository<Event,Long> {
 
     Page<Event> findByNameContaining(String name,Pageable pageable);
 
+    @Query(value = "SELECT * FROM sla_db.event WHERE user_id = :userId AND is_learn_event = 1 and to_time LIKE :date% ORDER BY to_time DESC",nativeQuery = true)
+    List<Event> getListEventByUserIdAndDate(@Param("userId") Long userId, @Param("date") String  date);
+
+    List<Event> findEventByToTimeBefore(Instant toTime);
 }
 

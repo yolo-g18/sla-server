@@ -16,6 +16,8 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+import javax.naming.AuthenticationException;
 import java.util.*;
 @Slf4j
 @EnableWebMvc
@@ -51,10 +53,20 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(AccountException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<Object> handleAccountException(AccountException ex, WebRequest req) {
         final ApiError apiError = new ApiError();
-        apiError.setStatus(HttpStatus.CONFLICT.value());
+        apiError.setStatus(HttpStatus.BAD_REQUEST.value());
+        apiError.setMessage(ex.getMessage());
+        logger.info(ex.getMessage());
+        return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseEntity<Object> handleAuthenticationException(AuthenticationException ex, WebRequest req) {
+        final ApiError apiError = new ApiError();
+        apiError.setStatus(HttpStatus.UNAUTHORIZED.value());
         apiError.setMessage(ex.getMessage());
         logger.info(ex.getMessage());
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
@@ -80,6 +92,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         logger.info(ex.getMessage());
         return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
     }
+
 
 
     // handle not found Room entity

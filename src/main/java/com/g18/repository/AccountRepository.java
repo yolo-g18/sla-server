@@ -19,7 +19,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     List<Account> findByUsernameContains(String keyword);
 
-    @Query(value = "SELECT username FROM sla_db.account where user_id = ?1 ", nativeQuery = true)
+    @Query(value = "SELECT username FROM account where user_id = ?1 ", nativeQuery = true)
     String findUserNameByUserId(long userId);
     Optional<Account> findByUser(User user);
 

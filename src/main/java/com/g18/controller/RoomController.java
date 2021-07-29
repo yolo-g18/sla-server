@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("api/room")
 public class RoomController {
 
     @Autowired
@@ -21,11 +22,10 @@ public class RoomController {
     public String createRoom(@RequestBody ObjectNode json){ return roomService.saveRoom(json);
     }
 
-    @GetMapping("/listRooms")
-    public List<ObjectNode> findAllRooms(){
-        return roomService.getRoomList();
+    @GetMapping("/getRoomListOfUser/{id}")
+    public List<ObjectNode> findAllRooms(@PathVariable Long id){
+        return roomService.getRoomListOfUser(id);
     }
-
 
     @GetMapping("/getRoom/{id}")
     public ObjectNode getRoomByID(@PathVariable Long id){

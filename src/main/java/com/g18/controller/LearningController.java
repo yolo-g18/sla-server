@@ -37,5 +37,10 @@ public class LearningController {
 	public ResponseEntity learnContinue(@RequestParam(value="studySetId") Long studySetId ){
 		return learningService.learningContinue(studySetId);
 	}
+
+	@GetMapping("/listCardSort")
+	public ResponseEntity getListCardLearningOrderByLearnedDate(@RequestParam(value="id") Long request){
+		return learningService.getListCardLearningOrderByLearnedDate(request);
+	}
 }
 

@@ -11,6 +11,7 @@ import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -24,6 +25,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
     private final AuthService authService;
+    private final PasswordEncoder passwordEncoder;
 
     public void save(UserProfileDto userProfileDto) throws NotFoundException{
 
@@ -73,8 +75,4 @@ public class UserService {
 
         return userResponse;
     }
-
-
-
-
 }

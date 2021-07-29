@@ -14,6 +14,9 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.expression.ExpressionException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +26,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -48,6 +54,9 @@ public class LearningService {
 
     @Autowired
     private StudySetLearningRepository studySetLearningRepository;
+
+    @Autowired
+    private EventRepository eventRepository;
 
     public ResponseEntity learningFlashCardByStudySet(Long studySetId){
         // TODO Auto-generated method stub
@@ -72,7 +81,7 @@ public class LearningService {
                     cardLearning.setCard(card);
                     cardLearning.setUser(user);
 
-                    Instant now = Instant.now().truncatedTo(ChronoUnit.DAYS);
+                    Instant now = Instant.now().truncatedTo(ChronoUnit.HOURS);
                     cardLearning.setLearnedDate(now);
 
                     cardLearning.setColor(null);
@@ -90,8 +99,10 @@ public class LearningService {
             }
             int numberOfCard = cards.size();
             StudySetLearning studySetLearning = new StudySetLearning();
+            boolean isFirstTime = false;
             if(numberOfCardAddNew != 0) {
                 if (numberOfCardAddNew == numberOfCard) {
+                    isFirstTime = true;
                     //Set StudySetLearning to Insert DB
                     UserStudySetId userStudySetId = new UserStudySetId();
                     userStudySetId.setStudySetId(studySetId);
@@ -100,7 +111,7 @@ public class LearningService {
                     studySetLearning.setStudySet(studySet);
                     studySetLearning.setUser(user);
                     studySetLearning.setColor(null);
-                    studySetLearning.setExpectedDate(Instant.now());
+                    studySetLearning.setExpectedDate(null);
                     studySetLearning.setFeedback(null);
                     studySetLearning.setProgress(0);
                     studySetLearning.setRating(0);
@@ -117,15 +128,79 @@ public class LearningService {
                 }
                 studySetLearningRepository.save(studySetLearning);
             }
-            //Add EventLearning, update later
+            //Add EventLearning if user learning for the first time
+            if(isFirstTime){
+                Instant now = Instant.now();
 
+                //Convert date to String
+                Date myDate = Date.from(now);
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                String today = formatter.format(myDate);
+
+                //Query using Like ->
+                List<Event> eventListToday = eventRepository.getListEventByUserIdAndDate(user.getId(), today);
+
+                //If there was another event before
+                if(eventListToday != null) {
+                    //Check if exist event learn of StudySet before
+                    boolean isExistEventOfStudySet = false;
+
+                    for(Event eventToday : eventListToday){
+                        String[] split = eventToday.getDescription().split("\\|");
+                        Long studySetIdOfEventBefore = Long.valueOf(split[1].trim());
+                        if(studySetIdOfEventBefore == studySetId) {
+                            isExistEventOfStudySet = true;
+                            break;
+                        }
+                    }
+                    //If different studySetID Of Event Before -> Create New Event
+                    if(!isExistEventOfStudySet){
+                        Event eventLearning = new Event();
+                        eventLearning.setUser(user);
+
+                        eventLearning.setDescription("Learn |" + studySetId);
+
+                        //Set time learn
+                        Instant from = now.atZone(ZoneId.systemDefault()).withHour(0).withMinute(0).toInstant();
+                        eventLearning.setFromTime(from);
+
+                        Instant to = now.atZone(ZoneId.systemDefault()).withHour(23).withMinute(59).toInstant();
+                        eventLearning.setToTime(to);
+
+                        eventLearning.setColor(null);
+
+                        eventLearning.setName("Review " + studySet.getTitle());
+                        eventLearning.setCreatedTime(now);
+                        eventLearning.setUpdateTime(now);
+                        eventLearning.setLearnEvent(true);
+                        eventRepository.save(eventLearning);
+                    }
+                }else{
+                    Event eventLearning = new Event();
+                    eventLearning.setUser(user);
+
+                    eventLearning.setDescription("Learn |" + studySetId);
+
+                    Instant from = now.atZone(ZoneId.systemDefault()).withHour(0).withMinute(0).toInstant();
+                    eventLearning.setFromTime(from);
+
+                    Instant to = now.atZone(ZoneId.systemDefault()).withHour(23).withMinute(59).toInstant();
+                    eventLearning.setToTime(to);
+
+                    eventLearning.setColor(null);
+
+                    eventLearning.setName("Review " + studySet.getTitle());
+                    eventLearning.setCreatedTime(now);
+                    eventLearning.setUpdateTime(now);
+                    eventRepository.save(eventLearning);
+                }
+            }
         }catch (Exception e){
             log.info("learningFlashCardByStudySet Exception: "+e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(responses);
+        return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
-
 
     public ResponseEntity learningFlashCardToday() {
         // TODO Auto-generated method stub
@@ -133,9 +208,10 @@ public class LearningService {
 
         try{
             User user = authService.getCurrentUser();
-            Instant now = Instant.now().truncatedTo(ChronoUnit.DAYS);
+            //Set today
+            Instant today = Instant.now().atZone(ZoneId.systemDefault()).withHour(7).toInstant().truncatedTo(ChronoUnit.DAYS);
 
-            List<CardLearning> cardLearningList = cardLearningRepository.findByUserAndLearnedDate(user,now);
+            List<CardLearning> cardLearningList = cardLearningRepository.findByUserAndLearnedDate(user,today);
 
             for(CardLearning cardLearning : cardLearningList){
 
@@ -143,7 +219,7 @@ public class LearningService {
 
                 responses.add(cardLearningDto);
             }
-            return ResponseEntity.status(HttpStatus.CREATED).body(responses);
+            return ResponseEntity.status(HttpStatus.OK).body(responses);
         }catch (Exception e){
             log.info("learningFlashCardToday Exception: "+e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -161,7 +237,8 @@ public class LearningService {
                 //Get infor
                 double eFactor = cardLearning.getEFactor();
                 double interval = cardLearning.getIntervalTime();
-                Instant learnDate = cardLearning.getLearnedDate();
+                Integer qualityBefore = cardLearning.getQ();
+
                 Integer repetitionNumber = cardLearning.getRepetitionNumber();
                 Status status;
 
@@ -181,39 +258,120 @@ public class LearningService {
                     }
                     repetitionNumber++;
 
-                    //Update progress in StudySetLearning
-                    StudySet studySet = studySetRepository.findById(card.getStudySet().getId()).orElseThrow(()-> new ExpressionException("Study Set not exist"));
-                    StudySetLearning studySetLearning = studySetLearningRepository.findStudySetLearningByStudySetAndUser(studySet, user);
-                    double progress = studySetLearning.getProgress();
-                    int numberOfCard = studySet.getCards().size();
-                    progress = progress + 1.0/numberOfCard;
-
-                    studySetLearning.setProgress(progress);
-                    studySetLearningRepository.save(studySetLearning);
+                    //If qualityBerore < 3, qualityUpdate >=3 -> Update progress increase(+)
+                    if(qualityBefore < 3){
+                        //Update progress in StudySetLearning
+                        StudySet studySet = studySetRepository.findById(card.getStudySet().getId()).orElseThrow(()-> new ExpressionException("Study Set not exist"));
+                        StudySetLearning studySetLearning = studySetLearningRepository.findStudySetLearningByStudySetAndUser(studySet, user);
+                        double progress = studySetLearning.getProgress();
+                        int numberOfCard = studySet.getCards().size();
+                        progress = progress + 1.0/numberOfCard;
+                        if(progress == 1){
+                            studySetLearning.setExpectedDate(Instant.now());
+                            studySetLearning.setStatus(Status.FINISHED);
+                        }
+                        studySetLearning.setProgress(progress);
+                        studySetLearningRepository.save(studySetLearning);
+                    }
                 }else{
                     status = Status.LEARNING;
                     repetitionNumber = 0;
                     interval = 1;
+
+                    //If qualityBefore >= 3, qualityUpdate < 3 -> Update progress decrease(-)
+                    if(qualityBefore >= 3){
+                        StudySet studySet = studySetRepository.findById(card.getStudySet().getId()).orElseThrow(()-> new ExpressionException("Study Set not exist"));
+                        StudySetLearning studySetLearning = studySetLearningRepository.findStudySetLearningByStudySetAndUser(studySet, user);
+                        double progress = studySetLearning.getProgress();
+                        if(progress == 1){
+                            studySetLearning.setExpectedDate(null);
+                            studySetLearning.setStatus(Status.REVIEW);
+                        }
+                        int numberOfCard = studySet.getCards().size();
+                        progress = progress - 1.0/numberOfCard;
+                        studySetLearning.setProgress(progress);
+                        studySetLearningRepository.save(studySetLearning);
+                    }
                 }
 
+                Instant now = Instant.now();
                 BigDecimal intervalRounding = new BigDecimal(interval).setScale(0,RoundingMode.DOWN);
-                Instant learnDateUpdate = learnDate.plus(intervalRounding.intValue(), ChronoUnit.DAYS);
+                Instant learnDate = now.plus(intervalRounding.intValue(), ChronoUnit.DAYS);
 
                 //Update CardLearning DB
                 cardLearning.setQ(cardQualityRequestUpdate.getQ());
-                cardLearning.setLearnedDate(learnDateUpdate);
+                cardLearning.setLearnedDate(learnDate);
                 cardLearning.setIntervalTime(intervalRounding.intValue());
                 cardLearning.setEFactor(eFactor);
                 cardLearning.setRepetitionNumber(repetitionNumber);
                 cardLearning.setStatus(status);
                 cardLearningRepository.save(cardLearning);
 
+                //Update Event
+                Date dateConvert = Date.from(learnDate);
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                String date = formatter.format(dateConvert);
+                Long studySetIdOfCard = card.getStudySet().getId();
+
+                List<Event> eventListToday = eventRepository.getListEventByUserIdAndDate(user.getId(), date);
+                if(eventListToday != null){
+                    //Check if exist event learn of StudySet before
+                    boolean isExistEventOfStudySet = false;
+
+                    for(Event eventToday : eventListToday){
+                        String[] split = eventToday.getDescription().split("\\|");
+                        Long studySetIdOfEventBefore = Long.valueOf(split[1].trim());
+                        if(studySetIdOfEventBefore == studySetIdOfCard) {
+                            isExistEventOfStudySet = true;
+                            break;
+                        }
+                    }
+                    if(!isExistEventOfStudySet){
+                        Event eventLearning = new Event();
+                        eventLearning.setUser(user);
+
+                        eventLearning.setDescription("Learn |" + studySetIdOfCard);
+
+                        Instant from = learnDate.atZone(ZoneId.systemDefault()).withHour(0).withMinute(0).toInstant();
+                        eventLearning.setFromTime(from);
+
+                        Instant to = learnDate.atZone(ZoneId.systemDefault()).withHour(23).withMinute(59).toInstant();
+                        eventLearning.setToTime(to);
+
+                        eventLearning.setColor(null);
+
+                        eventLearning.setName("Review " + card.getStudySet().getTitle());
+                        eventLearning.setCreatedTime(now);
+                        eventLearning.setUpdateTime(now);
+                        eventLearning.setLearnEvent(true);
+                        eventRepository.save(eventLearning);
+                    }
+                }else{
+                    Event eventLearning = new Event();
+                    eventLearning.setUser(user);
+
+                    eventLearning.setDescription("Learn |" + studySetIdOfCard);
+
+                    Instant from = learnDate.atZone(ZoneId.systemDefault()).withHour(0).withMinute(0).toInstant();
+                    eventLearning.setFromTime(from);
+
+                    Instant to = learnDate.atZone(ZoneId.systemDefault()).withHour(23).withMinute(59).toInstant();
+                    eventLearning.setToTime(to);
+
+                    eventLearning.setColor(null);
+
+                    eventLearning.setName("Review " + card.getStudySet().getTitle());
+                    eventLearning.setCreatedTime(now);
+                    eventLearning.setUpdateTime(now);
+                    eventRepository.save(eventLearning);
+
+                }
                 return ResponseEntity.status(HttpStatus.OK).body("Update after learning successfully");
             }else{
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Card for learning has not been created");
             }
         }catch(Exception e){
-            log.info("updateCardLearning Exception: "+e.getMessage());
+            log.info("updateCardLearning Exception: "+e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
@@ -232,22 +390,22 @@ public class LearningService {
 
     public ResponseEntity learningContinue(Long studySetId) {
         User user = authService.getCurrentAccount().getUser();
-        List<CardLearningDto> response = new ArrayList<>();
-        StudySet studySet = studySetRepository.findById(studySetId).orElseThrow(()->new ExpressionException("Study Set not exist"));
+        Pageable top20 = PageRequest.of(0,20);
 
-        List<Card> cardList = studySet.getCards();
-
-        for(Card card : cardList){
-            if(card.getStudySet().equals(studySet)){
-                for(CardLearning cardLearning: card.getCardLearningList()){
-                    if(cardLearning.getUser().equals(user)){
-                        CardLearningDto cardLearningDto = convertCardLearningToDTO(cardLearning);
-
-                        response.add(cardLearningDto);
-                    }
-                }
-            }
+        List<CardLearningDto> response = cardLearningRepository.getTopCardLearning(user.getId(), studySetId,top20);
+        if(response != null){
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
+    }
+
+    public ResponseEntity getListCardLearningOrderByLearnedDate(Long studySetId) {
+        User user = authService.getCurrentAccount().getUser();
+
+        List<CardLearningDto> response = cardLearningRepository.getListCardLearningOrderByLearnedDate(user.getId(), studySetId);
+        if(response != null){
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
     }
 }
