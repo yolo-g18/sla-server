@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class ReportDto {
     private Long id;
     private Long ssId;
-    private Long userId;
+    private String ssTitle;
+    private String username;
     private String content;
 }

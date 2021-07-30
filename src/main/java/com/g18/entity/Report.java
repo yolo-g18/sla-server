@@ -3,8 +3,10 @@ package com.g18.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
+import java.time.Instant;
 
 @Entity
 @Data
@@ -25,4 +27,8 @@ public class Report {
     private StudySet studySet;
 
     private String content;
+
+    private boolean isChecked;
+
+    private Instant createdTime;
 }

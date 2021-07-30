@@ -19,6 +19,8 @@ public interface StudySetRepository extends JpaRepository<StudySet,Long> {
 
     @Query(value = "SELECT creator_id FROM sla_db.study_set where id = ?1 ", nativeQuery = true)
     Long findCreatorIdById(Long studySetId);
+    @Query(value = "select * from sla_db.study_set where id in (  select distinct report.study_set_id from sla_db.report )", nativeQuery = true)
+    List<StudySet> findAllSSHasReport();
 
 
 
