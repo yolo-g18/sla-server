@@ -670,6 +670,10 @@ public class RoomService {
         // find specific room
         Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
 
+        // verify room's permisson
+        if(isMemberOfRoom(id) == false)
+            throw new RoomPermisson();
+
         // load all roomMembers in database
         List<RoomMember> roomMemberList = existingRoom.getRoomMembers();
 
@@ -702,6 +706,10 @@ public class RoomService {
 
         // find specific room
         Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
+
+        // verify room's permisson
+        if(isMemberOfRoom(id) == false)
+            throw new RoomPermisson();
 
         // load all roomInvitation
         List<RoomInvitation> roomInvitationList = existingRoom.getRoomInvitations();
@@ -736,6 +744,10 @@ public class RoomService {
         // find specific room
         Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
 
+        // verify room's permisson
+        if(isMemberOfRoom(id) == false)
+            throw new RoomPermisson();
+
         // load all roomRequestAttend
         List<RoomRequestAttend> roomRequestAttendList = existingRoom.getRoomRequestAttends();
 
@@ -768,6 +780,10 @@ public class RoomService {
 
         // find specific room
         Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
+
+        // verify room's permisson
+        if(isMemberOfRoom(id) == false)
+            throw new RoomPermisson();
 
         // load all roomFolders in database
         List<RoomFolder> roomFolderList = existingRoom.getRoomFolders();
@@ -802,6 +818,10 @@ public class RoomService {
 
         // find specific room
         Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
+
+        // verify room's permisson
+        if(isMemberOfRoom(id) == false)
+            throw new RoomPermisson();
 
         // load all roomStudySets in database
         List<RoomStudySet> roomStudySetList = existingRoom.getRoomStudySets();
@@ -887,6 +907,25 @@ public class RoomService {
         else{
             return true;
         }
+    }
+
+    public boolean isUserRequestPending(Long id){
+        // find specific room
+        Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
+
+        // get user logined
+        User currenUserLogined = authService.getCurrentUser();
+
+        List<RoomRequestAttend> roomRequestAttendList = existingRoom.getRoomRequestAttends();
+
+        RoomRequestAttend pending = roomRequestAttendList.stream().filter(
+                requestAttend -> requestAttend.getUser().getId().equals(currenUserLogined.getId())
+        ).findAny().orElse(null);
+
+        if(null != pending)
+             return true;
+
+        return false;
     }
 
 }

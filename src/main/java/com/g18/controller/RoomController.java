@@ -94,6 +94,11 @@ public class RoomController {
         return roomService.isMemberOfRoom(id);
     }
 
+    @GetMapping("/isUserRequestPending/{id}")
+    public boolean isUserRequestPending(@PathVariable Long id){
+        return roomService.isUserRequestPending(id);
+    }
+
     @DeleteMapping("/removeAllMemberOfRoom/{id}")
     public String removeAllMember(@PathVariable Long id){
         return roomService.removeAllMemberRoom(id);
