@@ -15,8 +15,8 @@ import java.util.List;
 public interface EventRepository extends JpaRepository<Event,Long> {
     void deleteById(long id);
   
-    @Query(value = "SELECT * FROM event WHERE created_time BETWEEN :from AND :to", nativeQuery = true)
-    List<Event> getAllBetweenDates(@Param("from") String from, @Param("to") String to);
+    @Query(value = "SELECT * FROM event WHERE user_id = :userId AND from_time BETWEEN :from AND :to", nativeQuery = true)
+    List<Event> getAllBetweenDates(@Param("userId") Long userId,@Param("from") String from, @Param("to") String to);
 
     Page<Event> findByNameContaining(String name,Pageable pageable);
 

@@ -38,7 +38,7 @@ public class EventConverter {
         eventDto.setCreatedTime(String.valueOf(event.getCreatedTime()));
         eventDto.setUpdateTime(String.valueOf(event.getUpdateTime()));
         eventDto.setLearnEvent(event.isLearnEvent());
-        eventDto.setUserId(event.getId());
+        eventDto.setUserId(event.getUser().getId());
         return eventDto;
     }
 

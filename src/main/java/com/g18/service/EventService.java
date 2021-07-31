@@ -70,7 +70,7 @@ public class EventService implements IEventService {
     @Override
     public List<EventDto> getAllBetweenDates(String from,String to) {
         List<EventDto> results = new ArrayList<>();
-        List<Event> events = eventRepository.getAllBetweenDates(from,to);
+        List<Event> events = eventRepository.getAllBetweenDates(authService.getCurrentUser().getId(),from,to);
         for (Event item : events){
             EventDto eventDto = eventConverter.toDto(item);
             results.add(eventDto);
