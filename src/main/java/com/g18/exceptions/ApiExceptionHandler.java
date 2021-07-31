@@ -136,7 +136,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
-    // handle no data (ex: a list is empty)
+
     @ExceptionHandler(NoDataFoundException.class)
     public ResponseEntity<Object> handleNoDataFoundException(
             NoDataFoundException ex, WebRequest request) {
@@ -147,7 +147,15 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(RoomPermisson.class)
+    public ResponseEntity<Object> handleRollPermissonException(
+            RoomPermisson ex, WebRequest request) {
 
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("message", "No permission");
+
+        return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
+    }
 
 
 }

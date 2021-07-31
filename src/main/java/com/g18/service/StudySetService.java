@@ -256,6 +256,28 @@ public class StudySetService {
         }
     }
 
+
+    public String getColorOfStudySetLearning(Long studySet_id){
+
+        // get user logined
+        User currenUserLogined = authService.getCurrentUser();
+
+        // get user's color when learning set
+        List<StudySetLearning> studySetLearningList = studySetLearningRepository.findAll();
+        StudySetLearning setLearning = studySetLearningList.stream().
+                filter(studySetLearning -> studySetLearning.getUserStudySetId().getStudySetId().equals(studySet_id)
+                        && studySetLearning.getUserStudySetId().getUserId().equals(currenUserLogined.getId()))
+                .findAny().orElse(null);
+
+        if(null == setLearning)
+            return "";
+
+        if(null == setLearning.getColor())
+            return "";
+
+        return setLearning.getColor().toString();
+    }
+  
     public ResponseEntity getListProgressByStudySet(Long studySetId) {
         List<ProgressResponse> responses = studySetLearningRepository.getListProgressByStudySet(studySetId);
 
@@ -264,5 +286,6 @@ public class StudySetService {
         }else{
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found.");
         }
+
     }
 }

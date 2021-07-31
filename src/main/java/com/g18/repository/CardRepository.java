@@ -11,7 +11,7 @@ import java.util.List;
 public interface CardRepository extends JpaRepository<Card,Long> {
     List<Card> findTop4ByStudySetId(Long studySetId);
 
-    @Query(value ="SELECT count(id) FROM sla_db.card where study_set_id = ?1",nativeQuery = true)
+    @Query(value ="SELECT count(id) FROM card where study_set_id = ?1",nativeQuery = true)
     int countNumberCardBySSID(long studySetId);
 
 }

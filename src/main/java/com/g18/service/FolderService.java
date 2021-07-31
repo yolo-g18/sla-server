@@ -40,6 +40,12 @@ public class FolderService {
     private AuthService authService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
+    private StudySetService studySetService;
+
+    @Autowired
     private AccountRepository accountRepository;
 
     @Autowired
@@ -119,7 +125,7 @@ public class FolderService {
         json.put("color",existingFolder.getColor().toString());
         json.put("description",existingFolder.getDescription());
         json.put("createdDate", formatter.format(existingFolder.getCreatedDate()));
-        json.put("creatorUserName",getUserNameOfCreator(existingFolder.getOwner().getId()));
+        json.put("creatorUserName",userService.getUserNameOfPerson(existingFolder.getOwner().getId()));
 
         return json;
     }
@@ -203,7 +209,7 @@ public class FolderService {
         StudySet existingStudySet = studySetRepository.findById(studySet_id).
                 orElseThrow(() -> new StudySetNotFoundException());
 
-        // check for SS exist in room
+        // check for SS exist in folder
         Long finalStudySet_id = studySet_id;
         Long finalFolder_id = folder_id;
         FolderStudySet temp = existingFolder.getFolderStudySets().stream().filter(
@@ -270,37 +276,7 @@ public class FolderService {
         return "remove StudySet from Folder successfully";
     }
 
-    private String getUserNameOfCreator(Long creator_id){
 
-        List<Account> accountList = accountRepository.findAll();
-
-        // find account of folder's creator
-        Account acc = accountList.stream().filter( account -> account.getUser().getId().equals(creator_id))
-                .findAny().orElse(null);
-
-        return acc.getUsername();
-    }
-
-    private String getColorOfStudySetLearning(Long studySet_id){
-
-        // get user logined
-        User currenUserLogined = authService.getCurrentUser();
-
-        // get user's color when learning set
-        List<StudySetLearning> studySetLearningList = studySetLearningRepository.findAll();
-        StudySetLearning setLearning = studySetLearningList.stream().
-                filter(studySetLearning -> studySetLearning.getUserStudySetId().getStudySetId().equals(studySet_id)
-                        && studySetLearning.getUserStudySetId().getUserId().equals(currenUserLogined.getId()))
-                .findAny().orElse(null);
-
-        if(null == setLearning)
-            return "";
-
-        if(null == setLearning.getColor())
-            return "";
-
-        return setLearning.getColor().toString();
-    }
 
     @Transactional
     public List<ObjectNode> getFolderStudySetList(Long id){
@@ -331,8 +307,9 @@ public class FolderService {
             json.put("createdDate", formatter.format(folderStudySet.getCreatedDate()));
             json.put("numberOfCards",folderStudySet.getStudySet().getCards().size());
             Long studySetOwner_id = folderStudySet.getStudySet().getCreator().getId();
-            json.put("creatorName",getUserNameOfCreator(studySetOwner_id));
-            String color = getColorOfStudySetLearning(folderStudySet.getFolderStudySetId().getStudySetId());
+            json.put("creatorName",userService.getUserNameOfPerson(studySetOwner_id));
+            String color = studySetService.getColorOfStudySetLearning(
+                    folderStudySet.getFolderStudySetId().getStudySetId());
             json.put("color",color);
             objectNodeList.add(json);
         }
@@ -363,8 +340,12 @@ public class FolderService {
 
     public Color[] listColorForFolder(){
 
-
         return Color.values();
 
+    }
+
+    @Transactional
+    public Long getMaxId(){
+        return folderRepository.getMaxId();
     }
 }

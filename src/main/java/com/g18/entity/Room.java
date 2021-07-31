@@ -40,6 +40,12 @@ public class Room {
     @OneToMany(mappedBy = "room", orphanRemoval=true, cascade=CascadeType.ALL)
     private List<RoomFolder>  roomFolders; //list folders in room
 
+    @OneToMany(mappedBy = "room", orphanRemoval=true, cascade=CascadeType.ALL)
+    private List<RoomInvitation>  roomInvitations; //list invited person in room
+
+    @OneToMany(mappedBy = "room", orphanRemoval=true, cascade=CascadeType.ALL)
+    private List<RoomRequestAttend>  roomRequestAttends; //list request attend person in room
+
     @Override
     public String toString() {
         return String.valueOf(id);
