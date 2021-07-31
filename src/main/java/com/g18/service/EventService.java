@@ -49,27 +49,6 @@ public class EventService implements IEventService {
         return "Create event successfully";
     }
 
-//    @Override
-//    public String save(EventDto eventDto) {
-//        User user = authService.getCurrentUser();
-//        Event event =  new Event();
-//        event.setUser(authService.getCurrentUser());
-//        event.setName(eventDto.getName());
-//        event.setDescription(eventDto.getDescription());
-//        event.setCreatedTime(Instant.now());
-//        event.setUpdateTime(eventDto.getUpdateTime());
-//        event.setFromTime(eventDto.getFromTime());
-//        event.setToTime(eventDto.getToTime());
-//        event.setColor(eventDto.getColor());
-//        System.out.println("From Time: " + eventDto.getFromTime());
-//        System.out.println("To Time: " + eventDto.getToTime());
-//
-//        event = eventRepository.save(event);
-//
-//        return "Create event successfully";
-//    }
-
-
     @Override
     public EventDto update(EventDto eventDto) {
         Event oldEvent = eventRepository.findById(eventDto.getId()).orElseThrow(()

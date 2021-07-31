@@ -81,7 +81,7 @@ public class LearningService {
                     cardLearning.setCard(card);
                     cardLearning.setUser(user);
 
-                    Instant now = Instant.now().truncatedTo(ChronoUnit.DAYS);
+                    Instant now = Instant.now().truncatedTo(ChronoUnit.HOURS);
                     cardLearning.setLearnedDate(now);
 
                     cardLearning.setColor(null);
@@ -169,9 +169,7 @@ public class LearningService {
 
                         eventLearning.setColor(null);
 
-                        String dayOfWeek = now.atZone(ZoneId.systemDefault()).getDayOfWeek().toString();
-
-                        eventLearning.setName("Learning event on " + dayOfWeek);
+                        eventLearning.setName("Review " + studySet.getTitle());
                         eventLearning.setCreatedTime(now);
                         eventLearning.setUpdateTime(now);
                         eventLearning.setLearnEvent(true);
@@ -191,9 +189,7 @@ public class LearningService {
 
                     eventLearning.setColor(null);
 
-                    String dayOfWeek = now.atZone(ZoneId.systemDefault()).getDayOfWeek().toString();
-
-                    eventLearning.setName("Learning event on " + dayOfWeek);
+                    eventLearning.setName("Review " + studySet.getTitle());
                     eventLearning.setCreatedTime(now);
                     eventLearning.setUpdateTime(now);
                     eventRepository.save(eventLearning);
@@ -212,9 +208,10 @@ public class LearningService {
 
         try{
             User user = authService.getCurrentUser();
-            Instant now = Instant.now().truncatedTo(ChronoUnit.DAYS);
+            //Set today
+            Instant today = Instant.now().atZone(ZoneId.systemDefault()).withHour(7).toInstant().truncatedTo(ChronoUnit.DAYS);
 
-            List<CardLearning> cardLearningList = cardLearningRepository.findByUserAndLearnedDate(user,now);
+            List<CardLearning> cardLearningList = cardLearningRepository.findByUserAndLearnedDate(user,today);
 
             for(CardLearning cardLearning : cardLearningList){
 
@@ -343,9 +340,7 @@ public class LearningService {
 
                         eventLearning.setColor(null);
 
-                        String dayOfWeek = now.atZone(ZoneId.systemDefault()).getDayOfWeek().toString();
-
-                        eventLearning.setName("Learning event on " + dayOfWeek);
+                        eventLearning.setName("Review " + card.getStudySet().getTitle());
                         eventLearning.setCreatedTime(now);
                         eventLearning.setUpdateTime(now);
                         eventLearning.setLearnEvent(true);
@@ -365,9 +360,7 @@ public class LearningService {
 
                     eventLearning.setColor(null);
 
-                    String dayOfWeek = now.atZone(ZoneId.systemDefault()).getDayOfWeek().toString();
-
-                    eventLearning.setName("Learning event on " + dayOfWeek);
+                    eventLearning.setName("Review " + card.getStudySet().getTitle());
                     eventLearning.setCreatedTime(now);
                     eventLearning.setUpdateTime(now);
                     eventRepository.save(eventLearning);
@@ -378,7 +371,7 @@ public class LearningService {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Card for learning has not been created");
             }
         }catch(Exception e){
-            log.info("updateCardLearning Exception: "+e.getMessage());
+            log.info("updateCardLearning Exception: "+e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }

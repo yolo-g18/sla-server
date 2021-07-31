@@ -1,34 +1,26 @@
-package com.g18.entity;
+package com.g18.dto;
 
+
+import com.g18.entity.User;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import java.time.Instant;
 
 @Data
-@Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class Noti {
+public class NotificationDto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
     private String title;
     private String description;
     private String type;
     private String link;
-    private Instant createdTime;
-    private Instant timeTrigger;
+    private String createdTime;
+    private String timeTrigger;
     private boolean isRead;
-
 }

@@ -19,12 +19,12 @@ public class HomeController {
     //get top 4 Learning Study Set
     @GetMapping("/SSLearning")
     List<StudySetLearningResponse> getStudySetsLearning(){
-        return homeService.getTop4LearningStudySets();
+        return homeService.getTop6LearningStudySets();
     }
     //get top 4 newest created Study Set
     @GetMapping("/SSCreated")
     List<SearchStudySetResponse> getCreatedStudySet(){
-        return homeService.getTop4StudySetCreatedByUserId();
+        return homeService.getTop6StudySetCreatedByUserId();
     }
 
 }

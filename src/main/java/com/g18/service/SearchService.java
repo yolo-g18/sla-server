@@ -33,7 +33,13 @@ public class SearchService {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private FolderStudySetRepository folderStudySetRepository;
 
+    @Autowired
+    private RoomService roomService;
+
+    //search study set by title and paging
     public Page<SearchStudySetResponse> searchStudySetByTitle(Pageable pageable, String keySearch) {
         Page<StudySet> studySetPage =studySetRepository.findByTitleContainsAndIsPublicTrue(keySearch,pageable);
         int totalElements = (int) studySetPage.getTotalElements();
@@ -69,21 +75,22 @@ public class SearchService {
                 ).collect(Collectors.toList()), pageable, totalElements);
     }
 
-
+    //search event and pagin
     public Page<EventDto> searchEventByTitle(Pageable pageable, String nameSearch) {
-        Page<Event> eventPage =eventRepository.findByNameContaining(nameSearch,pageable);
+        Page<Event> eventPage = eventRepository.findByNameContaining(nameSearch,pageable);
         int totalElements = (int) eventPage.getTotalElements();
         return new PageImpl<EventDto>(
                 eventPage.stream().map(event -> new EventDto(
                         event.getId(),event.getUser().getId(),event.getName(),event.getDescription(),event.isLearnEvent(),
-                        event.getFromTime(), event.getToTime(),event.getColor(),event.getCreatedTime(),event.getUpdateTime()
+                        String.valueOf(event.getFromTime()), String.valueOf(event.getToTime()),
+                        event.getColor(),String.valueOf(event.getCreatedTime()),String.valueOf(event.getUpdateTime())
                         )
                 ).collect(Collectors.toList()), pageable, totalElements);
     }
-
+    //search folder and paging
     public Page<SearchFolderResponse> searchFolderByTitle(Pageable pageable, String titleSearch) {
         Page<Folder> folderPage = folderRepository.findByTitleContaining(titleSearch,pageable);
-        int totalElements = folderPage.getNumberOfElements();
+        int totalElements = (int) folderPage.getTotalElements();
         return new PageImpl<SearchFolderResponse>(
                 folderPage.stream().map(
                         folder -> new SearchFolderResponse(
@@ -101,13 +108,13 @@ public class SearchService {
     //Search user by username and paging
     public Page<SearchUserResponse> searchUserByUsername(Pageable pageable, String username) {
         Page<Account> accountPage = accountRepository.findByUsernameContains(username,pageable);
-        int totalElements = accountPage.getNumberOfElements();
+        int totalElements = (int) accountPage.getTotalElements();
         return new PageImpl<SearchUserResponse>(
                 accountPage.stream().map(
                         account -> new SearchUserResponse(
                                 account.getUsername(),
                                 account.getUser().getAvatar(),
-                                account.getUser().getAvatar(),
+                                account.getUser().getBio(),
                                 account.getUser().getStudySetsOwn().size()
                         )
                 ).collect(Collectors.toList()), pageable, totalElements);
@@ -116,7 +123,7 @@ public class SearchService {
     // Search room by name and paging
     public Page<SearchRoomResponse> searchRoomByName(Pageable pageable, String nameSearch) {
         Page<Room> roomPage = roomRepository.findByNameContaining(nameSearch,pageable);
-        int totalElements = roomPage.getNumberOfElements();
+        int totalElements = (int) roomPage.getTotalElements();
         return new PageImpl<SearchRoomResponse>(
                 roomPage.stream().map(
                         room -> new SearchRoomResponse(
@@ -129,22 +136,26 @@ public class SearchService {
                                 //Error when find number of member (memberId and roomID)
                                 room.getRoomMembers().size(),
                                 //Error when find number of studyset (memberId and roomID)
-                                getTotalStudySetsInRoom(room)
+                                roomService.listIdOfSetsInRoom(room.getId()).size()
                         )
                 ).collect(Collectors.toList()), pageable, totalElements);
     }
 
-    private int getTotalStudySetsInRoom(Room room){
-        int total = 0;
-//        total += room.getRoomStudySets().size();
-        System.out.println("Room's StudySet" + room.getRoomStudySets().size());
-        for (RoomFolder rf : room.getRoomFolders()){
-            total += rf.getFolder().getFolderStudySets().size();
+    //search list user by username
+    public List<SearchUserResponse> getAllUserByUsername(String username){
+        List<Account> accounts = accountRepository.findByUsernameContaining(username);
+        List<SearchUserResponse> listResponse = new ArrayList<>();
+        for (Account acc : accounts){
+            SearchUserResponse accResponse = new SearchUserResponse();
+            accResponse.setUsername(acc.getUsername());
+            accResponse.setAvatar(acc.getUser().getAvatar());
+            accResponse.setBio(acc.getUser().getBio());
+            accResponse.setNumberStudySetOwn(acc.getUser().getStudySetsOwn().size());
+            listResponse.add(accResponse);
         }
-        System.out.println("Folder StudySet " + total);
-        return total;
-
+        return listResponse;
     }
+
 
     public String findUserNameByUserId(long uid){
         return accountRepository.findUserNameByUserId(uid);

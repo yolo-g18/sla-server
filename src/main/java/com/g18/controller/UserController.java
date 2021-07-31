@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/me")
@@ -24,6 +25,9 @@ public class UserController {
         AuthenticationResponse authenticationResponse
                 = AuthenticationResponse.builder()
                 .userResponse(authService.getUserResponseByCurrentAccount(authService.getCurrentAccount()))
+                .roles(authService.getCurrentAccount().getRoles().stream()
+                        .map(role -> new String(role.getName().name()))
+                        .collect(Collectors.toList()))
                 .build();
         return authenticationResponse;
     }
@@ -40,8 +44,7 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
-
+    @PutMapping("/change_password")
     @GetMapping("/lib")
     public ResponseEntity<String> getUserLib() {
         return new ResponseEntity<>("my lib", HttpStatus.OK);
