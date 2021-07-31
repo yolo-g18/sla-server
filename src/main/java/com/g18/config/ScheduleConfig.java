@@ -78,18 +78,19 @@ public class ScheduleConfig {
 
         String type = "daily";
         List<Notification> notificationList = notificationRepository.findNotificationByType(type);
+        if(notificationList != null) {
+            for (Notification noti : notificationList) {
 
-        for(Notification noti: notificationList){
+                String username = accountRepository.findUserNameByUserId(noti.getUser().getId());
 
-            String username = accountRepository.findUserNameByUserId(noti.getUser().getId());
-
-            String toEmail = noti.getUser().getEmail();
-            String body = "Hello "+username+"\n" +
-                    "You have some events to attend today.\n"+
-                    "Please participate fully and on time events on SLA.\n" +
-                    "Have a good day!";
-            String subject = "Notice to learn on "+learnTime;
-            emailSenderService.sendSimpleEmail(toEmail, body, subject);
+                String toEmail = noti.getUser().getEmail();
+                String body = "Hello " + username + "\n" +
+                        "You have some events to attend today.\n" +
+                        "Please participate fully and on time events on SLA.\n" +
+                        "Have a good day!";
+                String subject = "Notice to learn on " + learnTime;
+                emailSenderService.sendSimpleEmail(toEmail, body, subject);
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 package com.g18.controller;
 
 import com.g18.dto.CardQualityRequestUpdate;
+import com.g18.dto.LearnRequestDto;
 import com.g18.service.LearningService;
 
 import lombok.AllArgsConstructor;
@@ -28,9 +29,9 @@ public class LearningController {
 		return learningService.updateCardLearning(cardQualityRequestUpdate);
 	}
 
-	@GetMapping("/today")
-	public ResponseEntity learnToday(){
-		return learningService.learningFlashCardToday();
+	@GetMapping("/learnByDate")
+	public ResponseEntity learnToday(@Valid @RequestBody LearnRequestDto learnRequestDto){
+		return learningService.learningFlashCardByDateAndStudySetAndUser(learnRequestDto);
 	}
 
 	@GetMapping("continue")
