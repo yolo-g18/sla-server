@@ -21,22 +21,22 @@ public class CardController {
 	private CardService cardService;
 
 	@PostMapping("/create")
-	public String createCard(@RequestBody List<CardDto> request) {
+	public ResponseEntity createCard(@RequestBody List<CardDto> request) {
 		return cardService.createCard(request);
 	}
 
 	@PutMapping("/edit")
-	public String editCard(@RequestBody List<CardDto> request) {
+	public ResponseEntity editCard(@RequestBody List<CardDto> request) {
 		return cardService.editCard(request);
 	}
 
 	@DeleteMapping("/delete")
-	public String deleteCard(@RequestParam(value = "id") Long id) {
+	public ResponseEntity deleteCard(@RequestParam(value = "id") Long id) {
 		return cardService.deleteCard(id);
 	}
 
 	@PostMapping("/writeHint")
-	public String writeHint(@RequestBody CardDto cardDto) {
+	public ResponseEntity writeHint(@RequestBody CardDto cardDto) {
 		return cardService.writeHint(cardDto);
 	}
 
@@ -46,7 +46,7 @@ public class CardController {
 	}
 
 	@PutMapping("/color")
-	public String setColor(@RequestBody CardLearningDto request){
+	public ResponseEntity setColor(@RequestBody CardLearningDto request){
 		return cardService.setColorCardLearning(request);
 	}
 }

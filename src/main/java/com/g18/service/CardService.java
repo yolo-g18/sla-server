@@ -45,7 +45,7 @@ public class CardService {
     @Autowired
     private StudySetLearningRepository studySetLearningRepository;
 
-    public String createCard(List<CardDto> request) {
+    public ResponseEntity createCard(List<CardDto> request) {
         try{
             StudySet studySet = studySetRepository.findById(request.get(0).getStudySet()).orElseThrow(() -> new ExpressionException("Study Set not exist"));
             User user = authService.getCurrentAccount().getUser();
@@ -83,14 +83,14 @@ public class CardService {
                     cardLearningRepository.save(cardLearning);
                 }
             }
-            return "add Card successfully";
+            return ResponseEntity.status(HttpStatus.CREATED).body("Add Card successfully");
         }catch (Exception e){
             e.printStackTrace();
-            return "add Card fail";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Add Card fail");
         }
     }
 
-    public String editCard(List<CardDto> request) {
+    public ResponseEntity editCard(List<CardDto> request) {
         try{
             for (CardDto cardDto: request) {
                 Card card = cardRepository.findById(cardDto.getId()).orElseThrow(() -> new ExpressionException("Card not exist"));
@@ -98,14 +98,14 @@ public class CardService {
                 card.setFront(cardDto.getFront());
                 cardRepository.save(card);
             }
-            return "edit Card successfully";
+            return ResponseEntity.status(HttpStatus.OK).body("Edit Card successfully");
         }catch (Exception e){
             e.printStackTrace();
-            return "edit Card fail";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Edit Card fail");
         }
     }
 
-    public String deleteCard(Long id) {
+    public ResponseEntity deleteCard(Long id) {
         Card card = cardRepository.findById(id).orElseThrow(()->  new ExpressionException("Card not exist"));
         User auth = authService.getCurrentAccount().getUser();
 
@@ -115,13 +115,13 @@ public class CardService {
         //Check permission
         if(auth.equals(studySet.getCreator())) {
             cardRepository.delete(card);
-            return "delete Card successfully";
+            return ResponseEntity.status(HttpStatus.OK).body("Delete Card successfully");
         }else{
-            return "Not permitted";
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not permitted");
         }
     }
 
-    public String writeHint(CardDto cardDto) {
+    public ResponseEntity writeHint(CardDto cardDto) {
         try{
             User user = authService.getCurrentAccount().getUser();
             UserCardId userCardId = new UserCardId();
@@ -132,12 +132,12 @@ public class CardService {
             if(cardLearning!=null){
                 cardLearning.setHint(cardDto.getHint());
                 cardLearningRepository.save(cardLearning);
-                return "write Hint successfully";
+                return ResponseEntity.status(HttpStatus.CREATED).body("Write Hint successfully");
             }else{
-                return "CardLearning not exist";
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("CardLearning not exist");
             }
         }catch (Exception e){
-            return "write Hint fail";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Write Hint fail");
         }
     }
 
@@ -154,13 +154,13 @@ public class CardService {
 
                 responses.add(cardDto);
             }
-            return ResponseEntity.status(HttpStatus.CREATED).body(responses);
+            return ResponseEntity.status(HttpStatus.OK).body(responses);
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
-    public String setColorCardLearning(CardLearningDto cardId) {
+    public ResponseEntity setColorCardLearning(CardLearningDto cardId) {
         try {
             User user = authService.getCurrentAccount().getUser();
             UserCardId userCardId = new UserCardId();
@@ -169,12 +169,12 @@ public class CardService {
             CardLearning cardLearning = cardLearningRepository.getCardLearningByUserCardId(userCardId);
             if (cardLearning != null) {
                 cardLearning.setColor(cardId.getColor());
-                return "set Color successfully";
+                return ResponseEntity.status(HttpStatus.OK).body("Set Color successfully");
             } else {
-                return "Card Learnging not exist";
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Card Learning not exist");
             }
         }catch (Exception e){
-            return "set Color fail";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Set Color fail");
         }
     }
 }

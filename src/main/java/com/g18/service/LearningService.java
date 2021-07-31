@@ -3,6 +3,7 @@ package com.g18.service;
 
 import com.g18.dto.CardLearningDto;
 import com.g18.dto.CardQualityRequestUpdate;
+import com.g18.dto.LearnRequestDto;
 import com.g18.entity.*;
 
 import com.g18.model.Status;
@@ -202,22 +203,21 @@ public class LearningService {
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
 
-    public ResponseEntity learningFlashCardToday() {
+    public ResponseEntity learningFlashCardByDateAndStudySetAndUser(LearnRequestDto learnRequestDto) {
         // TODO Auto-generated method stub
         List<CardLearningDto> responses = new ArrayList<>();
-
         try{
-            User user = authService.getCurrentUser();
+            Long userId = authService.getCurrentUser().getId();
             //Set today
-            Instant today = Instant.now().atZone(ZoneId.systemDefault()).withHour(7).toInstant().truncatedTo(ChronoUnit.DAYS);
+            Long studySetId = learnRequestDto.getStudySetId();
+            String date = learnRequestDto.getLearnDate();
 
-            List<CardLearning> cardLearningList = cardLearningRepository.findByUserAndLearnedDate(user,today);
-
-            for(CardLearning cardLearning : cardLearningList){
-
-                CardLearningDto cardLearningDto = convertCardLearningToDTO(cardLearning);
-
-                responses.add(cardLearningDto);
+            List<CardLearning> cardLearningList = cardLearningRepository.getListCardLearningByStudySetIdAndUserIdAndDate(studySetId, userId, date);
+            if(cardLearningList != null){
+                for(CardLearning cardLearning : cardLearningList){
+                    CardLearningDto cardLearningDto = convertCardLearningToDTO(cardLearning);
+                    responses.add(cardLearningDto);
+                }
             }
             return ResponseEntity.status(HttpStatus.OK).body(responses);
         }catch (Exception e){
