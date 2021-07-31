@@ -94,4 +94,41 @@ public class RoomController {
         return roomService.isMemberOfRoom(id);
     }
 
+    @GetMapping("/isUserRequestPending/{id}")
+    public boolean isUserRequestPending(@PathVariable Long id){
+        return roomService.isUserRequestPending(id);
+    }
+
+    @DeleteMapping("/removeAllMemberOfRoom/{id}")
+    public String removeAllMember(@PathVariable Long id){
+        return roomService.removeAllMemberRoom(id);
+    }
+
+    @PutMapping("/requestAttendRoom")
+    public String requestAttendRoom(@RequestBody ObjectNode json){
+        return  roomService.requestAttendRoom(json);}
+
+    @PutMapping("/inviteUserToRoom")
+    public String inviteUserToRoom(@RequestBody ObjectNode json){
+        return  roomService.inviteUserToRoom(json);}
+
+    @DeleteMapping("/deleteRoomInvitation/{room_id}/{user_id}")
+    public String deleteRoomInvitation(@PathVariable Long room_id, @PathVariable Long user_id){
+        return roomService.deleteRoomInvitation(room_id,user_id);
+    }
+
+    @DeleteMapping("/deleteRoomRequestAttend/{room_id}/{user_id}")
+    public String deleteRoomRequestAttend(@PathVariable Long room_id, @PathVariable Long user_id){
+        return roomService.deleteRoomRequestAttend(room_id,user_id);
+    }
+
+    @GetMapping("/listRoomInvitations/{id}")
+    public List<ObjectNode> listInvitationsOfRoom(@PathVariable Long id){
+        return roomService.getRoomInvitaionList(id);
+    }
+
+    @GetMapping("/listRoomRequestAttend/{id}")
+    public List<ObjectNode> listRoomRequestAttend(@PathVariable Long id){
+        return roomService.getRoomRequestAttendList(id);
+    }
 }

@@ -62,5 +62,9 @@ public class FolderController {
         return folderService.listColorForFolder();
     }
 
+    @GetMapping("/getMaxIdOfFolder")
+    public Long getMaxIdOfFolder(){
+        return folderService.getMaxId();
+    }
 
 }

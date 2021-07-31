@@ -4,9 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.entity.*;
 import com.g18.exceptions.*;
-import com.g18.model.RoomFolderId;
-import com.g18.model.RoomMemberId;
-import com.g18.model.RoomStudySetId;
+import com.g18.model.*;
 import com.g18.repository.FolderRepository;
 import com.g18.repository.RoomRepository;
 import com.g18.repository.StudySetRepository;
@@ -33,6 +31,12 @@ public class RoomService {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private StudySetService studySetService;
 
     @Autowired
     private UserRepository userRepository;
@@ -105,6 +109,34 @@ public class RoomService {
         return objectNodeList;
     }
 
+
+    public HashSet<Long> listIdOfSetsInRoom(Long id){
+
+        HashSet<Long> hashSet = new HashSet<>();
+
+        // find a specific room
+        Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
+
+        // count set in room
+        for (RoomStudySet roomStudySet : existingRoom.getRoomStudySets())
+        {
+            hashSet.add(roomStudySet.getRoomStudySetId().getStudySetId());
+        }
+
+        // count set in folder included in room
+        for(RoomFolder roomFolder : existingRoom.getRoomFolders())
+        {
+            Folder folder = folderRepository.findById(roomFolder.getRoomFolderId().getFolderId()).
+                    orElseThrow(() -> new FolderNotFoundException());
+
+            for(FolderStudySet folderStudySet : folder.getFolderStudySets()){
+                hashSet.add(folderStudySet.getFolderStudySetId().getStudySetId());
+            }
+        }
+
+        return hashSet;
+    }
+
     @Transactional
     public ObjectNode getRoomByID(Long id){
 
@@ -119,9 +151,30 @@ public class RoomService {
         json.put("name",existingRoom.getName());
         json.put("description",existingRoom.getDescription());
         json.put("createdDate", formatter.format(existingRoom.getCreatedDate()));
-
+        json.put("ownerName",userService.getUserNameOfPerson(existingRoom.getOwner().getId()));
+        json.put("setNumbers",listIdOfSetsInRoom(id).size());
+        json.put("folderNumbers",existingRoom.getRoomFolders().size());
         return json;
+
     }
+
+    @Transactional
+    public String removeAllMemberRoom(Long id){
+
+        // verify room's permisson
+        if(isCreatorOfRoom(id) == false)
+            return "You are not creator of Room, You don't have permisson!!!";
+
+        // find that specific room
+        Room room = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
+
+        room.getRoomMembers().clear();
+
+        roomRepository.saveAndFlush(room);
+
+        return "remove all members successfully";
+    }
+
 
     @Transactional
     public String deleteRoom(Long id){
@@ -134,6 +187,7 @@ public class RoomService {
 
         return "remove room successfully";
     }
+
 
     @Transactional
     public String editRoom(ObjectNode json){
@@ -163,6 +217,107 @@ public class RoomService {
 
         return "edit Room successfully";
     }
+
+    @Transactional
+    public String requestAttendRoom(ObjectNode json){
+
+        Long room_id = null,user_id = null;
+
+        // parsing id of room
+        try {
+
+            room_id = Long.parseLong(json.get("room_id").asText());
+
+        }catch (Exception e){
+            System.out.printf(e.getMessage());
+        }
+
+        // parsing id of person
+        try {
+
+            user_id = Long.parseLong(json.get("user_id").asText());
+
+        }catch (Exception e){
+            System.out.printf(e.getMessage());
+        }
+
+        // find that room
+        Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
+        // find that user
+        User existingUser = userRepository.findById(user_id).orElseThrow(() -> new UserNotFoundException());
+
+        //create id of roomRequestAttend
+        RoomRequestAttendId roomRequestAttendId = new RoomRequestAttendId();
+
+        roomRequestAttendId.setRoomId(room_id);
+        roomRequestAttendId.setUserId(user_id);
+
+        RoomRequestAttend roomRequestAttend = new RoomRequestAttend();
+
+        // set attributes form roomRequestAttend
+        roomRequestAttend.setRoomRequestAttendId(roomRequestAttendId);
+        roomRequestAttend.setUser(existingUser);
+        roomRequestAttend.setRoom(existingRoom);
+        roomRequestAttend.setRequestedDate(Instant.now());
+
+        // add relationship roomRequestAttend
+        existingRoom.getRoomRequestAttends().add(roomRequestAttend);
+
+        roomRepository.saveAndFlush(existingRoom);
+
+        return "send request successfully";
+    }
+
+    @Transactional
+    public String inviteUserToRoom(ObjectNode json){
+
+        Long room_id = null,user_id = null;
+
+        // parsing id of room
+        try {
+
+            room_id = Long.parseLong(json.get("room_id").asText());
+
+        }catch (Exception e){
+            System.out.printf(e.getMessage());
+        }
+
+        // parsing id of person
+        try {
+
+            user_id = Long.parseLong(json.get("user_id").asText());
+
+        }catch (Exception e){
+            System.out.printf(e.getMessage());
+        }
+
+        // find that room
+        Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
+        // find that user
+        User existingUser = userRepository.findById(user_id).orElseThrow(() -> new UserNotFoundException());
+
+        //create id of roomInvitationId
+        RoomInvitationId roomInvitationId = new RoomInvitationId();
+
+        roomInvitationId.setRoomId(room_id);
+        roomInvitationId.setUserId(user_id);
+
+        RoomInvitation roomInvitation = new RoomInvitation();
+
+        // set attributes form roomInvitation
+        roomInvitation.setRoomInvitationId(roomInvitationId);
+        roomInvitation.setUser(existingUser);
+        roomInvitation.setRoom(existingRoom);
+        roomInvitation.setInvitedDate(Instant.now());
+
+        // add relationship roomInvitation
+        existingRoom.getRoomInvitations().add(roomInvitation);
+
+        roomRepository.saveAndFlush(existingRoom);
+
+        return "invite user successfully";
+    }
+
 
     @Transactional
     public String addMemberToRoom(ObjectNode json){
@@ -220,6 +375,54 @@ public class RoomService {
     }
 
     @Transactional
+    public String deleteRoomInvitation(Long room_id,Long user_id){
+
+        // find that room
+        Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
+        // find that member
+        User existingMember = userRepository.findById(user_id).orElseThrow(() -> new UserNotFoundException());
+
+        // find roomInvitation in roomInvitationList of a room
+        RoomInvitation roomInvitation =existingRoom.getRoomInvitations().stream().filter(
+                room_Invitation ->
+                        room_Invitation.getRoomInvitationId().getUserId().equals(user_id) &&
+                                room_Invitation.getRoomInvitationId().getRoomId().equals(room_id)
+
+        ).findAny().orElse(null);
+
+        // remove relationship roomIvitation
+        existingRoom.getRoomInvitations().remove(roomInvitation);
+
+        roomRepository.saveAndFlush(existingRoom);
+
+        return "remove roomInvitation successfully";
+    }
+
+    @Transactional
+    public String deleteRoomRequestAttend(Long room_id,Long user_id){
+
+        // find that room
+        Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
+        // find that member
+        User existingMember = userRepository.findById(user_id).orElseThrow(() -> new UserNotFoundException());
+
+        // find roomRequestAttend in roomRequestAttendList of a room
+        RoomRequestAttend roomRequestAttend = existingRoom.getRoomRequestAttends().stream().filter(
+                requestAttend ->
+                        requestAttend.getRoomRequestAttendId().getUserId().equals(user_id) &&
+                                requestAttend.getRoomRequestAttendId().getRoomId().equals(room_id)
+
+        ).findAny().orElse(null);
+
+        // remove relationship roomRequestAttend
+        existingRoom.getRoomRequestAttends().remove(roomRequestAttend);
+
+        roomRepository.saveAndFlush(existingRoom);
+
+        return "remove roomRequestAttend successfully";
+    }
+
+    @Transactional
     public String deleteMemberFromRoom(Long room_id,Long member_id){
 
         // verify room's permisson
@@ -256,6 +459,8 @@ public class RoomService {
     @Transactional
     public String addFolderToRoom(ObjectNode json){
 
+        String messageError = "cancel adding";
+
         Long room_id = null,folder_id = null;
 
         // parsing id of room
@@ -290,6 +495,18 @@ public class RoomService {
         Folder folder = folderRepository.findById(folder_id).orElseThrow(() -> new FolderNotFoundException());
         // find specific room
         Room room = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
+
+        // check for SS exist in room
+        Long finalFolder_id = folder_id;
+        Long finalRoom_id = room_id;
+        RoomFolder temp = room.getRoomFolders().stream().filter(
+                roomFolder -> roomFolder.getRoomFolderId().getFolderId().equals(finalFolder_id)
+                        && roomFolder.getRoomFolderId().getRoomId().equals(finalRoom_id)
+        ).findAny().orElse(null);
+
+        // folder existed in room
+        if(null != temp)
+            return messageError;
 
         RoomFolder roomFolder = new RoomFolder();
 
@@ -345,6 +562,8 @@ public class RoomService {
     @Transactional
     public String addStudySetToRoom(ObjectNode json){
 
+        String messageError = "cancel adding";
+
         Long room_id = null,studySet_id = null;
 
         // parsing if of room
@@ -381,6 +600,18 @@ public class RoomService {
 
         // find specific studySet
         StudySet studySet = studySetRepository.findById(studySet_id).orElseThrow(() -> new StudySetNotFoundException());
+
+        // check for SS exist in room
+        Long finalStudySet_id = studySet_id;
+        Long finalRoom_id = room_id;
+        RoomStudySet temp = room.getRoomStudySets().stream().filter(
+                roomStudySet -> roomStudySet.getRoomStudySetId().getStudySetId().equals(finalStudySet_id)
+                        && roomStudySet.getRoomStudySetId().getRoomId().equals(finalRoom_id)
+        ).findAny().orElse(null);
+
+        // SS existed in folder
+        if(null != temp)
+            return messageError;
 
         RoomStudySet roomStudySet = new RoomStudySet();
 
@@ -439,15 +670,19 @@ public class RoomService {
         // find specific room
         Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
 
+        // verify room's permisson
+        if(isMemberOfRoom(id) == false)
+            throw new RoomPermisson();
+
         // load all roomMembers in database
         List<RoomMember> roomMemberList = existingRoom.getRoomMembers();
 
-        if(roomMemberList.isEmpty()){
-            throw new NoDataFoundException(); // not found roomMembers
-        }
-
         // json load all roomMembers to client
         List<ObjectNode> objectNodeList = new ArrayList<>();
+
+        if(roomMemberList.isEmpty()){
+            return objectNodeList;
+        }
 
         // helper create objectnode
         ObjectMapper mapper;
@@ -457,9 +692,83 @@ public class RoomService {
             mapper =  new ObjectMapper();
             ObjectNode json = mapper.createObjectNode();
             json.put("member_id",roomMember.getRoomMemberId().getMemberId());
-            json.put("name",roomMember.getMember().getFirstName()+" "
-                    +roomMember.getMember().getLastName());
-            json.put("enrolledDate", formatter.format(roomMember.getEnrolledDate()));
+            json.put("userName",userService.getUserNameOfPerson(roomMember.getMember().getId()));
+
+
+            objectNodeList.add(json);
+        }
+
+        return objectNodeList;
+    }
+
+    @Transactional
+    public List<ObjectNode> getRoomInvitaionList(Long id){
+
+        // find specific room
+        Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
+
+        // verify room's permisson
+        if(isMemberOfRoom(id) == false)
+            throw new RoomPermisson();
+
+        // load all roomInvitation
+        List<RoomInvitation> roomInvitationList = existingRoom.getRoomInvitations();
+
+        // json load all to client
+        List<ObjectNode> objectNodeList = new ArrayList<>();
+
+        if(roomInvitationList.isEmpty()){
+            return objectNodeList;
+        }
+
+        // helper create objectnode
+        ObjectMapper mapper;
+
+        // load all to json list
+        for (RoomInvitation roomInvitation: roomInvitationList) {
+            mapper =  new ObjectMapper();
+            ObjectNode json = mapper.createObjectNode();
+            json.put("user_id",roomInvitation.getRoomInvitationId().getUserId());
+            json.put("userName",userService.getUserNameOfPerson(roomInvitation.getUser().getId()));
+            json.put("time",formatter.format(roomInvitation.getInvitedDate()));
+
+            objectNodeList.add(json);
+        }
+
+        return objectNodeList;
+    }
+
+    @Transactional
+    public List<ObjectNode> getRoomRequestAttendList(Long id){
+
+        // find specific room
+        Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
+
+        // verify room's permisson
+        if(isMemberOfRoom(id) == false)
+            throw new RoomPermisson();
+
+        // load all roomRequestAttend
+        List<RoomRequestAttend> roomRequestAttendList = existingRoom.getRoomRequestAttends();
+
+        // json load all to client
+        List<ObjectNode> objectNodeList = new ArrayList<>();
+
+        if(roomRequestAttendList.isEmpty()){
+            return objectNodeList;
+        }
+
+        // helper create objectnode
+        ObjectMapper mapper;
+
+        // load all to json list
+        for (RoomRequestAttend roomRequestAttend: roomRequestAttendList) {
+            mapper =  new ObjectMapper();
+            ObjectNode json = mapper.createObjectNode();
+            json.put("user_id",roomRequestAttend.getRoomRequestAttendId().getUserId());
+            json.put("userName",userService.getUserNameOfPerson(roomRequestAttend.getUser().getId()));
+            json.put("time",formatter.format(roomRequestAttend.getRequestedDate()));
+
             objectNodeList.add(json);
         }
 
@@ -472,17 +781,19 @@ public class RoomService {
         // find specific room
         Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
 
+        // verify room's permisson
+        if(isMemberOfRoom(id) == false)
+            throw new RoomPermisson();
 
         // load all roomFolders in database
         List<RoomFolder> roomFolderList = existingRoom.getRoomFolders();
 
-        if(roomFolderList.isEmpty()){
-            throw new NoDataFoundException(); // not found roomFolders
-        }
-
-
         // json load all roomFolders to client
         List<ObjectNode> objectNodeList = new ArrayList<>();
+
+        if(roomFolderList.isEmpty()){
+           return objectNodeList;
+        }
 
         // helper create objectnode
         ObjectMapper mapper;
@@ -493,7 +804,8 @@ public class RoomService {
             ObjectNode json = mapper.createObjectNode();
             json.put("folder_id",roomFolder.getRoomFolderId().getFolderId());
             json.put("title", roomFolder.getFolder().getTitle());
-            json.put("description",roomFolder.getFolder().getDescription());
+            json.put("color",roomFolder.getFolder().getColor().toString());
+            json.put("numberOfSets",roomFolder.getFolder().getFolderStudySets().size());
             json.put("createdDate", formatter.format(roomFolder.getCreatedDate()));
             objectNodeList.add(json);
         }
@@ -507,17 +819,19 @@ public class RoomService {
         // find specific room
         Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
 
+        // verify room's permisson
+        if(isMemberOfRoom(id) == false)
+            throw new RoomPermisson();
 
         // load all roomStudySets in database
         List<RoomStudySet> roomStudySetList = existingRoom.getRoomStudySets();
 
-        if(roomStudySetList.isEmpty()){
-            throw new NoDataFoundException(); // not found roomStudySets
-        }
-
         // json load all roomStudySets to client
         List<ObjectNode> objectNodeList = new ArrayList<>();
 
+        if(roomStudySetList.isEmpty()){
+           return objectNodeList;
+        }
         // helper create objectnode
         ObjectMapper mapper;
 
@@ -527,8 +841,15 @@ public class RoomService {
             ObjectNode json = mapper.createObjectNode();
             json.put("studySet_id",roomStudySet.getRoomStudySetId().getStudySetId());
             json.put("title", roomStudySet.getStudySet().getTitle());
+            json.put("tags",roomStudySet.getStudySet().getTag());
             json.put("description",roomStudySet.getStudySet().getDescription());
             json.put("createdDate", formatter.format(roomStudySet.getCreatedDate()));
+            json.put("numberOfCards",roomStudySet.getStudySet().getCards().size());
+            Long studySetOwner_id = roomStudySet.getStudySet().getCreator().getId();
+            json.put("creatorName",userService.getUserNameOfPerson(studySetOwner_id));
+            String color = studySetService.getColorOfStudySetLearning(
+                    roomStudySet.getRoomStudySetId().getStudySetId());
+            json.put("color",color);
             objectNodeList.add(json);
         }
 
@@ -586,6 +907,25 @@ public class RoomService {
         else{
             return true;
         }
+    }
+
+    public boolean isUserRequestPending(Long id){
+        // find specific room
+        Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
+
+        // get user logined
+        User currenUserLogined = authService.getCurrentUser();
+
+        List<RoomRequestAttend> roomRequestAttendList = existingRoom.getRoomRequestAttends();
+
+        RoomRequestAttend pending = roomRequestAttendList.stream().filter(
+                requestAttend -> requestAttend.getUser().getId().equals(currenUserLogined.getId())
+        ).findAny().orElse(null);
+
+        if(null != pending)
+             return true;
+
+        return false;
     }
 
     public HashSet<Long> listIdOfSetsInRoom(Long id){

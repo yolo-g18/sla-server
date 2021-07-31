@@ -13,6 +13,6 @@ import java.util.List;
 public interface RoomRepository extends JpaRepository<Room,Long> {
     Page<Room> findByNameContaining(String name, Pageable pageable);
 
-    @Query(value = "SELECT * FROM sla_db.room where name like CONCAT('%',:name,'%') and owner_id = :ownerId",nativeQuery = true)
+    @Query(value = "SELECT * FROM room where name like CONCAT('%',:name,'%') and owner_id = :ownerId",nativeQuery = true)
     List<Room> findByTitleAndOwnerId(@Param("ownerId")long ownerId, @Param("name")String name);
 }
