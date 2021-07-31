@@ -15,4 +15,7 @@ public interface RoomRepository extends JpaRepository<Room,Long> {
 
     @Query(value = "SELECT * FROM room where name like CONCAT('%',:name,'%') and owner_id = :ownerId",nativeQuery = true)
     List<Room> findByTitleAndOwnerId(@Param("ownerId")long ownerId, @Param("name")String name);
+
+    @Query(value = "SELECT max(room.id) FROM room",nativeQuery = true)
+    Long getMaxId();
 }

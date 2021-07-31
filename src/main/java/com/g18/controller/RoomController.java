@@ -131,4 +131,9 @@ public class RoomController {
     public List<ObjectNode> listRoomRequestAttend(@PathVariable Long id){
         return roomService.getRoomRequestAttendList(id);
     }
+
+    @GetMapping("/getMaxIdRoom")
+    public Long getMaxIdRoom(){
+        return roomService.getMaxId();
+    }
 }

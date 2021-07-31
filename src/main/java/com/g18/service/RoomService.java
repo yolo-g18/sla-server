@@ -928,5 +928,8 @@ public class RoomService {
         return false;
     }
 
-
+    @Transactional
+    public Long getMaxId(){
+        return roomRepository.getMaxId();
+    }
 }
