@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -27,4 +28,22 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     List<Account> findByUsernameContaining(String username);
 
+    @Query(value = "SELECT * FROM account\n" +
+            "where username like %:userName%\n" +
+            "and\n" +
+            "user_id not in (\n" +
+            "select member_id from room_member\n" +
+            "where room_id =:roomId\n" +
+            ")\n" +
+            "and\n" +
+            "user_id not in(\n" +
+            "select user_id from room_invitation\n" +
+            "where room_id =:roomId\n" +
+            ")\n" +
+            "and\n" +
+            "user_id not in(\n" +
+            "select user_id from room_request_attend\n" +
+            "where room_id =:roomId\n" +
+            ")", nativeQuery = true)
+    List<Account> searchGuestForInvitingToRoom(@Param("userName") String userName,@Param("roomId") Long roomId);
 }
