@@ -282,6 +282,10 @@ public class RoomService {
             System.out.printf(e.getMessage());
         }
 
+        // verify room's permisson
+        if(isCreatorOfRoom(room_id) == false)
+            throw new RoomPermisson();
+
         // parsing id of person
         try {
 
@@ -347,7 +351,7 @@ public class RoomService {
 
         // verify room's permisson
         if(isCreatorOfRoom(room_id) == false)
-            return "You are not creator of Room, You don't have permisson!!!";
+            throw new RoomPermisson();
 
         // parsing id of member
         try {
@@ -413,6 +417,10 @@ public class RoomService {
     @Transactional
     public String deleteRoomRequestAttend(Long room_id,Long user_id){
 
+        // verify room's permisson
+        if(isCreatorOfRoom(room_id) == false)
+            throw new RoomPermisson();
+
         // find that room
         Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
         // find that member
@@ -439,7 +447,7 @@ public class RoomService {
 
         // verify room's permisson
         if(isCreatorOfRoom(room_id) == false)
-            return "You are not creator of Room, You don't have permisson!!!";
+            throw new RoomPermisson();
 
         // find that room
         Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
@@ -477,8 +485,8 @@ public class RoomService {
         }
 
         // verify room's permisson
-        if(isMemberOfRoom(room_id) == false)
-           throw new RoomPermisson();
+        if(isCreatorOfRoom(room_id) == false)
+            throw new RoomPermisson();
 
         // parsing id of folder
         try {
@@ -532,7 +540,7 @@ public class RoomService {
     public String deleteFolderFromRoom(Long room_id,Long folder_id){
 
         // verify room's permisson
-        if(isMemberOfRoom(room_id) == false)
+        if(isCreatorOfRoom(room_id) == false)
             throw new RoomPermisson();
 
         // find specific folder
@@ -572,7 +580,7 @@ public class RoomService {
         }
 
         // verify room's permisson
-        if(isMemberOfRoom(room_id) == false)
+        if(isCreatorOfRoom(room_id) == false)
             throw new RoomPermisson();
 
 
@@ -629,7 +637,7 @@ public class RoomService {
     public String deleteStudySetFromRoom(Long room_id,Long studySet_id){
 
         // verify room's permisson
-        if(isMemberOfRoom(room_id) == false)
+        if(isCreatorOfRoom(room_id) == false)
             throw new RoomPermisson();
 
         // find specific room

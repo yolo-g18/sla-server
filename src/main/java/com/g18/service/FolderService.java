@@ -190,6 +190,10 @@ public class FolderService {
             System.out.printf(e.getMessage());
         }
 
+        // verify folder's permisson
+        if(isCreatorOfFolder(folder_id) == false)
+            throw new FolderPermisson();
+
         // parsing id of studySet
         try {
 
@@ -244,6 +248,10 @@ public class FolderService {
     }
     @Transactional
     public String deleteStudySetFromFolder(Long folder_id,Long studySet_id){
+
+        // verify folder's permisson
+        if(isCreatorOfFolder(folder_id) == false)
+            throw new FolderPermisson();
 
         // find that folder
         Folder existingFolder = folderRepository.findById(folder_id).
