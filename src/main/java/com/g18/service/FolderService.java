@@ -171,6 +171,7 @@ public class FolderService {
         if(isCreatorOfFolder(id) == false)
             throw new FolderPermisson();
 
+        folderRepository.deleteReferenceOfFolder(id);
         folderRepository.deleteById(id);
 
         return "remove Folder successfully";
