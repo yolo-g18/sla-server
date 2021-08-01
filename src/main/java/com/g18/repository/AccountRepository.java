@@ -39,11 +39,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
             "user_id not in(\n" +
             "select user_id from room_invitation\n" +
             "where room_id =:roomId\n" +
-            ")\n" +
-            "and\n" +
-            "user_id not in(\n" +
-            "select user_id from room_request_attend\n" +
-            "where room_id =:roomId\n" +
             ")", nativeQuery = true)
     List<Account> searchGuestForInvitingToRoom(@Param("userName") String userName,@Param("roomId") Long roomId);
 }
