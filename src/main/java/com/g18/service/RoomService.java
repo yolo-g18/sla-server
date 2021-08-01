@@ -163,7 +163,7 @@ public class RoomService {
 
         // verify room's permisson
         if(isCreatorOfRoom(id) == false)
-            return "You are not creator of Room, You don't have permisson!!!";
+            throw new RoomPermisson();
 
         // find that specific room
         Room room = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
@@ -181,7 +181,7 @@ public class RoomService {
 
         // verify room's permisson
         if(isCreatorOfRoom(id) == false)
-            return "You are not creator of Room, You don't have permisson!!!";
+            throw new RoomPermisson();
 
         roomRepository.deleteById(id);
 
@@ -203,7 +203,7 @@ public class RoomService {
 
         // verify room's permisson
         if(isCreatorOfRoom(id) == false)
-            return "You are not creator of Room, You don't have permisson!!!";
+            throw new RoomPermisson();
 
         // find that specific room
         Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
@@ -295,6 +295,18 @@ public class RoomService {
         Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
         // find that user
         User existingUser = userRepository.findById(user_id).orElseThrow(() -> new UserNotFoundException());
+
+        // check for user exist in invitation of room
+        Long finalUser_id = user_id;
+        Long finalRoom_id = room_id;
+        RoomInvitation temp = existingRoom.getRoomInvitations().stream().filter(
+                roomInvitation -> roomInvitation.getUser().getId().equals(finalUser_id)
+                        && roomInvitation.getRoom().getId().equals(finalRoom_id)
+        ).findAny().orElse(null);
+
+        // invexisted
+        if(null != temp)
+            throw new SLAException("invitation has been sent!");
 
         //create id of roomInvitationId
         RoomInvitationId roomInvitationId = new RoomInvitationId();
@@ -442,12 +454,6 @@ public class RoomService {
 
         ).findAny().orElse(null);
 
-        if(null == existingRoomMember)
-        {
-            // cancel remove because no relationship
-            return "Room dosen't include Member";
-        }
-
         // remove relationship roomMember
         existingRoom.getRoomMembers().remove(existingRoomMember);
 
@@ -458,8 +464,6 @@ public class RoomService {
 
     @Transactional
     public String addFolderToRoom(ObjectNode json){
-
-        String messageError = "cancel adding";
 
         Long room_id = null,folder_id = null;
 
@@ -474,7 +478,7 @@ public class RoomService {
 
         // verify room's permisson
         if(isMemberOfRoom(room_id) == false)
-            return "You are not member of Room, You don't have permisson!!!";
+           throw new RoomPermisson();
 
         // parsing id of folder
         try {
@@ -506,7 +510,7 @@ public class RoomService {
 
         // folder existed in room
         if(null != temp)
-            return messageError;
+            throw new SLAException("folder existed in room");
 
         RoomFolder roomFolder = new RoomFolder();
 
@@ -529,7 +533,7 @@ public class RoomService {
 
         // verify room's permisson
         if(isMemberOfRoom(room_id) == false)
-            return "You are not member of Room, You don't have permisson!!!";
+            throw new RoomPermisson();
 
         // find specific folder
         Folder folder = folderRepository.findById(folder_id).orElseThrow(() -> new FolderNotFoundException());
@@ -544,12 +548,6 @@ public class RoomService {
 
         ).findAny().orElse(null);
 
-        if(null == existingRoomFolder)
-        {
-            // cancel remove because no relationship
-            return "Room dosen't include Folder";
-        }
-
         // remove relationship roomFolder
         existingRoom.getRoomFolders().remove(existingRoomFolder);
 
@@ -561,8 +559,6 @@ public class RoomService {
 
     @Transactional
     public String addStudySetToRoom(ObjectNode json){
-
-        String messageError = "cancel adding";
 
         Long room_id = null,studySet_id = null;
 
@@ -577,7 +573,7 @@ public class RoomService {
 
         // verify room's permisson
         if(isMemberOfRoom(room_id) == false)
-            return "You are not member of Room, You don't have permisson!!!";
+            throw new RoomPermisson();
 
 
         // parsing id of studySet
@@ -609,9 +605,9 @@ public class RoomService {
                         && roomStudySet.getRoomStudySetId().getRoomId().equals(finalRoom_id)
         ).findAny().orElse(null);
 
-        // SS existed in folder
+
         if(null != temp)
-            return messageError;
+            throw new SLAException("set existed in room");
 
         RoomStudySet roomStudySet = new RoomStudySet();
 
@@ -634,7 +630,7 @@ public class RoomService {
 
         // verify room's permisson
         if(isMemberOfRoom(room_id) == false)
-            return "You are not member of Room, You don't have permisson!!!";
+            throw new RoomPermisson();
 
         // find specific room
         Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
@@ -649,12 +645,6 @@ public class RoomService {
                                 roomStudySet.getRoomStudySetId().getRoomId().equals(room_id)
 
         ).findAny().orElse(null);
-
-
-        if(null == existingRoomStudySet){
-            // cancel remove because no relationship
-              return "Room dosen't include StudySet";
-        }
 
         // remove relationship roomStudySet
         existingRoom.getRoomStudySets().remove(existingRoomStudySet);

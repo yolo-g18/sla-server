@@ -112,6 +112,7 @@ public class SearchService {
         return new PageImpl<SearchUserResponse>(
                 accountPage.stream().map(
                         account -> new SearchUserResponse(
+                                account.getUser().getId(),
                                 account.getUsername(),
                                 account.getUser().getAvatar(),
                                 account.getUser().getBio(),
@@ -147,6 +148,7 @@ public class SearchService {
         List<SearchUserResponse> listResponse = new ArrayList<>();
         for (Account acc : accounts){
             SearchUserResponse accResponse = new SearchUserResponse();
+            accResponse.setUserId(acc.getUser().getId());
             accResponse.setUsername(acc.getUsername());
             accResponse.setAvatar(acc.getUser().getAvatar());
             accResponse.setBio(acc.getUser().getBio());

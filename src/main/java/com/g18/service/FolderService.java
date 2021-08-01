@@ -92,7 +92,7 @@ public class FolderService {
 
         // verify folder's permisson
         if(isCreatorOfFolder(id) == false)
-            return "You are not creator of Folder, You don't have permisson!!!";
+            throw new FolderPermisson();
 
         // find that specific room
         Folder existingFolder = folderRepository.findById(id).orElseThrow(() -> new FolderNotFoundException());
@@ -169,7 +169,7 @@ public class FolderService {
 
         // verify folder's permisson
         if(isCreatorOfFolder(id) == false)
-            return "You are not creator of Folder, You don't have permisson!!!";
+            throw new FolderPermisson();
 
         folderRepository.deleteById(id);
 
@@ -178,8 +178,6 @@ public class FolderService {
 
     @Transactional
     public String addStudySetToFolder(ObjectNode json){
-
-        String messageError = "cancel adding";
 
         Long folder_id = null,studySet_id = null;
 
@@ -219,7 +217,7 @@ public class FolderService {
 
         // SS existed in folder
         if(null != temp)
-            return messageError;
+            throw new SLAException("set existed in folder");
 
         //create id of folderStudySet
         FolderStudySetId folderStudySetId = new FolderStudySetId();
@@ -261,12 +259,6 @@ public class FolderService {
                                 folderStudySet.getFolderStudySetId().getStudySetId().equals(studySet_id)
 
         ).findAny().orElse(null);
-
-        if(null == existingFolderStudySet)
-        {
-            // cancel remove because no relationship
-            return "Folder dosen't include StudySet";
-        }
 
         // remove relationship roomMember
         existingFolder.getFolderStudySets().remove(existingFolderStudySet);
