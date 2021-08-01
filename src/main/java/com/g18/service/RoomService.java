@@ -928,30 +928,4 @@ public class RoomService {
         return false;
     }
 
-    public HashSet<Long> listIdOfSetsInRoom(Long id){
-
-        HashSet<Long> hashSet = new HashSet<>();
-
-        // find a specific room
-        Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
-
-        // count set in room
-        for (RoomStudySet roomStudySet : existingRoom.getRoomStudySets())
-        {
-            hashSet.add(roomStudySet.getRoomStudySetId().getStudySetId());
-        }
-
-        // count set in folder included in room
-        for(RoomFolder roomFolder : existingRoom.getRoomFolders())
-        {
-            Folder folder = folderRepository.findById(roomFolder.getRoomFolderId().getFolderId()).
-                    orElseThrow(() -> new FolderNotFoundException());
-
-            for(FolderStudySet folderStudySet : folder.getFolderStudySets()){
-                hashSet.add(folderStudySet.getFolderStudySetId().getStudySetId());
-            }
-        }
-
-        return hashSet;
-    }
 }

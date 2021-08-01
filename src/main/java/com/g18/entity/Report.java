@@ -1,5 +1,6 @@
 package com.g18.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,21 +14,20 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Report {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name="user_id")
-    private User user;
+    @JoinColumn(name="reporter_id")
+    private User reporter;
 
     @ManyToOne
     @JoinColumn(name="study_set_id")
     private StudySet studySet;
 
     private String content;
-
+    @JsonProperty
     private boolean isChecked;
 
     private Instant createdTime;

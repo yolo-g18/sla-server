@@ -11,6 +11,6 @@ public class ReportDto {
     private Long id;
     private Long ssId;
     private String ssTitle;
-    private String username;
+    private String reporter;
     private String content;
 }
