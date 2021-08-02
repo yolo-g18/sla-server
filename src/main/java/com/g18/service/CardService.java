@@ -57,31 +57,7 @@ public class CardService {
                 card.setBack(cardDto.getBack());
                 card.setFront(cardDto.getFront());
                 cardRepository.save(card);
-                //Check if isLearning = true
-                if(studySetLearning != null){
-                    CardLearning cardLearning = new CardLearning();
-                    //Set User-Card
-                    UserCardId userCardId = new UserCardId();
-                    userCardId.setUserId(user.getId());
-                    userCardId.setCardId(card.getId());
 
-                    //Set CardLearning to Insert DB
-                    cardLearning.setUserCardId(userCardId);
-                    cardLearning.setCard(card);
-                    cardLearning.setUser(user);
-
-                    Instant now = Instant.now().truncatedTo(ChronoUnit.HOURS);
-                    cardLearning.setLearnedDate(now);
-
-                    cardLearning.setColor(null);
-                    cardLearning.setEFactor(2.5);
-                    cardLearning.setHint(null);
-                    cardLearning.setIntervalTime(0);
-                    cardLearning.setQ(0);
-                    cardLearning.setStatus(Status.NOTSTARTED);
-
-                    cardLearningRepository.save(cardLearning);
-                }
             }
             return ResponseEntity.status(HttpStatus.CREATED).body("Add Card successfully");
         }catch (Exception e){
