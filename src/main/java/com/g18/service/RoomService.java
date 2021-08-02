@@ -81,29 +81,13 @@ public class RoomService {
 
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
 
-        // load all rooms of user
-        List<Room> roomList = user.getRoomsOwn();
-
         // json load all rooms to client
         List<ObjectNode> objectNodeList = new ArrayList<>();
 
         // helper create objectnode
         ObjectMapper mapper;
 
-        // load all room created to json list
-        for (Room room: roomList) {
-            mapper =  new ObjectMapper();
-            ObjectNode json = mapper.createObjectNode();
-            json.put("room_id",room.getId());
-            json.put("name",room.getName());
-            json.put("ownerName",userService.getUserNameOfPerson(room.getOwner().getId()));
-            json.put("numberOfMembers",room.getRoomMembers().size());
-            json.put("createdDate", formatter.format(room.getCreatedDate()));
-            objectNodeList.add(json);
-        }
-
         List<Long> listRoomIdJoin = listRoomIdAttendOfUser(id);
-
 
         // load all room attend to json list
         for (Long item : listRoomIdJoin) {
@@ -117,7 +101,6 @@ public class RoomService {
             json.put("createdDate", formatter.format(room.getCreatedDate()));
             objectNodeList.add(json);
         }
-
 
         return  objectNodeList;
     }
@@ -709,10 +692,6 @@ public class RoomService {
 
         // get user logined
         User user = authService.getCurrentUser();
-
-        // verify room's permisson
-        if(isMemberOfRoom(user.getId()) == false)
-            throw new RoomPermisson();
 
         // load all roomInvitation
         List<RoomInvitation> roomInvitationList = user.getInvitationList();
