@@ -12,6 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,6 +26,12 @@ public class NotificationService {
     private NotificationRepository notificationRepository;
     @Autowired
     private AuthService authService;
+
+    private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime( FormatStyle.SHORT )
+            .withLocale( Locale.UK )
+            .withZone( ZoneId.systemDefault() );
+
+
     @Transactional
     public String saveNotification(ObjectNode json){
 
@@ -64,7 +74,7 @@ public class NotificationService {
         return new PageImpl<NotificationDto>(
                 notiPage.stream().map(notification -> new NotificationDto(
                                 notification.getId(),notification.getTitle(),notification.getDescription(),
-                                notification.getType(),notification.getLink(),String.valueOf(notification.getCreatedTime()),
+                                notification.getType(),notification.getLink(),formatter.format(notification.getCreatedTime()),
                                 String.valueOf(notification.getTimeTrigger()),notification.isRead()
                         )
                 ).collect(Collectors.toList()), pageable, totalElements);
