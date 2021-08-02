@@ -20,7 +20,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     List<Account> findByUsernameContains(String keyword);
 
     @Query(value = "SELECT username FROM account where user_id = ?1 ", nativeQuery = true)
-    String findUserNameByUserId(long userId);
+    String findUserNameByUserId(Long userId);
     Optional<Account> findByUser(User user);
 
     Page<Account> findByUsernameContains(String userName, Pageable pageable);
