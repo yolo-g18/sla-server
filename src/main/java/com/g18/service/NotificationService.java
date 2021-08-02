@@ -47,7 +47,10 @@ public class NotificationService {
         User owner = userRepository.getOne(creator_id);
         notify.setUser(owner);
         notify.setCreatedTime(Instant.now());
-        notify.setTimeTrigger(Instant.parse(json.get("timeTrigger").asText()));
+
+        if(null != json.get("timeTrigger").asText())
+                notify.setTimeTrigger(Instant.parse(json.get("timeTrigger").asText()));
+
         notificationRepository.save(notify);
         return "create notification successfully";
     }

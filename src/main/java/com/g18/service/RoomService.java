@@ -710,6 +710,10 @@ public class RoomService {
         // get user logined
         User user = authService.getCurrentUser();
 
+        // verify room's permisson
+        if(isMemberOfRoom(user.getId()) == false)
+            throw new RoomPermisson();
+
         // load all roomInvitation
         List<RoomInvitation> roomInvitationList = user.getInvitationList();
 
