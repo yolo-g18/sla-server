@@ -30,8 +30,8 @@ public class LearningController {
 	}
 
 	@GetMapping("/learnByDate")
-	public ResponseEntity learnToday(@Valid @RequestBody LearnRequestDto learnRequestDto){
-		return learningService.learningFlashCardByDateAndStudySetAndUser(learnRequestDto);
+	public ResponseEntity learnToday(@RequestParam(value="studySet") Long studySetId, @RequestParam(value="date") String date){
+		return learningService.learningFlashCardByDateAndStudySetAndUser(studySetId, date);
 	}
 
 	@GetMapping("continue")

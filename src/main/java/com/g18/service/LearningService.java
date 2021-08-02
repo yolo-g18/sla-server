@@ -160,7 +160,7 @@ public class LearningService {
                         Event eventLearning = new Event();
                         eventLearning.setUser(user);
 
-                        eventLearning.setDescription("Learn |" + studySetId);
+                        eventLearning.setDescription(""+studySetId);
 
                         //Set time learn
                         Instant from = now.atZone(ZoneId.systemDefault()).withHour(0).withMinute(0).toInstant();
@@ -181,7 +181,7 @@ public class LearningService {
                     Event eventLearning = new Event();
                     eventLearning.setUser(user);
 
-                    eventLearning.setDescription("Learn |" + studySetId);
+                    eventLearning.setDescription("" + studySetId);
 
                     Instant from = now.atZone(ZoneId.systemDefault()).withHour(0).withMinute(0).toInstant();
                     eventLearning.setFromTime(from);
@@ -204,14 +204,11 @@ public class LearningService {
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
 
-    public ResponseEntity learningFlashCardByDateAndStudySetAndUser(LearnRequestDto learnRequestDto) {
+    public ResponseEntity learningFlashCardByDateAndStudySetAndUser(Long studySetId, String date) {
         // TODO Auto-generated method stub
         List<CardLearningDto> responses = new ArrayList<>();
         try{
             Long userId = authService.getCurrentUser().getId();
-            //Set today
-            Long studySetId = learnRequestDto.getStudySetId();
-            String date = learnRequestDto.getLearnDate();
 
             List<CardLearning> cardLearningList = cardLearningRepository.getListCardLearningByStudySetIdAndUserIdAndDate(studySetId, userId, date);
             if(cardLearningList != null){
@@ -331,7 +328,7 @@ public class LearningService {
                         Event eventLearning = new Event();
                         eventLearning.setUser(user);
 
-                        eventLearning.setDescription("Learn |" + studySetIdOfCard);
+                        eventLearning.setDescription(""+studySetIdOfCard);
 
                         Instant from = learnDate.atZone(ZoneId.systemDefault()).withHour(0).withMinute(0).toInstant();
                         eventLearning.setFromTime(from);
@@ -351,7 +348,7 @@ public class LearningService {
                     Event eventLearning = new Event();
                     eventLearning.setUser(user);
 
-                    eventLearning.setDescription("Learn |" + studySetIdOfCard);
+                    eventLearning.setDescription("" + studySetIdOfCard);
 
                     Instant from = learnDate.atZone(ZoneId.systemDefault()).withHour(0).withMinute(0).toInstant();
                     eventLearning.setFromTime(from);
