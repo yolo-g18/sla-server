@@ -87,26 +87,39 @@ public class RoomService {
         // json load all rooms to client
         List<ObjectNode> objectNodeList = new ArrayList<>();
 
-        if(roomList.isEmpty()){
-            return objectNodeList;
-        }
-
         // helper create objectnode
         ObjectMapper mapper;
 
-        // load all room to json list
+        // load all room created to json list
         for (Room room: roomList) {
             mapper =  new ObjectMapper();
             ObjectNode json = mapper.createObjectNode();
             json.put("room_id",room.getId());
             json.put("name",room.getName());
-            json.put("description",room.getDescription());
+            json.put("ownerName",userService.getUserNameOfPerson(room.getOwner().getId()));
             json.put("numberOfMembers",room.getRoomMembers().size());
             json.put("createdDate", formatter.format(room.getCreatedDate()));
             objectNodeList.add(json);
         }
 
-        return objectNodeList;
+        List<Long> listRoomIdJoin = listRoomIdAttendOfUser(id);
+
+
+        // load all room attend to json list
+        for (Long item : listRoomIdJoin) {
+            mapper =  new ObjectMapper();
+            ObjectNode json = mapper.createObjectNode();
+            Room room = roomRepository.getOne(item);
+            json.put("room_id",room.getId());
+            json.put("name",room.getName());
+            json.put("ownerName",userService.getUserNameOfPerson(room.getOwner().getId()));
+            json.put("numberOfMembers",room.getRoomMembers().size());
+            json.put("createdDate", formatter.format(room.getCreatedDate()));
+            objectNodeList.add(json);
+        }
+
+
+        return  objectNodeList;
     }
 
 
@@ -349,10 +362,6 @@ public class RoomService {
             System.out.printf(e.getMessage());
         }
 
-        // verify room's permisson
-        if(isCreatorOfRoom(room_id) == false)
-            throw new RoomPermisson();
-
         // parsing id of member
         try {
 
@@ -416,10 +425,6 @@ public class RoomService {
 
     @Transactional
     public String deleteRoomRequestAttend(Long room_id,Long user_id){
-
-        // verify room's permisson
-        if(isCreatorOfRoom(room_id) == false)
-            throw new RoomPermisson();
 
         // find that room
         Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
@@ -700,17 +705,13 @@ public class RoomService {
     }
 
     @Transactional
-    public List<ObjectNode> getRoomInvitaionList(Long id){
+    public List<ObjectNode> getRoomInvitationListOfUser(){
 
-        // find specific room
-        Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
-
-        // verify room's permisson
-        if(isMemberOfRoom(id) == false)
-            throw new RoomPermisson();
+        // get user logined
+        User user = authService.getCurrentUser();
 
         // load all roomInvitation
-        List<RoomInvitation> roomInvitationList = existingRoom.getRoomInvitations();
+        List<RoomInvitation> roomInvitationList = user.getInvitationList();
 
         // json load all to client
         List<ObjectNode> objectNodeList = new ArrayList<>();
@@ -726,9 +727,11 @@ public class RoomService {
         for (RoomInvitation roomInvitation: roomInvitationList) {
             mapper =  new ObjectMapper();
             ObjectNode json = mapper.createObjectNode();
-            json.put("user_id",roomInvitation.getRoomInvitationId().getUserId());
-            json.put("userName",userService.getUserNameOfPerson(roomInvitation.getUser().getId()));
-            json.put("time",formatter.format(roomInvitation.getInvitedDate()));
+            json.put("roomId",roomInvitation.getRoom().getId());
+            json.put("roomName",roomInvitation.getRoom().getName());
+            json.put("userNameHost",userService.getUserNameOfPerson(roomInvitation.getRoom()
+                    .getOwner().getId()));
+            json.put("timeInvited",formatter.format(roomInvitation.getInvitedDate()));
 
             objectNodeList.add(json);
         }
@@ -929,5 +932,10 @@ public class RoomService {
     @Transactional
     public Long getMaxId(){
         return roomRepository.getMaxId();
+    }
+
+    @Transactional
+    public List<Long> listRoomIdAttendOfUser(Long userId){
+        return roomRepository.listRoomIdAttendOfUser(userId);
     }
 }

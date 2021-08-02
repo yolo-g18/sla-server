@@ -122,9 +122,9 @@ public class RoomController {
         return roomService.deleteRoomRequestAttend(room_id,user_id);
     }
 
-    @GetMapping("/listRoomInvitations/{id}")
-    public List<ObjectNode> listInvitationsOfRoom(@PathVariable Long id){
-        return roomService.getRoomInvitaionList(id);
+    @GetMapping("/getRoomInvitationList")
+    public List<ObjectNode> listInvitationsOfRoom(){
+        return roomService.getRoomInvitationListOfUser();
     }
 
     @GetMapping("/listRoomRequestAttend/{id}")
@@ -136,4 +136,5 @@ public class RoomController {
     public Long getMaxIdRoom(){
         return roomService.getMaxId();
     }
+
 }

@@ -18,4 +18,11 @@ public interface RoomRepository extends JpaRepository<Room,Long> {
 
     @Query(value = "SELECT max(room.id) FROM room",nativeQuery = true)
     Long getMaxId();
+
+    @Query(value = "SELECT room_id FROM room_member\n" +
+            "where member_id =:userId and\n" +
+            "member_id not in (\n" +
+            "select owner_id from room\n" +
+            ")",nativeQuery = true)
+    List<Long> listRoomIdAttendOfUser(@Param("userId")Long userId);
 }
