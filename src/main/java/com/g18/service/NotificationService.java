@@ -102,4 +102,9 @@ public class NotificationService {
         System.out.println(json.get("notiId").asText());
         notificationRepository.readNew(id);
     }
+
+    @Transactional
+    public void readAllNews(){
+        notificationRepository.readAllNews();
+    }
 }

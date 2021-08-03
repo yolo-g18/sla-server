@@ -21,4 +21,10 @@ public interface NotificationRepository extends JpaRepository<Notification,Long>
      @Modifying
      @Query(value = "update notification set is_read = 1 where id =:notiId", nativeQuery = true)
      public void readNew(@Param("notiId") Long notiId);
+
+     @Modifying
+     @Query(value =
+             "update notification set is_read = 1"
+            , nativeQuery = true)
+     public void readAllNews();
 }

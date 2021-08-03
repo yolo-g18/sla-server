@@ -66,4 +66,10 @@ public class NotificationController {
         return "read news";
     }
 
+    @PutMapping("/readAllNews")
+    String readAllNews(){
+        notificationService.readAllNews();
+        return "read all news";
+    }
+
 }
