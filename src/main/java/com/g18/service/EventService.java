@@ -41,10 +41,20 @@ public class EventService implements IEventService {
     private AuthService authService;
 
     @Override
-    public String save(EventDto eventDto) {
+    public String save(ObjectNode json) {
         User user = authService.getCurrentUser();
-        Event event =  eventConverter.toEntity(eventDto);
+        Event event =  new Event();
         event.setUser(user);
+
+        event.setName(json.get("name").asText());
+        event.setDescription(json.get("description").asText());
+        event.setFromTime(Instant.parse(json.get("fromTime").asText()));
+        event.setToTime(Instant.parse(json.get("toTime").asText()));
+        event.setLearnEvent(Boolean.parseBoolean(json.get("isLearnEvent").asText()));
+        event.setColor(Color.valueOf(json.get("color").asText()));
+        event.setCreatedTime(Instant.now());
+        event.setUpdateTime(Instant.now());
+
         event = eventRepository.save(event);
         return "Create event successfully";
     }

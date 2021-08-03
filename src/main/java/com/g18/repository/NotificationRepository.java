@@ -1,5 +1,5 @@
 package com.g18.repository;
-import com.g18.entity.Event;
+
 import com.g18.entity.Notification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.Instant;
 import java.util.List;
 
 public interface NotificationRepository extends JpaRepository<Notification,Long> {
@@ -31,5 +32,7 @@ public interface NotificationRepository extends JpaRepository<Notification,Long>
      @Query(value = "SELECT count(*) FROM notification where is_read = 0 and user_id=:userId", nativeQuery = true)
      public Long getNotReadNewsNumber(@Param("userId") Long userId);
 
+     List<Notification> findByTypeAndTimeTriggerBetweenOrderByTimeTrigger(String type, Instant timeTrigger1, Instant timeTrigger2);
 
+     List<Notification> findNotificationByType(String type);
 }

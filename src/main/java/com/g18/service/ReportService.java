@@ -41,7 +41,7 @@ public class ReportService {
                             report.getId(),
                             report.getStudySet().getId(),
                             report.getStudySet().getTitle(),
-                            accountRepository.findUserNameByUserId(report.getUser().getId()),
+                            accountRepository.findUserNameByUserId(report.getReporter().getId()),
                             report.getContent()
                         )
                 ).collect(Collectors.toList()), pageable, totalElements);
@@ -54,7 +54,7 @@ public class ReportService {
         StudySet ss = studySetRepository.findById(ssID).orElseThrow(()
                 ->  new ExpressionException("Lỗi ! ko tìm thấy Study set."));
         report.setStudySet(ss);
-        report.setUser(authService.getCurrentUser());
+        report.setReporter(authService.getCurrentUser());
         report.setContent(json.get("content").asText());
         report.setCreatedTime(Instant.now());
         reportRepository.save(report);

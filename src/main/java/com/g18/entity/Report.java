@@ -20,7 +20,7 @@ public class Report {
 
     @ManyToOne
     @JoinColumn(name="user_id")
-    private User user;
+    private User reporter;
 
     @ManyToOne
     @JoinColumn(name="study_set_id")

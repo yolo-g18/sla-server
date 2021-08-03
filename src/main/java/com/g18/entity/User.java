@@ -41,7 +41,7 @@ public class User {
 	@OneToMany(mappedBy = "user", orphanRemoval=true, cascade=CascadeType.ALL)
 	private List<Notification> notis;
 
-	@OneToMany(mappedBy = "user", orphanRemoval=true, cascade=CascadeType.ALL)
+	@OneToMany(mappedBy = "reporter", orphanRemoval=true, cascade=CascadeType.ALL)
 	private List<Report> reports;
 
 	@OneToMany(mappedBy = "creator")

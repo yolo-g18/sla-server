@@ -2,16 +2,22 @@ package com.g18.config;
 
 import com.g18.entity.CardLearning;
 import com.g18.entity.Event;
+import com.g18.entity.Notification;
+import com.g18.repository.AccountRepository;
 import com.g18.repository.CardLearningRepository;
 import com.g18.repository.EventRepository;
+import com.g18.repository.NotificationRepository;
+import com.g18.service.EmailSenderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
 
 @Configuration
@@ -23,6 +29,15 @@ public class ScheduleConfig {
 
     @Autowired
     private EventRepository eventRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
+
+    @Autowired
+    private EmailSenderService emailSenderService;
+
+    @Autowired
+    private AccountRepository accountRepository;
 
     @Scheduled(cron = "0 0 1 * * *")//Run at 1 A.M every day
     public void showTime() {
@@ -50,6 +65,64 @@ public class ScheduleConfig {
                 event.setFromTime(from);
                 event.setToTime(to);
                 eventRepository.save(event);
+            }
+        }
+    }
+
+    @Scheduled(cron = "0 0 6 * * *")//Run at 6 A.M every day
+    public void sendEmailDaily() {
+
+        Date myDate = Date.from(Instant.now());
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        String learnTime = formatter.format(myDate);
+
+        String type = "daily";
+        List<Notification> notificationList = notificationRepository.findNotificationByType(type);
+        if(notificationList != null) {
+            for (Notification noti : notificationList) {
+
+                String username = accountRepository.findUserNameByUserId(noti.getUser().getId());
+
+                String toEmail = noti.getUser().getEmail();
+                String body = "Hello " + username + "\n" +
+                        "You have some events to attend today.\n" +
+                        "Please participate fully and on time events on SLA.\n" +
+                        "Have a good day!";
+                String subject = "Notice to learn on " + learnTime;
+                emailSenderService.sendSimpleEmail(toEmail, body, subject);
+            }
+        }
+    }
+
+    @Scheduled(cron = "* */10 * * * *")//Run after 10 minutes.
+    public void sendEmailNotiLearn() {
+        Instant now = Instant.now();
+        Instant after10Minutes = now.plus(10, ChronoUnit.MINUTES);
+
+
+        String type = "learn";
+        List<Notification> notificationList = notificationRepository.findByTypeAndTimeTriggerBetweenOrderByTimeTrigger(type,now, after10Minutes);
+        if(notificationList != null) {
+            for (Notification noti : notificationList) {
+                Instant timeTrigger = noti.getTimeTrigger();
+
+                Date myDate = Date.from(timeTrigger);
+                SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");
+                String learnTime = formatter.format(myDate);
+
+                String username = accountRepository.findUserNameByUserId(noti.getUser().getId());
+
+                String toEmail = noti.getUser().getEmail();
+                String body = "Hello " + username + "\n" +
+                        "Time to learn is " + learnTime + "\n" +
+                        "Please go to SLA to learn.";
+                String subject = "Time to learn";
+                emailSenderService.sendSimpleEmail(toEmail, body, subject);
+
+                //update timeTrigger: plus one day
+                timeTrigger = timeTrigger.plus(1, ChronoUnit.DAYS);
+                noti.setTimeTrigger(timeTrigger);
+                notificationRepository.save(noti);
             }
         }
     }
