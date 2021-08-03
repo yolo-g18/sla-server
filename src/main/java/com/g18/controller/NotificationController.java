@@ -72,4 +72,11 @@ public class NotificationController {
         return "read all news";
     }
 
+    @GetMapping("/getNotReadNewsNumber/{userId}")
+    Long getNotReadNewsNumber(@PathVariable Long userId){
+        return notificationService.getNotReadNewsNumber(userId);
+    }
+
+
+
 }

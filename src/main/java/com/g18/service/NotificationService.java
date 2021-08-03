@@ -128,4 +128,11 @@ public class NotificationService {
 
         notificationRepository.readAllNews(userId);
     }
+
+    @Transactional
+    public Long getNotReadNewsNumber(Long userId){
+        return notificationRepository.getNotReadNewsNumber(userId);
+    }
+
+
 }

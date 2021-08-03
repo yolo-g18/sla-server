@@ -19,12 +19,17 @@ public interface NotificationRepository extends JpaRepository<Notification,Long>
      Page<Notification> findByUserIdOrderByCreatedTimeDesc(Long userID, Pageable pageable);
 
      @Modifying
-     @Query(value = "update notification set is_read = 1 where id =:notiId and user_id=:userId", nativeQuery = true)
+     @Query(value = "update notification set is_read = 1 where id =:notiId and user_id=:userId",
+             nativeQuery = true)
      public void readNew(@Param("notiId") Long notiId,@Param("userId") Long userId);
 
      @Modifying
-     @Query(value =
-             "update notification set is_read = 1 where user_id=:userId"
+     @Query(value = "update notification set is_read = 1 where user_id=:userId"
             , nativeQuery = true)
      public void readAllNews(@Param("userId") Long userId);
+
+     @Query(value = "SELECT count(*) FROM notification where is_read = 0 and user_id=:userId", nativeQuery = true)
+     public Long getNotReadNewsNumber(@Param("userId") Long userId);
+
+
 }

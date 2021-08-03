@@ -165,9 +165,7 @@ public class RoomService {
         // find that specific room
         Room room = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
 
-        room.getRoomMembers().clear();
-
-        roomRepository.saveAndFlush(room);
+        roomRepository.removeAllMember(id);
 
         return "remove all members successfully";
     }
