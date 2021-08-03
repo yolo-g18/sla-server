@@ -90,21 +90,42 @@ public class NotificationService {
     @Transactional
     public void readNews(ObjectNode json)
     {
-        Long id = null;
+        Long notiId = null;
+        Long userId = null;
 
         try{
-            id = Long.parseLong(json.get("notiId").asText());
+            notiId = Long.parseLong(json.get("notiId").asText());
         }
         catch (Exception e)
         {
             System.out.println(e.getMessage());
         }
-        System.out.println(json.get("notiId").asText());
-        notificationRepository.readNew(id);
+
+        try{
+            userId = Long.parseLong(json.get("userId").asText());
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+
+
+        notificationRepository.readNew(notiId,userId);
     }
 
     @Transactional
-    public void readAllNews(){
-        notificationRepository.readAllNews();
+    public void readAllNews(ObjectNode json){
+
+        Long userId = null;
+
+        try{
+            userId = Long.parseLong(json.get("userId").asText());
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+
+        notificationRepository.readAllNews(userId);
     }
 }

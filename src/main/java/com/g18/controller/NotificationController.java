@@ -67,8 +67,8 @@ public class NotificationController {
     }
 
     @PutMapping("/readAllNews")
-    String readAllNews(){
-        notificationService.readAllNews();
+    String readAllNews(@RequestBody ObjectNode json){
+        notificationService.readAllNews(json);
         return "read all news";
     }
 
