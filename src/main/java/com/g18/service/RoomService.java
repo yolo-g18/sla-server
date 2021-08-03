@@ -27,7 +27,7 @@ public class RoomService {
 
     private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime( FormatStyle.SHORT )
             .withLocale( Locale.UK )
-            .withZone( ZoneId.systemDefault() );
+            .withZone( ZoneId.systemDefault());
 
     @Autowired
     private AuthService authService;
@@ -147,6 +147,7 @@ public class RoomService {
         json.put("name",existingRoom.getName());
         json.put("description",existingRoom.getDescription());
         json.put("createdDate", formatter.format(existingRoom.getCreatedDate()));
+        json.put("ownerId",existingRoom.getOwner().getId());
         json.put("ownerName",userService.getUserNameOfPerson(existingRoom.getOwner().getId()));
         json.put("setNumbers",listIdOfSetsInRoom(id).size());
         json.put("folderNumbers",existingRoom.getRoomFolders().size());

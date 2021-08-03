@@ -4,6 +4,7 @@ import com.g18.entity.Notification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -17,4 +18,7 @@ public interface NotificationRepository extends JpaRepository<Notification,Long>
 
      Page<Notification> findByUserIdOrderByCreatedTimeDesc(Long userID, Pageable pageable);
 
+     @Modifying
+     @Query(value = "update notification set is_read = 1 where id =:notiId", nativeQuery = true)
+     public void readNew(@Param("notiId") Long notiId);
 }

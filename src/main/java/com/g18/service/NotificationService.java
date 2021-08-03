@@ -12,11 +12,20 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
 public class NotificationService {
+
+    private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime( FormatStyle.SHORT )
+            .withLocale( Locale.UK )
+            .withZone( ZoneId.systemDefault());
+
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -72,11 +81,25 @@ public class NotificationService {
         return new PageImpl<NotificationDto>(
                 notiPage.stream().map(notification -> new NotificationDto(
                                 notification.getId(),notification.getTitle(),notification.getDescription(),
-                                notification.getType(),notification.getLink(),String.valueOf(notification.getCreatedTime()),
+                                notification.getType(),notification.getLink(),formatter.format(notification.getCreatedTime()),
                                 String.valueOf(notification.getTimeTrigger()),notification.isRead()
                         )
                 ).collect(Collectors.toList()), pageable, totalElements);
     }
 
+    @Transactional
+    public void readNews(ObjectNode json)
+    {
+        Long id = null;
 
+        try{
+            id = Long.parseLong(json.get("notiId").asText());
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+        System.out.println(json.get("notiId").asText());
+        notificationRepository.readNew(id);
+    }
 }

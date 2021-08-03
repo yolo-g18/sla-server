@@ -60,4 +60,10 @@ public class NotificationController {
         return "sent email";
     }
 
+    @PutMapping("/readNews")
+    String readNews(@RequestBody ObjectNode json){
+        notificationService.readNews(json);
+        return "read news";
+    }
+
 }
