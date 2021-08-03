@@ -112,7 +112,7 @@ public class StudySetService {
             User user = userRepository.findById(userId).orElse(null);
 
             StudySet studySet = studySetRepository.findById(request.getId())
-                                        .orElseThrow(()->  new ExpressionException("Study Set not exist"));;
+                                        .orElseThrow(()->  new ExpressionException("Study Set not exist"));
             if(user.equals(studySet.getCreator())){
                 studySet.setDescription(request.getDescription());
                 studySet.setTag(request.getTag());
@@ -154,11 +154,15 @@ public class StudySetService {
     public ResponseEntity viewStudySetBy(Long studySetId) {
 
         StudySet studySet = studySetRepository.findById(studySetId)
-                                    .orElseThrow(()->  new ExpressionException("Study Set not exist"));;
+                                    .orElseThrow(()->  new ExpressionException("Study Set not exist"));
+
         User user = authService.getCurrentAccount().getUser();
         boolean isPublic = studySet.isPublic();
         if(!isPublic && !user.equals(studySet.getCreator())){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not allowed");
+            StudySetLearning isExistStudySetLearning = studySetLearningRepository.findByUserIdAndStudySetId(user.getId(), studySetId);
+            if(isExistStudySetLearning == null){
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not allowed");
+            }
         }
         StudySetResponse studySetResponse = setStudySetResponse(studySet, 0);
         return ResponseEntity.status(HttpStatus.OK).body(studySetResponse);

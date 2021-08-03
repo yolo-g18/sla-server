@@ -148,8 +148,7 @@ public class LearningService {
                     boolean isExistEventOfStudySet = false;
 
                     for(Event eventToday : eventListToday){
-                        String[] split = eventToday.getDescription().split("\\|");
-                        Long studySetIdOfEventBefore = Long.valueOf(split[1].trim());
+                        Long studySetIdOfEventBefore = Long.valueOf(eventToday.getDescription().trim());
                         if(studySetIdOfEventBefore == studySetId) {
                             isExistEventOfStudySet = true;
                             break;
@@ -317,8 +316,7 @@ public class LearningService {
                     boolean isExistEventOfStudySet = false;
 
                     for(Event eventToday : eventListToday){
-                        String[] split = eventToday.getDescription().split("\\|");
-                        Long studySetIdOfEventBefore = Long.valueOf(split[1].trim());
+                        Long studySetIdOfEventBefore = Long.valueOf(eventToday.getDescription().trim());
                         if(studySetIdOfEventBefore == studySetIdOfCard) {
                             isExistEventOfStudySet = true;
                             break;
@@ -477,5 +475,32 @@ public class LearningService {
             return ResponseEntity.status(HttpStatus.OK).body(response);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
+    }
+
+    public void addStudySetLearningByUserAndStudySet(User user, StudySet studySet){
+
+        StudySetLearning studySetLearning = studySetLearningRepository.findStudySetLearningByStudySetAndUser(studySet,user);
+        if(studySetLearning == null) {
+            //Set UserStudySetId
+            UserStudySetId userStudySetId = new UserStudySetId();
+            userStudySetId.setStudySetId(studySet.getId());
+            userStudySetId.setUserId(user.getId());
+
+            //Set StudySetLearning
+            studySetLearning.setUserStudySetId(userStudySetId);
+            studySetLearning.setStudySet(studySet);
+            studySetLearning.setUser(user);
+            studySetLearning.setColor(null);
+            studySetLearning.setExpectedDate(null);
+            studySetLearning.setFeedback(null);
+            studySetLearning.setProgress(0);
+            studySetLearning.setRating(0);
+            studySetLearning.setStartDate(Instant.now());
+            studySetLearning.setStatus(Status.LEARNING);
+            studySetLearning.setPublic(studySet.isPublic());
+
+            //Insert into DB
+            studySetLearningRepository.save(studySetLearning);
+        }
     }
 }
