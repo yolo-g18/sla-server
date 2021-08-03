@@ -148,7 +148,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(RoomPermisson.class)
-    public ResponseEntity<Object> handleRollPermissonException(
+    public ResponseEntity<Object> handleRoomPermissonException(
             RoomPermisson ex, WebRequest request) {
 
         Map<String, Object> body = new LinkedHashMap<>();
@@ -157,5 +157,14 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(FolderPermisson.class)
+    public ResponseEntity<Object> handleFolderPermissonException(
+            FolderPermisson ex, WebRequest request) {
+
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("message", "No permission");
+
+        return new ResponseEntity<>(body, HttpStatus.FORBIDDEN);
+    }
 
 }

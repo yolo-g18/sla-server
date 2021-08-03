@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SearchUserResponse {
+    private Long userId;
     private String username;
     private String avatar;
     private String bio;

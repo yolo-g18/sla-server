@@ -60,4 +60,23 @@ public class NotificationController {
         return "sent email";
     }
 
+    @PutMapping("/readNews")
+    String readNews(@RequestBody ObjectNode json){
+        notificationService.readNews(json);
+        return "read news";
+    }
+
+    @PutMapping("/readAllNews")
+    String readAllNews(@RequestBody ObjectNode json){
+        notificationService.readAllNews(json);
+        return "read all news";
+    }
+
+    @GetMapping("/getNotReadNewsNumber/{userId}")
+    Long getNotReadNewsNumber(@PathVariable Long userId){
+        return notificationService.getNotReadNewsNumber(userId);
+    }
+
+
+
 }
