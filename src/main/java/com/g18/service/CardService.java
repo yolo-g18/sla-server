@@ -4,6 +4,7 @@ import com.g18.dto.CardDto;
 import com.g18.dto.CardLearningDto;
 import com.g18.entity.*;
 
+import com.g18.model.Color;
 import com.g18.model.Status;
 import com.g18.model.UserCardId;
 import com.g18.repository.CardLearningRepository;
@@ -136,15 +137,15 @@ public class CardService {
         }
     }
 
-    public ResponseEntity setColorCardLearning(CardLearningDto cardId) {
+    public ResponseEntity setColorCardLearning(Long cardId, String color) {
         try {
             User user = authService.getCurrentAccount().getUser();
             UserCardId userCardId = new UserCardId();
             userCardId.setUserId(user.getId());
-            userCardId.setCardId(cardId.getCardId());
+            userCardId.setCardId(cardId);
             CardLearning cardLearning = cardLearningRepository.getCardLearningByUserCardId(userCardId);
             if (cardLearning != null) {
-                cardLearning.setColor(cardId.getColor());
+                cardLearning.setColor(Color.valueOf(color));
                 return ResponseEntity.status(HttpStatus.OK).body("Set Color successfully");
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Card Learning not exist");

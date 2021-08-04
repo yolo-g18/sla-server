@@ -46,8 +46,8 @@ public class CardController {
 	}
 
 	@PutMapping("/color")
-	public ResponseEntity setColor(@RequestBody CardLearningDto request){
-		return cardService.setColorCardLearning(request);
+	public ResponseEntity setColor(@RequestParam(value="id") Long cardId, @RequestParam(value="color") String color){
+		return cardService.setColorCardLearning(cardId, color);
 	}
 }
 
