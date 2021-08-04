@@ -7,6 +7,7 @@ import com.g18.dto.LearnRequestDto;
 import com.g18.dto.LearningrResponseDto;
 import com.g18.entity.*;
 
+import com.g18.model.Color;
 import com.g18.model.Status;
 import com.g18.model.UserCardId;
 import com.g18.model.UserStudySetId;
@@ -60,6 +61,9 @@ public class LearningService {
     @Autowired
     private EventRepository eventRepository;
 
+    @Autowired
+    private NotificationRepository notificationRepository;
+
     public ResponseEntity learningFlashCardByStudySet(Long studySetId){
         // TODO Auto-generated method stub
         List<CardLearningDto> responses = new ArrayList<>();
@@ -102,6 +106,7 @@ public class LearningService {
             int numberOfCard = cards.size();
             StudySetLearning studySetLearning = new StudySetLearning();
             boolean isFirstTime = false;
+            Color color = Color.GRAY;
             if(numberOfCardAddNew != 0) {
                 if (numberOfCardAddNew == numberOfCard) {
                     isFirstTime = true;
@@ -120,15 +125,16 @@ public class LearningService {
                     studySetLearning.setStartDate(Instant.now());
                     studySetLearning.setStatus(Status.LEARNING);
                     studySetLearning.setPublic(studySet.isPublic());
-
+                    studySetLearningRepository.save(studySetLearning);
                 } else {
                     StudySetLearning ssl = studySetLearningRepository.findStudySetLearningByStudySetAndUser(studySet, user);
 
                     double progress = ssl.getProgress();
                     progress = progress * (numberOfCard - numberOfCardAddNew) / numberOfCard;
                     studySetLearning.setProgress(progress);
+                    studySetLearningRepository.save(studySetLearning);
+                    color = studySetLearning.getColor();
                 }
-                studySetLearningRepository.save(studySetLearning);
             }
             //Add EventLearning if user learning for the first time
             if(isFirstTime){
@@ -168,13 +174,15 @@ public class LearningService {
                         Instant to = now.atZone(ZoneId.systemDefault()).withHour(23).withMinute(59).toInstant();
                         eventLearning.setToTime(to);
 
-                        eventLearning.setColor(null);
+                        eventLearning.setColor(color);
 
                         eventLearning.setName("Review " + studySet.getTitle());
                         eventLearning.setCreatedTime(now);
                         eventLearning.setUpdateTime(now);
                         eventLearning.setLearnEvent(true);
                         eventRepository.save(eventLearning);
+
+                        createNotificationAfterCreateEvent(eventLearning);
                     }
                 }else{
                     Event eventLearning = new Event();
@@ -188,12 +196,14 @@ public class LearningService {
                     Instant to = now.atZone(ZoneId.systemDefault()).withHour(23).withMinute(59).toInstant();
                     eventLearning.setToTime(to);
 
-                    eventLearning.setColor(null);
+                    eventLearning.setColor(color);
 
                     eventLearning.setName("Review " + studySet.getTitle());
                     eventLearning.setCreatedTime(now);
                     eventLearning.setUpdateTime(now);
                     eventRepository.save(eventLearning);
+
+                    createNotificationAfterCreateEvent(eventLearning);
                 }
             }
         }catch (Exception e){
@@ -227,7 +237,7 @@ public class LearningService {
         try{
             User user = authService.getCurrentUser();
             Card card = cardRepository.findById(cardQualityRequestUpdate.getCardId()).orElseThrow(() -> new ExpressionException("Card not exist"));
-
+            Color color = Color.GRAY;
             //Get cardLearning to update
             CardLearning cardLearning = cardLearningRepository.findCardLearningByCardAndUser(card,user);
             if(cardLearning != null){
@@ -269,6 +279,7 @@ public class LearningService {
                         }
                         studySetLearning.setProgress(progress);
                         studySetLearningRepository.save(studySetLearning);
+                        color = studySetLearning.getColor();
                     }
                 }else{
                     status = Status.LEARNING;
@@ -288,6 +299,7 @@ public class LearningService {
                         progress = progress - 1.0/numberOfCard;
                         studySetLearning.setProgress(progress);
                         studySetLearningRepository.save(studySetLearning);
+                        color = studySetLearning.getColor();
                     }
                 }
 
@@ -334,13 +346,15 @@ public class LearningService {
                         Instant to = learnDate.atZone(ZoneId.systemDefault()).withHour(23).withMinute(59).toInstant();
                         eventLearning.setToTime(to);
 
-                        eventLearning.setColor(null);
+                        eventLearning.setColor(color);
 
                         eventLearning.setName("Review " + card.getStudySet().getTitle());
                         eventLearning.setCreatedTime(now);
                         eventLearning.setUpdateTime(now);
                         eventLearning.setLearnEvent(true);
                         eventRepository.save(eventLearning);
+
+                        createNotificationAfterCreateEvent(eventLearning);
                     }
                 }else{
                     Event eventLearning = new Event();
@@ -354,13 +368,14 @@ public class LearningService {
                     Instant to = learnDate.atZone(ZoneId.systemDefault()).withHour(23).withMinute(59).toInstant();
                     eventLearning.setToTime(to);
 
-                    eventLearning.setColor(null);
+                    eventLearning.setColor(color);
 
                     eventLearning.setName("Review " + card.getStudySet().getTitle());
                     eventLearning.setCreatedTime(now);
                     eventLearning.setUpdateTime(now);
                     eventRepository.save(eventLearning);
 
+                    createNotificationAfterCreateEvent(eventLearning);
                 }
                 return ResponseEntity.status(HttpStatus.OK).body("Update after learning successfully");
             }else{
@@ -502,5 +517,19 @@ public class LearningService {
             //Insert into DB
             studySetLearningRepository.save(studySetLearning);
         }
+    }
+
+    private void createNotificationAfterCreateEvent(Event event){
+        User user = event.getUser();
+        Notification notification = new Notification();
+        notification.setUser(user);
+        notification.setTitle("Notice to learn daily");
+        notification.setDescription(event.getName());
+        notification.setType("daily");
+        notification.setLink(null);
+        notification.setCreatedTime(Instant.now());
+        notification.setTimeTrigger(Instant.now());
+        notification.setRead(true);
+        notificationRepository.save(notification);
     }
 }

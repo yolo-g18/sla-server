@@ -34,5 +34,6 @@ public interface NotificationRepository extends JpaRepository<Notification,Long>
 
      List<Notification> findByTypeAndTimeTriggerBetweenOrderByTimeTrigger(String type, Instant timeTrigger1, Instant timeTrigger2);
 
-     List<Notification> findNotificationByType(String type);
+     @Query(value="SELECT * FROM notification WHERE type = :type AND time_trigger LIKE :timeTrigger% ", nativeQuery = true)
+     List<Notification> findNotificationByTypeAndTimeTrigger(@Param("type") String type, @Param("timeTrigger") String timeTrigger);
 }

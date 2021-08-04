@@ -3,10 +3,8 @@ package com.g18.config;
 import com.g18.entity.CardLearning;
 import com.g18.entity.Event;
 import com.g18.entity.Notification;
-import com.g18.repository.AccountRepository;
-import com.g18.repository.CardLearningRepository;
-import com.g18.repository.EventRepository;
-import com.g18.repository.NotificationRepository;
+import com.g18.entity.User;
+import com.g18.repository.*;
 import com.g18.service.EmailSenderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -39,8 +38,9 @@ public class ScheduleConfig {
     @Autowired
     private AccountRepository accountRepository;
 
+
     @Scheduled(cron = "0 0 1 * * *")//Run at 1 A.M every day
-    public void showTime() {
+    public void updateDaily() {
 
         //Get time
         Instant timeUpdate = Instant.now();
@@ -55,7 +55,7 @@ public class ScheduleConfig {
         }
 
         //Get list Event to Update Time
-        List<Event> eventList = eventRepository.findEventByToTimeBefore(timeUpdate);
+        List<Event> eventList = eventRepository.findEventByIsLearnEventAndToTimeBefore(true, timeUpdate);
         if(eventList != null){
             Instant from = timeUpdate.atZone(ZoneId.systemDefault()).withHour(0).withMinute(0).toInstant();
 
@@ -65,6 +65,18 @@ public class ScheduleConfig {
                 event.setFromTime(from);
                 event.setToTime(to);
                 eventRepository.save(event);
+
+                User user = event.getUser();
+                Notification notification = new Notification();
+                notification.setUser(user);
+                notification.setTitle("Notice to learn daily");
+                notification.setDescription(event.getName());
+                notification.setType("daily");
+                notification.setLink(null);
+                notification.setCreatedTime(Instant.now());
+                notification.setTimeTrigger(Instant.now());
+                notification.setRead(true);
+                notificationRepository.save(notification);
             }
         }
     }
@@ -73,23 +85,37 @@ public class ScheduleConfig {
     public void sendEmailDaily() {
 
         Date myDate = Date.from(Instant.now());
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        String learnTime = formatter.format(myDate);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        String today = formatter.format(myDate);
 
         String type = "daily";
-        List<Notification> notificationList = notificationRepository.findNotificationByType(type);
+        List<Notification> notificationList = notificationRepository.findNotificationByTypeAndTimeTrigger(type, today);
         if(notificationList != null) {
+            formatter = new SimpleDateFormat("dd/MM/yyyy");
+            String learnTime = formatter.format(myDate);
+            //List userId to check if sent mail
+            List<Long> userIdList = new ArrayList<>();
             for (Notification noti : notificationList) {
+                boolean isExist = false;
+                for(Long userId : userIdList){
+                    if(userId == noti.getUser().getId()){
+                        isExist = true;
+                    }
+                }
+                if(!isExist){
+                    String username = accountRepository.findUserNameByUserId(noti.getUser().getId());
 
-                String username = accountRepository.findUserNameByUserId(noti.getUser().getId());
+                    String toEmail = noti.getUser().getEmail();
+                    String body = "Hello " + username + "\n" +
+                            "You have some events to attend today.\n" +
+                            "Please participate fully and on time events on SLA.\n" +
+                            "Have a good day!";
+                    String subject = "Notice to learn on " + learnTime;
+                    emailSenderService.sendSimpleEmail(toEmail, body, subject);
 
-                String toEmail = noti.getUser().getEmail();
-                String body = "Hello " + username + "\n" +
-                        "You have some events to attend today.\n" +
-                        "Please participate fully and on time events on SLA.\n" +
-                        "Have a good day!";
-                String subject = "Notice to learn on " + learnTime;
-                emailSenderService.sendSimpleEmail(toEmail, body, subject);
+                    //If isExist = false, add to list
+                    userIdList.add(noti.getUser().getId());
+                }
             }
         }
     }
