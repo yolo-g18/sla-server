@@ -33,6 +33,7 @@ public class NotificationController {
 
     @PostMapping("/create")
     public String createNoti(@RequestBody ObjectNode json){ return notificationService.saveNotification(json);}
+
     //Delete event
     @DeleteMapping(value = "/delete")
     public ResponseEntity<String> deleteEvent (@RequestBody long[] ids){
@@ -46,7 +47,7 @@ public class NotificationController {
     }
     //Get top 20 notification
     @GetMapping("/get")
-    Page<NotificationDto> getNoti(@PageableDefault(size = 20) Pageable pageable){
+    Page<NotificationDto> getNoti(@PageableDefault(size = 4) Pageable pageable){
         User currentUser = authService.getCurrentUser();
         return notificationService.getNotification(currentUser.getId(),pageable);
     }

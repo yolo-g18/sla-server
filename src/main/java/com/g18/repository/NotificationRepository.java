@@ -13,7 +13,6 @@ import java.util.List;
 
 public interface NotificationRepository extends JpaRepository<Notification,Long> {
      @Query(value = "SELECT * FROM notification where user_id = :userID order by created_time ASC LIMIT :limit", nativeQuery = true)
-     //SELECT * FROM sla_db.notification where user_id = 1 order by created_time ASC LIMIT 2;
      List<Notification> findTop20ByUserIdOrderByCreatedTimeDesc(@Param("userID") Long userId,
                                                                 @Param("limit") int limit);
 
