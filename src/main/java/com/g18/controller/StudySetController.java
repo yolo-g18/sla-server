@@ -1,8 +1,6 @@
 package com.g18.controller;
 
-import com.g18.dto.CardDto;
-import com.g18.dto.StudySetRequest;
-import com.g18.dto.StudySetResponse;
+import com.g18.dto.*;
 import com.g18.entity.StudySet;
 import lombok.AllArgsConstructor;
 
@@ -65,6 +63,11 @@ public class StudySetController {
 	@GetMapping("/listProgressByStudySet")
 	public ResponseEntity getListProgressByStudySet(@RequestParam(value="id") Long request){
 		return studySetService.getListProgressByStudySet(request);
+	}
+
+	@PutMapping("/color")
+	public ResponseEntity setColor(@RequestParam(value="id") Long studySetId, @RequestParam(value="color") String color){
+		return studySetService.setColorStudySetLearning(studySetId, color);
 	}
 }
 

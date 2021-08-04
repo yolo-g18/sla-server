@@ -17,6 +17,7 @@ import com.g18.entity.*;
 
 import com.g18.model.Color;
 import com.g18.model.Status;
+import com.g18.model.UserCardId;
 import com.g18.model.UserStudySetId;
 import com.g18.repository.*;
 
@@ -285,5 +286,21 @@ public class StudySetService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found.");
         }
 
+    }
+
+    public ResponseEntity setColorStudySetLearning(Long studySetId, String color) {
+        try {
+            User user = authService.getCurrentAccount().getUser();
+
+            StudySetLearning studySetLearning = studySetLearningRepository.findByUserIdAndStudySetId(user.getId(), studySetId);
+            if (studySetLearning != null) {
+                studySetLearning.setColor(Color.valueOf(color));
+                return ResponseEntity.status(HttpStatus.OK).body("Set Color successfully");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Study Set Learning not exist");
+            }
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Set Color fail");
+        }
     }
 }
