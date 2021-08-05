@@ -1,6 +1,7 @@
 package com.g18.service;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
 import lombok.extern.slf4j.Slf4j;
@@ -26,12 +27,12 @@ public class StorageService {
     private AmazonS3 s3Client;
 
     public String uploadFile(MultipartFile file) {
+
         File fileObj = convertMultiPartFileToFile(file);
         String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-        String fileUrl = endpointUrl + "/" + bucketName + "/" + fileName;
-        s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
+        s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj).withCannedAcl(CannedAccessControlList.PublicRead));
         fileObj.delete();
-        return "File uploaded : " + fileName;
+        return s3Client.getUrl(bucketName,fileName).toString();
     }
 
     private File convertMultiPartFileToFile(MultipartFile file) {
