@@ -2,11 +2,8 @@ package com.g18.controller;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.dto.EventDto;
-import com.g18.dto.SearchStudySetResponse;
-import com.g18.entity.Event;
 import com.g18.repository.EventRepository;
 import com.g18.service.EventService;
-import com.g18.service.IS.IEventService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +16,7 @@ import java.util.List;
 @RequestMapping("api")
 public class EventController {
     @Autowired
-    private IEventService eventService;
+    private EventService eventService;
     @Autowired
     private EventRepository eventRepository;
 
@@ -51,7 +48,6 @@ public class EventController {
         }catch (Exception e){
             throw new NotFoundException("Event not found");
         }
-
     }
     //Delete event
     @DeleteMapping(value = "/event")
@@ -62,7 +58,6 @@ public class EventController {
             return new ResponseEntity<>("Not found Event", HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>("Delete Event Successful", HttpStatus.OK);
-
     }
 
 

@@ -1,33 +1,27 @@
 package com.g18.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.converter.EventConverter;
 import com.g18.dto.EventDto;
 import com.g18.entity.Event;
 import com.g18.entity.User;
-import com.g18.exceptions.AccountException;
 import com.g18.model.Color;
 import com.g18.repository.EventRepository;
 import com.g18.repository.UserRepository;
-import com.g18.service.IS.IEventService;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.ExpressionException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Slf4j
-public class EventService implements IEventService {
+public class EventService {
     @Autowired
     private EventRepository eventRepository;
 
@@ -40,7 +34,7 @@ public class EventService implements IEventService {
     @Autowired
     private AuthService authService;
 
-    @Override
+    @Transactional
     public String save(ObjectNode json) {
         User user = authService.getCurrentUser();
         Event event =  new Event();
@@ -59,7 +53,7 @@ public class EventService implements IEventService {
         return "Create event successfully";
     }
 
-    @Override
+    @Transactional
     public EventDto update(EventDto eventDto) {
         Event oldEvent = eventRepository.findById(eventDto.getId()).orElseThrow(()
                 ->  new ExpressionException("Lỗi ko tìm thấy")) ;
@@ -70,14 +64,14 @@ public class EventService implements IEventService {
         return eventConverter.toDto(newEvent);
     }
 
-    @Override
+    @Transactional
     public void delete(long[] ids) {
         for (long item: ids){
             eventRepository.deleteById(item);
         }
     }
 
-    @Override
+    @Transactional
     public List<EventDto> getAllBetweenDates(String from,String to) {
         List<EventDto> results = new ArrayList<>();
         List<Event> events = eventRepository.getAllBetweenDates(authService.getCurrentUser().getId(),from,to);
