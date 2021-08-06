@@ -1,46 +1,34 @@
 package com.g18.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.g18.converter.EventConverter;
 import com.g18.dto.EventDto;
 import com.g18.entity.Event;
 import com.g18.entity.User;
-import com.g18.exceptions.AccountException;
 import com.g18.model.Color;
 import com.g18.repository.EventRepository;
 import com.g18.repository.UserRepository;
-import com.g18.service.IS.IEventService;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.ExpressionException;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Slf4j
-public class EventService implements IEventService {
+public class EventService {
     @Autowired
     private EventRepository eventRepository;
 
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private EventConverter eventConverter;
 
     @Autowired
     private AuthService authService;
 
-    @Override
     public String save(ObjectNode json) {
         User user = authService.getCurrentUser();
         Event event =  new Event();
@@ -59,30 +47,39 @@ public class EventService implements IEventService {
         return "Create event successfully";
     }
 
-    @Override
-    public EventDto update(EventDto eventDto) {
-        Event oldEvent = eventRepository.findById(eventDto.getId()).orElseThrow(()
+
+    public void update(Long eventId,ObjectNode json) {
+        Event oldEvent = eventRepository.findById(eventId).orElseThrow(()
                 ->  new ExpressionException("Lỗi ko tìm thấy")) ;
-        Event newEvent = eventConverter.toEntity(eventDto,oldEvent);
+        oldEvent.setName(json.get("name").asText());
+        oldEvent.setDescription(json.get("description").asText());
+        oldEvent.setFromTime(Instant.parse(json.get("fromTime").asText()));
+        oldEvent.setToTime(Instant.parse(json.get("toTime").asText()));
+        oldEvent.setLearnEvent(Boolean.parseBoolean(json.get("isLearnEvent").asText()));
+        oldEvent.setColor(Color.valueOf(json.get("color").asText()));
+        oldEvent.setUpdateTime(Instant.now());
         User user = authService.getCurrentUser();
-        newEvent.setUser(user);
-        newEvent = eventRepository.save(newEvent);
-        return eventConverter.toDto(newEvent);
+        eventRepository.save(oldEvent);
     }
 
-    @Override
-    public void delete(long[] ids) {
-        for (long item: ids){
-            eventRepository.deleteById(item);
-        }
+    public void delete(Long eventId) {
+            eventRepository.deleteById(eventId);
     }
 
-    @Override
     public List<EventDto> getAllBetweenDates(String from,String to) {
         List<EventDto> results = new ArrayList<>();
         List<Event> events = eventRepository.getAllBetweenDates(authService.getCurrentUser().getId(),from,to);
-        for (Event item : events){
-            EventDto eventDto = eventConverter.toDto(item);
+        for (Event event : events){
+            EventDto eventDto = new EventDto();
+            eventDto.setId(event.getId());
+            eventDto.setUserId(event.getUser().getId());
+            eventDto.setName(event.getName());
+            eventDto.setDescription(event.getDescription());
+            eventDto.setLearnEvent(event.isLearnEvent());
+            eventDto.setFromTime(String.valueOf(event.getFromTime()));
+            eventDto.setToTime(String.valueOf(event.getToTime()));
+            eventDto.setUpdateTime(String.valueOf(event.getUpdateTime()));
+            eventDto.setCreatedTime(String.valueOf(event.getCreatedTime()));
             results.add(eventDto);
         }
         return results;

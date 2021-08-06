@@ -6,7 +6,6 @@ import com.g18.dto.SearchStudySetResponse;
 import com.g18.entity.Event;
 import com.g18.repository.EventRepository;
 import com.g18.service.EventService;
-import com.g18.service.IS.IEventService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +18,7 @@ import java.util.List;
 @RequestMapping("api")
 public class EventController {
     @Autowired
-    private IEventService eventService;
+    private EventService eventService;
     @Autowired
     private EventRepository eventRepository;
 
@@ -41,12 +40,10 @@ public class EventController {
     }
 
     //Update event
-    @PutMapping(value = "/event/{id}")
-    public ResponseEntity<String> updateEvent(@RequestBody EventDto eventDto,@PathVariable("id") String id_raw) throws NotFoundException {
+    @PutMapping(value = "/event/{eventId}")
+    public ResponseEntity<String> updateEvent(@RequestBody ObjectNode json,@PathVariable("eventId") Long eventId) throws NotFoundException {
         try{
-            long id = Long.parseLong(id_raw);
-            eventDto.setId(id);
-            eventService.update(eventDto);
+            eventService.update(eventId,json);
             return new ResponseEntity<>("Update Event Successful", HttpStatus.OK);
         }catch (Exception e){
             throw new NotFoundException("Event not found");
@@ -54,10 +51,10 @@ public class EventController {
 
     }
     //Delete event
-    @DeleteMapping(value = "/event")
-    public ResponseEntity<String> deleteEvent ( @RequestBody long[] ids){
+    @DeleteMapping(value = "/event/{eventId}")
+    public ResponseEntity<String> deleteEvent (@PathVariable("eventId") Long eventId){
         try {
-            eventService.delete(ids);
+            eventService.delete(eventId);
         }catch (Exception e){
             return new ResponseEntity<>("Not found Event", HttpStatus.NOT_FOUND);
         }
