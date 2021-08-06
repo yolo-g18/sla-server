@@ -1,7 +1,6 @@
 package com.g18.controller;
 
 import com.g18.dto.CardQualityRequestUpdate;
-import com.g18.dto.LearnRequestDto;
 import com.g18.service.LearningService;
 
 import lombok.AllArgsConstructor;

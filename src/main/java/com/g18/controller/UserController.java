@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.Instant;
 import java.util.stream.Collectors;
 
 @RestController
@@ -44,11 +45,18 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("/change_password")
+    @PutMapping("/changeFavorTime")
+    public ResponseEntity<Void> updateFavorTime(Instant favourTimeFrom, Instant favourTimeTo) {
+        userService.updateFavorTime(favourTimeFrom, favourTimeTo);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @GetMapping("/lib")
     public ResponseEntity<String> getUserLib() {
         return new ResponseEntity<>("my lib", HttpStatus.OK);
     }
+
+
 
 }
 

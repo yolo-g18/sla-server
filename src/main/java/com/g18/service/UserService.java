@@ -88,5 +88,32 @@ public class UserService {
         return acc.getUsername();
     }
 
+    public void updateFavorTime(Instant favourTimeFrom, Instant favourTimeTo) {
+//        try {
+//            if(favourTimeTo.compareTo(favourTimeFrom) < 0) {
+//                throw new AccountException("Invalid time");
+//            } else {
+//                User user = authService.getCurrentUser();
+//                user.setFavourTimeFrom(favourTimeFrom);
+//                user.setFavourTimeTo(favourTimeTo);
+//
+//                userRepository.save(user);
+//            }
+//        }catch (Exception err) {
+//            log.error(String.valueOf(err));
+//        }
+        if(favourTimeTo.compareTo(favourTimeFrom) < 0) {
+            throw new AccountException("Invalid time");
+        } else {
+            User user = authService.getCurrentUser();
+            user.setFavourTimeFrom(favourTimeFrom);
+            user.setFavourTimeTo(favourTimeTo);
+
+            userRepository.save(user);
+        }
+
+    }
+
+
 
 }
