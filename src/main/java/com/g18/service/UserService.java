@@ -1,5 +1,6 @@
 package com.g18.service;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.dto.UserProfileDto;
 import com.g18.dto.UserResponse;
 import com.g18.entity.Account;
@@ -88,7 +89,7 @@ public class UserService {
         return acc.getUsername();
     }
 
-    public void updateFavorTime(Instant favourTimeFrom, Instant favourTimeTo) {
+    public void updateFavorTime(ObjectNode json) {
 //        try {
 //            if(favourTimeTo.compareTo(favourTimeFrom) < 0) {
 //                throw new AccountException("Invalid time");
@@ -102,6 +103,8 @@ public class UserService {
 //        }catch (Exception err) {
 //            log.error(String.valueOf(err));
 //        }
+        Instant favourTimeFrom = Instant.parse(json.get("favourTimeFrom").asText());
+        Instant favourTimeTo = Instant.parse(json.get("favourTimeTo").asText());
         if(favourTimeTo.compareTo(favourTimeFrom) < 0) {
             throw new AccountException("Invalid time");
         } else {

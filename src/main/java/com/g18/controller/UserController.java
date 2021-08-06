@@ -1,5 +1,6 @@
 package com.g18.controller;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.dto.AuthenticationResponse;
 import com.g18.dto.UserProfileDto;
 import com.g18.dto.UserResponse;
@@ -46,8 +47,8 @@ public class UserController {
     }
 
     @PutMapping("/changeFavorTime")
-    public ResponseEntity<Void> updateFavorTime(Instant favourTimeFrom, Instant favourTimeTo) {
-        userService.updateFavorTime(favourTimeFrom, favourTimeTo);
+    public ResponseEntity<Void> updateFavorTime(@RequestBody ObjectNode json) {
+        userService.updateFavorTime(json);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
