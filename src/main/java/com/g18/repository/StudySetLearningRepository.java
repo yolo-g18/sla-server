@@ -19,7 +19,7 @@ public interface StudySetLearningRepository extends JpaRepository<StudySetLearni
 
     List<StudySetLearning> findByStudySetId(Long ssId);
 
-    @Query(value = "SELECT AVG(rating) FROM sla_db.study_set_learning  where study_set_id = ?1" , nativeQuery = true)
+    @Query(value = "SELECT AVG(rating) FROM study_set_learning  where study_set_id = ?1" , nativeQuery = true)
     double getAVGRatingSS(Long ssId);
 
     @Query("SELECT new com.g18.dto.ProgressResponse(a.username, s.studySet.id, s.progress, s.startDate) FROM StudySetLearning s INNER JOIN Account a ON s.user.id = a.user.id WHERE s.studySet.id =:studySetId")

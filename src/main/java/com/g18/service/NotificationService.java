@@ -15,11 +15,17 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+
 import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
 public class NotificationService {
+
+    private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime( FormatStyle.SHORT )
+            .withLocale( Locale.UK )
+            .withZone( ZoneId.systemDefault());
+
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -56,7 +62,14 @@ public class NotificationService {
         User owner = userRepository.getOne(creator_id);
         notify.setUser(owner);
         notify.setCreatedTime(Instant.now());
-        notify.setTimeTrigger(Instant.parse(json.get("timeTrigger").asText()));
+
+        try{
+            notify.setTimeTrigger(Instant.parse(json.get("timeTrigger").asText()));
+        }catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+
         notificationRepository.save(notify);
         return "create notification successfully";
     }
@@ -78,6 +91,53 @@ public class NotificationService {
                                 String.valueOf(notification.getTimeTrigger()),notification.isRead()
                         )
                 ).collect(Collectors.toList()), pageable, totalElements);
+    }
+
+    @Transactional
+    public void readNews(ObjectNode json)
+    {
+        Long notiId = null;
+        Long userId = null;
+
+        try{
+            notiId = Long.parseLong(json.get("notiId").asText());
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+
+        try{
+            userId = Long.parseLong(json.get("userId").asText());
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+
+
+        notificationRepository.readNew(notiId,userId);
+    }
+
+    @Transactional
+    public void readAllNews(ObjectNode json){
+
+        Long userId = null;
+
+        try{
+            userId = Long.parseLong(json.get("userId").asText());
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+
+        notificationRepository.readAllNews(userId);
+    }
+
+    @Transactional
+    public Long getNotReadNewsNumber(Long userId){
+        return notificationRepository.getNotReadNewsNumber(userId);
     }
 
 

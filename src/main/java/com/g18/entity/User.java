@@ -54,12 +54,15 @@ public class User {
 	private List<Folder>  FoldersOwn; //list folders created
 
 	@OneToMany(mappedBy = "member", orphanRemoval=true, cascade=CascadeType.ALL)
-	private List<RoomMember>  roomsJoin; //list rooms joined
+	private List<RoomMember>  MemberJoin; //list rooms joined
 
 	@OneToMany(mappedBy = "user", orphanRemoval=true, cascade=CascadeType.ALL)
 	private List<StudySetLearning>  studySetsLearning; //list study sets learning
 
 	@OneToMany(mappedBy = "user", orphanRemoval=true, cascade = CascadeType.ALL)
 	private List<CardLearning>  cardsLearning; //list cardLearning
+
+	@OneToMany(mappedBy = "user", orphanRemoval=true, cascade = CascadeType.ALL)
+	private List<RoomInvitation>  invitationList;
 
 }

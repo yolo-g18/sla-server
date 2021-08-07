@@ -1,11 +1,8 @@
 package com.g18.controller;
 
-import com.g18.dto.AuthenticationResponse;
-import com.g18.dto.LoginRequest;
-import com.g18.dto.RefreshTokenRequest;
+import com.g18.dto.*;
 import com.g18.entity.Account;
 import com.g18.service.AuthService;
-import com.g18.dto.RegisterRequest;
 import com.g18.service.RefreshTokenService;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
@@ -63,5 +60,13 @@ public class AuthController {
         }
         return ResponseEntity.status(HttpStatus.OK).body("Refresh Token Delete Successfully!!");
     }
+
+
+    @PutMapping("/changePassword")
+    public ResponseEntity<String> changePassword(@Valid @RequestBody ChangePasswordDto changePasswordDto) {
+        authService.changePassword(changePasswordDto);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 
 }

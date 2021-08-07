@@ -20,6 +20,7 @@ public class Report {
 
     @ManyToOne
     @JoinColumn(name="reporter_id")
+
     private User reporter;
 
     @ManyToOne

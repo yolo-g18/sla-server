@@ -1,5 +1,6 @@
 package com.g18.controller;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.dto.AuthenticationResponse;
 import com.g18.dto.UserProfileDto;
 import com.g18.dto.UserResponse;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.Instant;
 import java.util.stream.Collectors;
 
 @RestController
@@ -44,11 +46,18 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @PutMapping("/change_password")
+    @PutMapping("/changeFavorTime")
+    public ResponseEntity<Void> updateFavorTime(@RequestBody ObjectNode json) {
+        userService.updateFavorTime(json);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @GetMapping("/lib")
     public ResponseEntity<String> getUserLib() {
         return new ResponseEntity<>("my lib", HttpStatus.OK);
     }
+
+
 
 }
 

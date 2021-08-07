@@ -54,5 +54,11 @@ public class SearchController {
         return searchService.getAllUserByUsername(username);
     }
 
+    @GetMapping(value = "/user/{username}/{roomId}")
+    List<SearchUserResponse> getAllInvitingGuessByUsername(@PathVariable("username")String username,
+                                                           @PathVariable("roomId")Long roomId){
+        return searchService.getAllInvitingGuessByUsername(username,roomId);
+    }
+
 }
 

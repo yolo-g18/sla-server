@@ -28,9 +28,9 @@ public class LearningController {
 		return learningService.updateCardLearning(cardQualityRequestUpdate);
 	}
 
-	@GetMapping("/today")
-	public ResponseEntity learnToday(){
-		return learningService.learningFlashCardToday();
+	@GetMapping("/learnByDate")
+	public ResponseEntity learnToday(@RequestParam(value="studySet") Long studySetId, @RequestParam(value="date") String date){
+		return learningService.learningFlashCardByDateAndStudySetAndUser(studySetId, date);
 	}
 
 	@GetMapping("continue")

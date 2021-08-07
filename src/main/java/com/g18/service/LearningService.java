@@ -3,8 +3,11 @@ package com.g18.service;
 
 import com.g18.dto.CardLearningDto;
 import com.g18.dto.CardQualityRequestUpdate;
+import com.g18.dto.LearnRequestDto;
+import com.g18.dto.LearningrResponseDto;
 import com.g18.entity.*;
 
+import com.g18.model.Color;
 import com.g18.model.Status;
 import com.g18.model.UserCardId;
 import com.g18.model.UserStudySetId;
@@ -58,6 +61,9 @@ public class LearningService {
     @Autowired
     private EventRepository eventRepository;
 
+    @Autowired
+    private NotificationRepository notificationRepository;
+
     public ResponseEntity learningFlashCardByStudySet(Long studySetId){
         // TODO Auto-generated method stub
         List<CardLearningDto> responses = new ArrayList<>();
@@ -100,6 +106,7 @@ public class LearningService {
             int numberOfCard = cards.size();
             StudySetLearning studySetLearning = new StudySetLearning();
             boolean isFirstTime = false;
+            Color color = Color.GRAY;
             if(numberOfCardAddNew != 0) {
                 if (numberOfCardAddNew == numberOfCard) {
                     isFirstTime = true;
@@ -118,15 +125,16 @@ public class LearningService {
                     studySetLearning.setStartDate(Instant.now());
                     studySetLearning.setStatus(Status.LEARNING);
                     studySetLearning.setPublic(studySet.isPublic());
-
+                    studySetLearningRepository.save(studySetLearning);
                 } else {
                     StudySetLearning ssl = studySetLearningRepository.findStudySetLearningByStudySetAndUser(studySet, user);
 
                     double progress = ssl.getProgress();
                     progress = progress * (numberOfCard - numberOfCardAddNew) / numberOfCard;
                     studySetLearning.setProgress(progress);
+                    studySetLearningRepository.save(studySetLearning);
+                    color = studySetLearning.getColor();
                 }
-                studySetLearningRepository.save(studySetLearning);
             }
             //Add EventLearning if user learning for the first time
             if(isFirstTime){
@@ -146,8 +154,7 @@ public class LearningService {
                     boolean isExistEventOfStudySet = false;
 
                     for(Event eventToday : eventListToday){
-                        String[] split = eventToday.getDescription().split("\\|");
-                        Long studySetIdOfEventBefore = Long.valueOf(split[1].trim());
+                        Long studySetIdOfEventBefore = Long.valueOf(eventToday.getDescription().trim());
                         if(studySetIdOfEventBefore == studySetId) {
                             isExistEventOfStudySet = true;
                             break;
@@ -158,7 +165,7 @@ public class LearningService {
                         Event eventLearning = new Event();
                         eventLearning.setUser(user);
 
-                        eventLearning.setDescription("Learn |" + studySetId);
+                        eventLearning.setDescription(""+studySetId);
 
                         //Set time learn
                         Instant from = now.atZone(ZoneId.systemDefault()).withHour(0).withMinute(0).toInstant();
@@ -167,19 +174,21 @@ public class LearningService {
                         Instant to = now.atZone(ZoneId.systemDefault()).withHour(23).withMinute(59).toInstant();
                         eventLearning.setToTime(to);
 
-                        eventLearning.setColor(null);
+                        eventLearning.setColor(color);
 
                         eventLearning.setName("Review " + studySet.getTitle());
                         eventLearning.setCreatedTime(now);
                         eventLearning.setUpdateTime(now);
                         eventLearning.setLearnEvent(true);
                         eventRepository.save(eventLearning);
+
+                        createNotificationAfterCreateEvent(eventLearning);
                     }
                 }else{
                     Event eventLearning = new Event();
                     eventLearning.setUser(user);
 
-                    eventLearning.setDescription("Learn |" + studySetId);
+                    eventLearning.setDescription("" + studySetId);
 
                     Instant from = now.atZone(ZoneId.systemDefault()).withHour(0).withMinute(0).toInstant();
                     eventLearning.setFromTime(from);
@@ -187,12 +196,14 @@ public class LearningService {
                     Instant to = now.atZone(ZoneId.systemDefault()).withHour(23).withMinute(59).toInstant();
                     eventLearning.setToTime(to);
 
-                    eventLearning.setColor(null);
+                    eventLearning.setColor(color);
 
                     eventLearning.setName("Review " + studySet.getTitle());
                     eventLearning.setCreatedTime(now);
                     eventLearning.setUpdateTime(now);
                     eventRepository.save(eventLearning);
+
+                    createNotificationAfterCreateEvent(eventLearning);
                 }
             }
         }catch (Exception e){
@@ -202,22 +213,18 @@ public class LearningService {
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
 
-    public ResponseEntity learningFlashCardToday() {
+    public ResponseEntity learningFlashCardByDateAndStudySetAndUser(Long studySetId, String date) {
         // TODO Auto-generated method stub
         List<CardLearningDto> responses = new ArrayList<>();
-
         try{
-            User user = authService.getCurrentUser();
-            //Set today
-            Instant today = Instant.now().atZone(ZoneId.systemDefault()).withHour(7).toInstant().truncatedTo(ChronoUnit.DAYS);
+            Long userId = authService.getCurrentUser().getId();
 
-            List<CardLearning> cardLearningList = cardLearningRepository.findByUserAndLearnedDate(user,today);
-
-            for(CardLearning cardLearning : cardLearningList){
-
-                CardLearningDto cardLearningDto = convertCardLearningToDTO(cardLearning);
-
-                responses.add(cardLearningDto);
+            List<CardLearning> cardLearningList = cardLearningRepository.getListCardLearningByStudySetIdAndUserIdAndDate(studySetId, userId, date);
+            if(cardLearningList != null){
+                for(CardLearning cardLearning : cardLearningList){
+                    CardLearningDto cardLearningDto = convertCardLearningToDTO(cardLearning);
+                    responses.add(cardLearningDto);
+                }
             }
             return ResponseEntity.status(HttpStatus.OK).body(responses);
         }catch (Exception e){
@@ -230,7 +237,7 @@ public class LearningService {
         try{
             User user = authService.getCurrentUser();
             Card card = cardRepository.findById(cardQualityRequestUpdate.getCardId()).orElseThrow(() -> new ExpressionException("Card not exist"));
-
+            Color color = Color.GRAY;
             //Get cardLearning to update
             CardLearning cardLearning = cardLearningRepository.findCardLearningByCardAndUser(card,user);
             if(cardLearning != null){
@@ -272,6 +279,7 @@ public class LearningService {
                         }
                         studySetLearning.setProgress(progress);
                         studySetLearningRepository.save(studySetLearning);
+                        color = studySetLearning.getColor();
                     }
                 }else{
                     status = Status.LEARNING;
@@ -291,6 +299,7 @@ public class LearningService {
                         progress = progress - 1.0/numberOfCard;
                         studySetLearning.setProgress(progress);
                         studySetLearningRepository.save(studySetLearning);
+                        color = studySetLearning.getColor();
                     }
                 }
 
@@ -319,8 +328,7 @@ public class LearningService {
                     boolean isExistEventOfStudySet = false;
 
                     for(Event eventToday : eventListToday){
-                        String[] split = eventToday.getDescription().split("\\|");
-                        Long studySetIdOfEventBefore = Long.valueOf(split[1].trim());
+                        Long studySetIdOfEventBefore = Long.valueOf(eventToday.getDescription().trim());
                         if(studySetIdOfEventBefore == studySetIdOfCard) {
                             isExistEventOfStudySet = true;
                             break;
@@ -330,7 +338,7 @@ public class LearningService {
                         Event eventLearning = new Event();
                         eventLearning.setUser(user);
 
-                        eventLearning.setDescription("Learn |" + studySetIdOfCard);
+                        eventLearning.setDescription(""+studySetIdOfCard);
 
                         Instant from = learnDate.atZone(ZoneId.systemDefault()).withHour(0).withMinute(0).toInstant();
                         eventLearning.setFromTime(from);
@@ -338,19 +346,21 @@ public class LearningService {
                         Instant to = learnDate.atZone(ZoneId.systemDefault()).withHour(23).withMinute(59).toInstant();
                         eventLearning.setToTime(to);
 
-                        eventLearning.setColor(null);
+                        eventLearning.setColor(color);
 
                         eventLearning.setName("Review " + card.getStudySet().getTitle());
                         eventLearning.setCreatedTime(now);
                         eventLearning.setUpdateTime(now);
                         eventLearning.setLearnEvent(true);
                         eventRepository.save(eventLearning);
+
+                        createNotificationAfterCreateEvent(eventLearning);
                     }
                 }else{
                     Event eventLearning = new Event();
                     eventLearning.setUser(user);
 
-                    eventLearning.setDescription("Learn |" + studySetIdOfCard);
+                    eventLearning.setDescription("" + studySetIdOfCard);
 
                     Instant from = learnDate.atZone(ZoneId.systemDefault()).withHour(0).withMinute(0).toInstant();
                     eventLearning.setFromTime(from);
@@ -358,13 +368,14 @@ public class LearningService {
                     Instant to = learnDate.atZone(ZoneId.systemDefault()).withHour(23).withMinute(59).toInstant();
                     eventLearning.setToTime(to);
 
-                    eventLearning.setColor(null);
+                    eventLearning.setColor(color);
 
                     eventLearning.setName("Review " + card.getStudySet().getTitle());
                     eventLearning.setCreatedTime(now);
                     eventLearning.setUpdateTime(now);
                     eventRepository.save(eventLearning);
 
+                    createNotificationAfterCreateEvent(eventLearning);
                 }
                 return ResponseEntity.status(HttpStatus.OK).body("Update after learning successfully");
             }else{
@@ -389,12 +400,84 @@ public class LearningService {
     }
 
     public ResponseEntity learningContinue(Long studySetId) {
-        User user = authService.getCurrentAccount().getUser();
-        Pageable top20 = PageRequest.of(0,20);
+        try {
+            User user = authService.getCurrentAccount().getUser();
+            StudySet studySet = studySetRepository.findById(studySetId).orElseThrow(() -> new ExpressionException("Study Set not exist"));
+            List<Card> cards = studySet.getCards();
+            int numberOfCardAddNew = 0;
+            for (Card card : cards) {
+                CardLearning cardLearning = cardLearningRepository.findCardLearningByCardAndUser(card, user);
+                if (cardLearning == null) {
+                    numberOfCardAddNew++;
+                    //Set User-Card
+                    UserCardId userCardId = new UserCardId();
+                    userCardId.setUserId(user.getId());
+                    userCardId.setCardId(card.getId());
 
-        List<CardLearningDto> response = cardLearningRepository.getTopCardLearning(user.getId(), studySetId,top20);
-        if(response != null){
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+                    //Set CardLearning to Insert DB
+                    cardLearning = new CardLearning();
+                    cardLearning.setUserCardId(userCardId);
+                    cardLearning.setCard(card);
+                    cardLearning.setUser(user);
+
+                    Instant now = Instant.now().truncatedTo(ChronoUnit.HOURS);
+                    cardLearning.setLearnedDate(now);
+
+                    cardLearning.setColor(null);
+                    cardLearning.setEFactor(2.5);
+                    cardLearning.setHint(null);
+                    cardLearning.setIntervalTime(0);
+                    cardLearning.setQ(0);
+                    cardLearning.setStatus(Status.NOTSTARTED);
+
+                    cardLearningRepository.save(cardLearning);
+                }
+            }
+            int numberOfCard = cards.size();
+
+            if (numberOfCardAddNew != 0) {
+                if (numberOfCardAddNew == numberOfCard) {
+                    //Set StudySetLearning to Insert DB
+                    StudySetLearning studySetLearning = new StudySetLearning();
+
+                    UserStudySetId userStudySetId = new UserStudySetId();
+                    userStudySetId.setStudySetId(studySetId);
+                    userStudySetId.setUserId(user.getId());
+                    studySetLearning.setUserStudySetId(userStudySetId);
+                    studySetLearning.setStudySet(studySet);
+                    studySetLearning.setUser(user);
+                    studySetLearning.setColor(null);
+                    studySetLearning.setExpectedDate(null);
+                    studySetLearning.setFeedback(null);
+                    studySetLearning.setProgress(0);
+                    studySetLearning.setRating(0);
+                    studySetLearning.setStartDate(Instant.now());
+                    studySetLearning.setStatus(Status.LEARNING);
+                    studySetLearning.setPublic(studySet.isPublic());
+                    studySetLearningRepository.save(studySetLearning);
+                } else {
+                    StudySetLearning ssl = studySetLearningRepository.findStudySetLearningByStudySetAndUser(studySet, user);
+
+                    double progress = ssl.getProgress();
+                    progress = progress * (numberOfCard - numberOfCardAddNew) / numberOfCard;
+                    ssl.setProgress(progress);
+                    studySetLearningRepository.save(ssl);
+                }
+
+            }
+            Pageable top20 = PageRequest.of(0, 20);
+
+            List<CardLearningDto> listCardLearning = cardLearningRepository.getTopCardLearning(user.getId(), studySetId, top20);
+            LearningrResponseDto response
+                    = new LearningrResponseDto(studySetLearningRepository.findStudySetLearningByStudySetAndUser(studySet, user)
+                    .getProgress(),
+                    listCardLearning);
+            if (response != null) {
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+            }
+        }catch (Exception e){
+            log.info("learningContinue Exception: "+e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
     }
@@ -407,5 +490,46 @@ public class LearningService {
             return ResponseEntity.status(HttpStatus.OK).body(response);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
+    }
+
+    public void addStudySetLearningByUserAndStudySet(User user, StudySet studySet){
+
+        StudySetLearning studySetLearning = studySetLearningRepository.findStudySetLearningByStudySetAndUser(studySet,user);
+        if(studySetLearning == null) {
+            //Set UserStudySetId
+            UserStudySetId userStudySetId = new UserStudySetId();
+            userStudySetId.setStudySetId(studySet.getId());
+            userStudySetId.setUserId(user.getId());
+
+            //Set StudySetLearning
+            studySetLearning.setUserStudySetId(userStudySetId);
+            studySetLearning.setStudySet(studySet);
+            studySetLearning.setUser(user);
+            studySetLearning.setColor(null);
+            studySetLearning.setExpectedDate(null);
+            studySetLearning.setFeedback(null);
+            studySetLearning.setProgress(0);
+            studySetLearning.setRating(0);
+            studySetLearning.setStartDate(Instant.now());
+            studySetLearning.setStatus(Status.LEARNING);
+            studySetLearning.setPublic(studySet.isPublic());
+
+            //Insert into DB
+            studySetLearningRepository.save(studySetLearning);
+        }
+    }
+
+    private void createNotificationAfterCreateEvent(Event event){
+        User user = event.getUser();
+        Notification notification = new Notification();
+        notification.setUser(user);
+        notification.setTitle("Notice to learn daily");
+        notification.setDescription(event.getName());
+        notification.setType("daily");
+        notification.setLink(null);
+        notification.setCreatedTime(Instant.now());
+        notification.setTimeTrigger(Instant.now());
+        notification.setRead(true);
+        notificationRepository.save(notification);
     }
 }

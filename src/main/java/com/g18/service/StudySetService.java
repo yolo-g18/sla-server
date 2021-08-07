@@ -17,6 +17,7 @@ import com.g18.entity.*;
 
 import com.g18.model.Color;
 import com.g18.model.Status;
+import com.g18.model.UserCardId;
 import com.g18.model.UserStudySetId;
 import com.g18.repository.*;
 
@@ -67,7 +68,7 @@ public class StudySetService {
     private ExcelUtils excelUtils;
 
 
-    public String createStudySet(StudySetRequest request) {
+    public ResponseEntity createStudySet(StudySetRequest request) {
     	Long userId = authService.getCurrentAccount().getUser().getId();
 
         try{
@@ -85,34 +86,34 @@ public class StudySetService {
                 card.setStudySet(studySet);
             }
             studySet.setCards(listCard);
-            return studySetRepository.save(studySet).getId().toString();
+            Long id = studySetRepository.save(studySet).getId();
+            return ResponseEntity.status(HttpStatus.CREATED).body(id);
         }catch (Exception e){
             log.info(e.getMessage());
-            return "add Study Set fail";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Add Study Set fail");
         }
-
     }
 
-    public String deleteStudySet(Long studySetId) {
+    public ResponseEntity deleteStudySet(Long studySetId) {
         StudySet studySet = studySetRepository.findById(studySetId).orElseThrow(() ->new ExpressionException("Study Set not exist"));
         User auth = authService.getCurrentAccount().getUser();
         //Check permission
         if(auth.equals(studySet.getCreator())){
             studySetRepository.deleteById(studySetId);
-            return "delete StudySet successfully";
+            return ResponseEntity.status(HttpStatus.OK).body("Delete StudySet successfully");
         }else{
-            return "Not permitted";
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not permitted");
         }
     }
 
-    public String editStudySet(StudySetRequest request) {
+    public ResponseEntity editStudySet(StudySetRequest request) {
         Long userId = authService.getCurrentAccount().getUser().getId();
 
         try{
             User user = userRepository.findById(userId).orElse(null);
 
             StudySet studySet = studySetRepository.findById(request.getId())
-                                        .orElseThrow(()->  new ExpressionException("Study Set not exist"));;
+                                        .orElseThrow(()->  new ExpressionException("Study Set not exist"));
             if(user.equals(studySet.getCreator())){
                 studySet.setDescription(request.getDescription());
                 studySet.setTag(request.getTag());
@@ -120,14 +121,13 @@ public class StudySetService {
                 studySet.setPublic(request.isPublic());
 
                 studySetRepository.save(studySet);
-                return "update StudySet successfully";
+                return ResponseEntity.status(HttpStatus.OK).body("update StudySet successfully");
             }else{
-                return "Not permitted";
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not permitted");
             }
-
         }catch (Exception e){
             log.info(e.getMessage());
-            return "update Study Set fail";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("update Study Set fail");
         }
     }
 
@@ -155,19 +155,18 @@ public class StudySetService {
     public ResponseEntity viewStudySetBy(Long studySetId) {
 
         StudySet studySet = studySetRepository.findById(studySetId)
-                                    .orElseThrow(()->  new ExpressionException("Study Set not exist"));;
+                                    .orElseThrow(()->  new ExpressionException("Study Set not exist"));
+
         User user = authService.getCurrentAccount().getUser();
         boolean isPublic = studySet.isPublic();
         if(!isPublic && !user.equals(studySet.getCreator())){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not allowed");
+            StudySetLearning isExistStudySetLearning = studySetLearningRepository.findByUserIdAndStudySetId(user.getId(), studySetId);
+            if(isExistStudySetLearning == null){
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not allowed");
+            }
         }
         StudySetResponse studySetResponse = setStudySetResponse(studySet, 0);
         return ResponseEntity.status(HttpStatus.OK).body(studySetResponse);
-    }
-
-    public String shareStudySetBy(StudySetRequest request) {
-        // TODO Auto-generated method stub
-        return "share StudySet successfully";
     }
 
     public void exportStudySetToExcel(HttpServletResponse response, Long studySetId) throws IOException {
@@ -287,5 +286,21 @@ public class StudySetService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found.");
         }
 
+    }
+
+    public ResponseEntity setColorStudySetLearning(Long studySetId, String color) {
+        try {
+            User user = authService.getCurrentAccount().getUser();
+
+            StudySetLearning studySetLearning = studySetLearningRepository.findByUserIdAndStudySetId(user.getId(), studySetId);
+            if (studySetLearning != null) {
+                studySetLearning.setColor(Color.valueOf(color));
+                return ResponseEntity.status(HttpStatus.OK).body("Set Color successfully");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Study Set Learning not exist");
+            }
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Set Color fail");
+        }
     }
 }

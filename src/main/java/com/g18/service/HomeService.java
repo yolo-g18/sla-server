@@ -69,7 +69,7 @@ public class HomeService {
         return result;
     }
 
-    public String findUserNameByUserId(long uid){
+    public String findUserNameByUserId(Long uid){
         return accountRepository.findUserNameByUserId(uid);
     }
 }

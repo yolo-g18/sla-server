@@ -7,11 +7,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Repository
 public interface EventRepository extends JpaRepository<Event,Long> {
     void deleteById(long id);
   
@@ -25,6 +27,6 @@ public interface EventRepository extends JpaRepository<Event,Long> {
 
     List<Event> getListEventByUserIdAndDate(@Param("userId") Long userId, @Param("date") String  date);
 
-    List<Event> findEventByToTimeBefore(Instant toTime);
+    List<Event> findEventByIsLearnEventAndToTimeBefore(@Param("isLearnEvent") boolean isLearnEvent,@Param("toTime") Instant toTime);
 }
 

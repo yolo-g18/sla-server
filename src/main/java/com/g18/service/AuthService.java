@@ -265,19 +265,14 @@ public class AuthService {
         return !(authentication instanceof AnonymousAuthenticationToken) && authentication.isAuthenticated();
     }
 
-    public void changePassword (String newPassword, String reNewPassword, String oldPassword) {
+    public void changePassword (ChangePasswordDto changePasswordDto) {
 
         Account account = getCurrentAccount();
-        if(account.getPassword() != passwordEncoder.encode(oldPassword)) {
-            throw new AccountException("Wrong Password, Please enter again!");
+        if(passwordEncoder.matches(changePasswordDto.getOldPassword(), getCurrentAccount().getPassword())) {
+            account.setPassword(passwordEncoder.encode((changePasswordDto.getNewPassword())));
+            accountRepository.save(account);
         } else {
-            if(newPassword != reNewPassword) {
-                throw new AccountException("Password not match");
-            } else {
-                account.setPassword(passwordEncoder.encode((newPassword)));
-                accountRepository.save(account);
-            }
-
+            throw new AccountException("Wrong Password, Please enter again!");
         }
 
     }

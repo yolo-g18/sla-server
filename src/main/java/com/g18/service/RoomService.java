@@ -27,7 +27,7 @@ public class RoomService {
 
     private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime( FormatStyle.SHORT )
             .withLocale( Locale.UK )
-            .withZone( ZoneId.systemDefault() );
+            .withZone( ZoneId.systemDefault());
 
     @Autowired
     private AuthService authService;
@@ -81,32 +81,28 @@ public class RoomService {
 
         User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
 
-        // load all rooms of user
-        List<Room> roomList = user.getRoomsOwn();
-
         // json load all rooms to client
         List<ObjectNode> objectNodeList = new ArrayList<>();
-
-        if(roomList.isEmpty()){
-            return objectNodeList;
-        }
 
         // helper create objectnode
         ObjectMapper mapper;
 
-        // load all room to json list
-        for (Room room: roomList) {
+        List<Long> listRoomIdJoin = listRoomIdAttendOfUser(id);
+
+        // load all room attend to json list
+        for (Long item : listRoomIdJoin) {
             mapper =  new ObjectMapper();
             ObjectNode json = mapper.createObjectNode();
+            Room room = roomRepository.getOne(item);
             json.put("room_id",room.getId());
             json.put("name",room.getName());
-            json.put("description",room.getDescription());
+            json.put("ownerName",userService.getUserNameOfPerson(room.getOwner().getId()));
             json.put("numberOfMembers",room.getRoomMembers().size());
             json.put("createdDate", formatter.format(room.getCreatedDate()));
             objectNodeList.add(json);
         }
 
-        return objectNodeList;
+        return  objectNodeList;
     }
 
 
@@ -151,6 +147,7 @@ public class RoomService {
         json.put("name",existingRoom.getName());
         json.put("description",existingRoom.getDescription());
         json.put("createdDate", formatter.format(existingRoom.getCreatedDate()));
+        json.put("ownerId",existingRoom.getOwner().getId());
         json.put("ownerName",userService.getUserNameOfPerson(existingRoom.getOwner().getId()));
         json.put("setNumbers",listIdOfSetsInRoom(id).size());
         json.put("folderNumbers",existingRoom.getRoomFolders().size());
@@ -163,14 +160,12 @@ public class RoomService {
 
         // verify room's permisson
         if(isCreatorOfRoom(id) == false)
-            return "You are not creator of Room, You don't have permisson!!!";
+            throw new RoomPermisson();
 
         // find that specific room
         Room room = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
 
-        room.getRoomMembers().clear();
-
-        roomRepository.saveAndFlush(room);
+        roomRepository.removeAllMember(id);
 
         return "remove all members successfully";
     }
@@ -181,7 +176,7 @@ public class RoomService {
 
         // verify room's permisson
         if(isCreatorOfRoom(id) == false)
-            return "You are not creator of Room, You don't have permisson!!!";
+            throw new RoomPermisson();
 
         roomRepository.deleteById(id);
 
@@ -203,7 +198,7 @@ public class RoomService {
 
         // verify room's permisson
         if(isCreatorOfRoom(id) == false)
-            return "You are not creator of Room, You don't have permisson!!!";
+            throw new RoomPermisson();
 
         // find that specific room
         Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
@@ -282,6 +277,10 @@ public class RoomService {
             System.out.printf(e.getMessage());
         }
 
+        // verify room's permisson
+        if(isCreatorOfRoom(room_id) == false)
+            throw new RoomPermisson();
+
         // parsing id of person
         try {
 
@@ -295,6 +294,18 @@ public class RoomService {
         Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
         // find that user
         User existingUser = userRepository.findById(user_id).orElseThrow(() -> new UserNotFoundException());
+
+        // check for user exist in invitation of room
+        Long finalUser_id = user_id;
+        Long finalRoom_id = room_id;
+        RoomInvitation temp = existingRoom.getRoomInvitations().stream().filter(
+                roomInvitation -> roomInvitation.getUser().getId().equals(finalUser_id)
+                        && roomInvitation.getRoom().getId().equals(finalRoom_id)
+        ).findAny().orElse(null);
+
+        // invexisted
+        if(null != temp)
+            throw new SLAException("invitation has been sent!");
 
         //create id of roomInvitationId
         RoomInvitationId roomInvitationId = new RoomInvitationId();
@@ -332,10 +343,6 @@ public class RoomService {
         }catch (Exception e){
             System.out.printf(e.getMessage());
         }
-
-        // verify room's permisson
-        if(isCreatorOfRoom(room_id) == false)
-            return "You are not creator of Room, You don't have permisson!!!";
 
         // parsing id of member
         try {
@@ -427,7 +434,7 @@ public class RoomService {
 
         // verify room's permisson
         if(isCreatorOfRoom(room_id) == false)
-            return "You are not creator of Room, You don't have permisson!!!";
+            throw new RoomPermisson();
 
         // find that room
         Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
@@ -442,12 +449,6 @@ public class RoomService {
 
         ).findAny().orElse(null);
 
-        if(null == existingRoomMember)
-        {
-            // cancel remove because no relationship
-            return "Room dosen't include Member";
-        }
-
         // remove relationship roomMember
         existingRoom.getRoomMembers().remove(existingRoomMember);
 
@@ -458,8 +459,6 @@ public class RoomService {
 
     @Transactional
     public String addFolderToRoom(ObjectNode json){
-
-        String messageError = "cancel adding";
 
         Long room_id = null,folder_id = null;
 
@@ -473,8 +472,8 @@ public class RoomService {
         }
 
         // verify room's permisson
-        if(isMemberOfRoom(room_id) == false)
-            return "You are not member of Room, You don't have permisson!!!";
+        if(isCreatorOfRoom(room_id) == false)
+            throw new RoomPermisson();
 
         // parsing id of folder
         try {
@@ -506,7 +505,7 @@ public class RoomService {
 
         // folder existed in room
         if(null != temp)
-            return messageError;
+            throw new SLAException("folder existed in room");
 
         RoomFolder roomFolder = new RoomFolder();
 
@@ -528,8 +527,8 @@ public class RoomService {
     public String deleteFolderFromRoom(Long room_id,Long folder_id){
 
         // verify room's permisson
-        if(isMemberOfRoom(room_id) == false)
-            return "You are not member of Room, You don't have permisson!!!";
+        if(isCreatorOfRoom(room_id) == false)
+            throw new RoomPermisson();
 
         // find specific folder
         Folder folder = folderRepository.findById(folder_id).orElseThrow(() -> new FolderNotFoundException());
@@ -544,12 +543,6 @@ public class RoomService {
 
         ).findAny().orElse(null);
 
-        if(null == existingRoomFolder)
-        {
-            // cancel remove because no relationship
-            return "Room dosen't include Folder";
-        }
-
         // remove relationship roomFolder
         existingRoom.getRoomFolders().remove(existingRoomFolder);
 
@@ -561,8 +554,6 @@ public class RoomService {
 
     @Transactional
     public String addStudySetToRoom(ObjectNode json){
-
-        String messageError = "cancel adding";
 
         Long room_id = null,studySet_id = null;
 
@@ -576,8 +567,8 @@ public class RoomService {
         }
 
         // verify room's permisson
-        if(isMemberOfRoom(room_id) == false)
-            return "You are not member of Room, You don't have permisson!!!";
+        if(isCreatorOfRoom(room_id) == false)
+            throw new RoomPermisson();
 
 
         // parsing id of studySet
@@ -609,9 +600,9 @@ public class RoomService {
                         && roomStudySet.getRoomStudySetId().getRoomId().equals(finalRoom_id)
         ).findAny().orElse(null);
 
-        // SS existed in folder
+
         if(null != temp)
-            return messageError;
+            throw new SLAException("set existed in room");
 
         RoomStudySet roomStudySet = new RoomStudySet();
 
@@ -633,8 +624,8 @@ public class RoomService {
     public String deleteStudySetFromRoom(Long room_id,Long studySet_id){
 
         // verify room's permisson
-        if(isMemberOfRoom(room_id) == false)
-            return "You are not member of Room, You don't have permisson!!!";
+        if(isCreatorOfRoom(room_id) == false)
+            throw new RoomPermisson();
 
         // find specific room
         Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
@@ -649,12 +640,6 @@ public class RoomService {
                                 roomStudySet.getRoomStudySetId().getRoomId().equals(room_id)
 
         ).findAny().orElse(null);
-
-
-        if(null == existingRoomStudySet){
-            // cancel remove because no relationship
-              return "Room dosen't include StudySet";
-        }
 
         // remove relationship roomStudySet
         existingRoom.getRoomStudySets().remove(existingRoomStudySet);
@@ -702,17 +687,13 @@ public class RoomService {
     }
 
     @Transactional
-    public List<ObjectNode> getRoomInvitaionList(Long id){
+    public List<ObjectNode> getRoomInvitationListOfUser(){
 
-        // find specific room
-        Room existingRoom = roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException());
-
-        // verify room's permisson
-        if(isMemberOfRoom(id) == false)
-            throw new RoomPermisson();
+        // get user logined
+        User user = authService.getCurrentUser();
 
         // load all roomInvitation
-        List<RoomInvitation> roomInvitationList = existingRoom.getRoomInvitations();
+        List<RoomInvitation> roomInvitationList = user.getInvitationList();
 
         // json load all to client
         List<ObjectNode> objectNodeList = new ArrayList<>();
@@ -728,9 +709,11 @@ public class RoomService {
         for (RoomInvitation roomInvitation: roomInvitationList) {
             mapper =  new ObjectMapper();
             ObjectNode json = mapper.createObjectNode();
-            json.put("user_id",roomInvitation.getRoomInvitationId().getUserId());
-            json.put("userName",userService.getUserNameOfPerson(roomInvitation.getUser().getId()));
-            json.put("time",formatter.format(roomInvitation.getInvitedDate()));
+            json.put("roomId",roomInvitation.getRoom().getId());
+            json.put("roomName",roomInvitation.getRoom().getName());
+            json.put("userNameHost",userService.getUserNameOfPerson(roomInvitation.getRoom()
+                    .getOwner().getId()));
+            json.put("timeInvited",formatter.format(roomInvitation.getInvitedDate()));
 
             objectNodeList.add(json);
         }
@@ -927,5 +910,6 @@ public class RoomService {
 
         return false;
     }
+
 
 }
