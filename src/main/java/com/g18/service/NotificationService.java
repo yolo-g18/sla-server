@@ -22,10 +22,6 @@ import java.util.stream.Collectors;
 @Service
 public class NotificationService {
 
-    private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime( FormatStyle.SHORT )
-            .withLocale( Locale.UK )
-            .withZone( ZoneId.systemDefault());
-
     @Autowired
     private UserRepository userRepository;
     @Autowired

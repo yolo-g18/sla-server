@@ -2,6 +2,7 @@ package com.g18.controller;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.dto.AuthenticationResponse;
+import com.g18.dto.ChangePasswordDto;
 import com.g18.dto.UserProfileDto;
 import com.g18.dto.UserResponse;
 import com.g18.service.AuthService;
@@ -57,6 +58,11 @@ public class UserController {
         return new ResponseEntity<>("my lib", HttpStatus.OK);
     }
 
+    @PutMapping("/changePassword")
+    public ResponseEntity<String> changePassword(@Valid @RequestBody ChangePasswordDto changePasswordDto) {
+        authService.changePassword(changePasswordDto);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
 
 }

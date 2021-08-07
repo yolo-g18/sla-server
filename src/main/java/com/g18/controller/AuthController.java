@@ -62,11 +62,5 @@ public class AuthController {
     }
 
 
-    @PutMapping("/changePassword")
-    public ResponseEntity<String> changePassword(@Valid @RequestBody ChangePasswordDto changePasswordDto) {
-        authService.changePassword(changePasswordDto);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
 
 }
