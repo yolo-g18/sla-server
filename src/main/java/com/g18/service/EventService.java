@@ -78,6 +78,7 @@ public class EventService {
             eventDto.setLearnEvent(event.isLearnEvent());
             eventDto.setFromTime(String.valueOf(event.getFromTime()));
             eventDto.setToTime(String.valueOf(event.getToTime()));
+            eventDto.setColor(event.getColor());
             eventDto.setUpdateTime(String.valueOf(event.getUpdateTime()));
             eventDto.setCreatedTime(String.valueOf(event.getCreatedTime()));
             results.add(eventDto);
