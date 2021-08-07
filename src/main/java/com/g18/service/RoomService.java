@@ -911,13 +911,5 @@ public class RoomService {
         return false;
     }
 
-    @Transactional
-    public Long getMaxId(){
-        return roomRepository.getMaxId();
-    }
 
-    @Transactional
-    public List<Long> listRoomIdAttendOfUser(Long userId){
-        return roomRepository.listRoomIdAttendOfUser(userId);
-    }
 }

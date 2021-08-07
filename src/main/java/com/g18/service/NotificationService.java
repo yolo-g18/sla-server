@@ -15,7 +15,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.List;
+
 import java.util.Locale;
 import java.util.stream.Collectors;
 
@@ -32,6 +32,12 @@ public class NotificationService {
     private NotificationRepository notificationRepository;
     @Autowired
     private AuthService authService;
+
+    private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime( FormatStyle.SHORT )
+            .withLocale( Locale.UK )
+            .withZone( ZoneId.systemDefault() );
+
+
     @Transactional
     public String saveNotification(ObjectNode json){
 
