@@ -17,10 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -62,6 +59,12 @@ public class ReportService {
                 ).collect(Collectors.toList()), pageable, totalElements);
     }
 
+
+    public boolean checkReprotExistence(Long ssID) {
+        Optional<Report> report = reportRepository.findByStudySetIdAndAndReporterId(ssID,
+                authService.getCurrentUser().getId());
+        return report.isPresent();
+    }
 
 
 

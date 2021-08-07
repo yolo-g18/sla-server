@@ -2,6 +2,7 @@ package com.g18.controller;
 
 import com.g18.dto.*;
 import com.g18.entity.StudySet;
+import com.g18.service.ReportService;
 import lombok.AllArgsConstructor;
 
 import java.io.IOException;
@@ -24,6 +25,8 @@ public class StudySetController {
     
 	@Autowired
     private StudySetService studySetService;
+	@Autowired
+	private ReportService reportService;
 	
 	@GetMapping("/list")
     public ResponseEntity listStudySet(){
@@ -68,6 +71,19 @@ public class StudySetController {
 	@PutMapping("/color")
 	public ResponseEntity setColor(@RequestParam(value="id") Long studySetId, @RequestParam(value="color") String color){
 		return studySetService.setColorStudySetLearning(studySetId, color);
+	}
+
+	//create report
+	@PostMapping(value = "/report/{ssId}")
+	public String createReport(@PathVariable("ssId") Long ssId, @RequestBody ObjectNode json){
+		return reportService.saveReport(ssId,json);
+	}
+
+	//check report
+	@GetMapping("/checkReprotExistence/{ssId}")
+	public boolean checkReprotExistence(@PathVariable("ssId") Long ssId) {
+		return reportService.checkReprotExistence(ssId);
+
 	}
 }
 

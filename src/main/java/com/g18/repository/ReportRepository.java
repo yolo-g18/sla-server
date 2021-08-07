@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ReportRepository extends JpaRepository<Report, Long> {
@@ -17,6 +18,7 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
     List<Report> findByStudySetId(Long ssId);
     Page<Report> findByIsCheckedFalse(Pageable pageable);
     Page<Report> findByIsCheckedFalseAndContentContains(String content,Pageable pageable);
+    Optional<Report>findByStudySetIdAndAndReporterId(Long studySetId, Long ReporterID);
 
 
 }

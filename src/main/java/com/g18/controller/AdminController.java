@@ -35,12 +35,6 @@ public class AdminController {
     @Autowired
     private EmailSenderService emailSenderService;
 
-    //create report
-    @PostMapping(value = "/report/{ssId}")
-    public String createReport(@PathVariable("ssId") Long ssId, @RequestBody ObjectNode json){
-        return reportService.saveReport(ssId,json);
-    }
-
     //get all report
     @GetMapping("/report/all")
     public Page<ReportDto> getAllReports(Pageable pageable) {
