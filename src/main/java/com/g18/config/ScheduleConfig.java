@@ -45,38 +45,47 @@ public class ScheduleConfig {
         //Get time
         Instant timeUpdate = Instant.now();
 
-        //Get list CardLearning to Update Time
-        List<CardLearning> cardLearningList = cardLearningRepository.findCardLearningByLearnedDateBefore(timeUpdate);
-        if (cardLearningList != null) {
-            for (CardLearning cardLearning : cardLearningList) {
-                cardLearning.setLearnedDate(timeUpdate.truncatedTo(ChronoUnit.HOURS));
-                cardLearningRepository.save(cardLearning);
-            }
-        }
-
         //Get list Event to Update Time
         List<Event> eventList = eventRepository.findEventByIsLearnEventAndToTimeBefore(true, timeUpdate);
-        if(eventList != null){
+        if(!eventList.isEmpty()){
+            Date myDate = Date.from(timeUpdate.minus(1,ChronoUnit.DAYS));
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            String date = formatter.format(myDate);
+
             Instant from = timeUpdate.atZone(ZoneId.systemDefault()).withHour(0).withMinute(0).toInstant();
 
             Instant to = timeUpdate.atZone(ZoneId.systemDefault()).withHour(23).withMinute(59).toInstant();
 
             for(Event event : eventList){
-                event.setFromTime(from);
-                event.setToTime(to);
-                eventRepository.save(event);
-
                 User user = event.getUser();
-                Notification notification = new Notification();
-                notification.setUser(user);
-                notification.setTitle("Notice to learn daily");
-                notification.setDescription(event.getName());
-                notification.setType("daily");
-                notification.setLink(null);
-                notification.setCreatedTime(Instant.now());
-                notification.setTimeTrigger(Instant.now());
-                notification.setRead(true);
-                notificationRepository.save(notification);
+                Long studySetId = Long.valueOf(event.getDescription().trim());
+
+                List<CardLearning> cards= cardLearningRepository.getListCardLearningByStudySetIdAndUserIdAndDate(studySetId, user.getId(), date);
+                if(!cards.isEmpty()){
+                    event.setFromTime(from);
+                    event.setToTime(to);
+                    eventRepository.save(event);
+
+                    Notification notification = new Notification();
+                    notification.setUser(user);
+                    notification.setTitle("Notice to learn daily");
+                    notification.setDescription(event.getName());
+                    notification.setType("daily");
+                    notification.setLink(null);
+                    notification.setCreatedTime(Instant.now());
+                    notification.setTimeTrigger(Instant.now());
+                    notification.setRead(true);
+                    notificationRepository.save(notification);
+                }
+            }
+        }
+
+        //Get list CardLearning to Update Time
+        List<CardLearning> cardLearningList = cardLearningRepository.findCardLearningByLearnedDateBefore(timeUpdate);
+        if (!cardLearningList.isEmpty()) {
+            for (CardLearning cardLearning : cardLearningList) {
+                cardLearning.setLearnedDate(timeUpdate.truncatedTo(ChronoUnit.HOURS));
+                cardLearningRepository.save(cardLearning);
             }
         }
     }
@@ -90,7 +99,7 @@ public class ScheduleConfig {
 
         String type = "daily";
         List<Notification> notificationList = notificationRepository.findNotificationByTypeAndTimeTrigger(type, today);
-        if(notificationList != null) {
+        if(!notificationList.isEmpty()) {
             formatter = new SimpleDateFormat("dd/MM/yyyy");
             String learnTime = formatter.format(myDate);
             //List userId to check if sent mail
@@ -128,7 +137,7 @@ public class ScheduleConfig {
 
         String type = "learn";
         List<Notification> notificationList = notificationRepository.findByTypeAndTimeTriggerBetweenOrderByTimeTrigger(type,now, after10Minutes);
-        if(notificationList != null) {
+        if(!notificationList.isEmpty()) {
             for (Notification noti : notificationList) {
                 Instant timeTrigger = noti.getTimeTrigger();
 
