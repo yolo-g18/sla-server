@@ -1,6 +1,7 @@
 package com.g18.repository;
 
 import com.g18.entity.Notification;
+import com.g18.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -35,4 +36,6 @@ public interface NotificationRepository extends JpaRepository<Notification,Long>
 
      @Query(value="SELECT * FROM notification WHERE type = :type AND time_trigger LIKE :timeTrigger% ", nativeQuery = true)
      List<Notification> findNotificationByTypeAndTimeTrigger(@Param("type") String type, @Param("timeTrigger") String timeTrigger);
+
+     Notification findNotificationByUserAndType(User user, String type);
 }

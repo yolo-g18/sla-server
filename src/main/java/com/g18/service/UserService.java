@@ -4,18 +4,22 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.dto.UserProfileDto;
 import com.g18.dto.UserResponse;
 import com.g18.entity.Account;
+import com.g18.entity.Notification;
 import com.g18.entity.User;
 import com.g18.exceptions.AccountException;
 import com.g18.repository.AccountRepository;
+import com.g18.repository.NotificationRepository;
 import com.g18.repository.UserRepository;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 
@@ -28,6 +32,9 @@ public class UserService {
     private final AccountRepository accountRepository;
     private final AuthService authService;
     private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
 
     public void save(UserProfileDto userProfileDto) throws NotFoundException{
 
@@ -113,6 +120,33 @@ public class UserService {
             user.setFavourTimeTo(favourTimeTo);
 
             userRepository.save(user);
+
+            String type = "learn";
+            Notification notification = notificationRepository.findNotificationByUserAndType(user, type);
+            if(notification!=null) {
+
+                if (favourTimeFrom.isBefore(Instant.now())) {
+                    favourTimeFrom = favourTimeFrom.plus(1, ChronoUnit.DAYS);
+                }
+                notification.setTimeTrigger(favourTimeFrom.truncatedTo(ChronoUnit.MINUTES));
+
+                notificationRepository.save(notification);
+            }else{
+                Notification notificationNew = new Notification();
+                notificationNew.setUser(user);
+                notificationNew.setTitle("Time to learn");
+                notificationNew.setDescription("Time to learn");
+                notificationNew.setType(type);
+                notificationNew.setLink(null);
+                notificationNew.setCreatedTime(Instant.now());
+
+                if (favourTimeFrom.isBefore(Instant.now())) {
+                    favourTimeFrom = favourTimeFrom.plus(1, ChronoUnit.DAYS);
+                }
+                notificationNew.setTimeTrigger(favourTimeFrom.truncatedTo(ChronoUnit.MINUTES));
+                notificationNew.setRead(true);
+                notificationRepository.save(notificationNew);
+            }
         }
 
     }
