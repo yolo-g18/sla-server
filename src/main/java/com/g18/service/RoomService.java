@@ -441,10 +441,6 @@ public class RoomService {
     @Transactional
     public String deleteMemberFromRoom(Long room_id,Long member_id){
 
-        // verify room's permisson
-        if(isCreatorOfRoom(room_id) == false)
-            throw new RoomPermisson();
-
         // find that room
         Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
         // find that member
