@@ -69,10 +69,8 @@ public class StudySetService {
 
 
     public ResponseEntity createStudySet(StudySetRequest request) {
-    	Long userId = authService.getCurrentAccount().getUser().getId();
-
         try{
-            User user = userRepository.findById(userId).orElseThrow(()-> new ExpressionException("Study Set not exist"));
+            User user = authService.getCurrentAccount().getUser();
 
             StudySet studySet = new StudySet();
             studySet.setCreator(user);
