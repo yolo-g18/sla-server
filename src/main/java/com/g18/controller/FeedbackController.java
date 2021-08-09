@@ -1,31 +1,35 @@
 package com.g18.controller;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.g18.dto.FeedbackResponse;
-import com.g18.repository.StudySetLearningRepository;
+
+import com.g18.dto.FeedbackRequest;
+
 import com.g18.service.FeedbackService;
-import javassist.NotFoundException;
+
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
+@AllArgsConstructor
 public class FeedbackController {
     @Autowired
     private FeedbackService feedbackService;
-    @Autowired
-    private StudySetLearningRepository studySetLearningRepository;
 
-    @PutMapping(value = "/api/feedback/{ssId}")
-    public String feedbackAndRating(@PathVariable("ssId") Long ssId,
-                                  @RequestBody ObjectNode json) throws NotFoundException {
-         return feedbackService.ratingAndFeedback(ssId,json);
+    @PutMapping(value = "/api/feedback/edit")
+    public ResponseEntity editFeedback(@Valid @RequestBody FeedbackRequest request){
+        return feedbackService.editFeedback(request);
     }
 
-    @GetMapping(value = "/api/feedback/{ssId}")
-    public FeedbackResponse getReportOfStudySet(@PathVariable("ssId") Long ssId) {
-        FeedbackResponse response = new FeedbackResponse();
-        response.setAvgRating(studySetLearningRepository.getAVGRatingSS(ssId));
-        response.setListFeedback(feedbackService.getAllFeedbackOfStudySet(ssId));
-       return response;
+    @GetMapping(value = "/api/feedback/{studySetId}/me")
+    public ResponseEntity getRatingOfCurrentUser(@PathVariable("studySetId") long studySetId){
+        return feedbackService.getRatingOfCurrentUser(studySetId);
+    }
+
+    @GetMapping(value = "/api/feedback/{studySetId}")
+    public ResponseEntity getListRatingOfStudySet(@PathVariable("studySetId") long studySetId){
+        return feedbackService.getListRatingOfStudySet(studySetId);
     }
 }
