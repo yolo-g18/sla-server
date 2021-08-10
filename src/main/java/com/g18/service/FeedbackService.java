@@ -2,11 +2,16 @@ package com.g18.service;
 
 import com.g18.dto.FeedbackRequest;
 import com.g18.dto.FeedbackResponse;
+import com.g18.entity.StudySet;
 import com.g18.entity.StudySetLearning;
 import com.g18.entity.User;
+import com.g18.exceptions.StudySetNotFoundException;
+import com.g18.exceptions.UserNotFoundException;
 import com.g18.repository.AccountRepository;
 import com.g18.repository.StudySetLearningRepository;
 
+import com.g18.repository.StudySetRepository;
+import com.g18.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,6 +33,10 @@ public class FeedbackService {
 
     @Autowired
     private AccountRepository accountRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private StudySetRepository studySetRepository;
 
     public ResponseEntity editFeedback(FeedbackRequest request) {
         try{
@@ -86,6 +95,7 @@ public class FeedbackService {
                     feedbackResponse.setUserName(userName);
                     feedbackResponse.setRating(studySetLearning.getRating());
                     feedbackResponse.setFeedback(studySetLearning.getFeedback());
+                    feedbackResponse.setAvatar(studySetLearning.getUser().getAvatar());
 
                     response.add(feedbackResponse);
                 }

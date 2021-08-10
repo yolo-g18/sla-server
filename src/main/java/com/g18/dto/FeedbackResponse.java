@@ -14,4 +14,5 @@ public class FeedbackResponse {
     private String userName;
     private double rating;
     private String feedback;
+    private String avatar;
 }
