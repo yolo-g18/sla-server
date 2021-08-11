@@ -14,6 +14,6 @@ public class ReportDto {
     private String reporter;
     private String content;
     private String user_avatar;
-    private String createDate;
+    private String createdTime;
     private boolean isChecked;
 }
