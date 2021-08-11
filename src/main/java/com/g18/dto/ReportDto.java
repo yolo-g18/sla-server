@@ -13,4 +13,7 @@ public class ReportDto {
     private String ssTitle;
     private String reporter;
     private String content;
+    private String user_avatar;
+    private String createDate;
+    private boolean isChecked;
 }

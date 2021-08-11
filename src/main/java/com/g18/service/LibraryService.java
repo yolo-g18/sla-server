@@ -48,20 +48,19 @@ public class LibraryService {
             sslDto.setRating(ssl.getRating());
             sslDto.setStatus(ssl.getStatus());
             sslDto.setNumberOfCards(cardRepository.countNumberCardBySSID(ssl.getStudySet().getId()));
-            sslDto.setOwner(findUserNameByUserId(ssl.getUser().getId()));
+            sslDto.setOwner(findUserNameByUserId(ssl.getStudySet().getCreator().getId()));
             results.add(sslDto);
         }
         return results;
     }
     // get all study sets the current user have created
     public List<SearchStudySetResponse> getStudySetCreatedByUserId(long userId) {
-        User currentUser = authService.getCurrentUser();
         List<StudySet> studySetList =studySetRepository.findByCreatorId(userId);
         List<SearchStudySetResponse> result = new ArrayList<>();
         for(StudySet ss : studySetList){
             SearchStudySetResponse sssr = new SearchStudySetResponse();
             sssr.setId(ss.getId());
-            sssr.setCreator(findUserNameByUserId(currentUser.getId()));
+            sssr.setCreator(findUserNameByUserId(ss.getCreator().getId()));
             sssr.setNumberOfCards(ss.getCards().size());
             sssr.setTitle(ss.getTitle());
             sssr.setDescription(ss.getDescription());

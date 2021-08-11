@@ -16,9 +16,7 @@ public interface ReportRepository extends JpaRepository<Report, Long> {
     int numberOfReportSS(Long ssId);
 
     List<Report> findByStudySetId(Long ssId);
-    Page<Report> findByIsCheckedFalse(Pageable pageable);
-    Page<Report> findByIsCheckedFalseAndContentContains(String content,Pageable pageable);
+    Page<Report> findAllByOrderByCreatedTimeDesc(Pageable pageable);
+    Page<Report> findByContentContains(String content,Pageable pageable);
     Optional<Report>findByStudySetIdAndAndReporterId(Long studySetId, Long ReporterID);
-
-
 }

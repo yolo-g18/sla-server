@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.dto.ReportDto;
 import com.g18.repository.AccountRepository;
+import com.g18.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -30,9 +31,11 @@ public class ReportService {
     private ReportRepository reportRepository;
     @Autowired
     private AccountRepository accountRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     public Page<ReportDto> getAllReport(Pageable pageable){
-        Page<Report> reports = reportRepository.findByIsCheckedFalse(pageable);
+        Page<Report> reports = reportRepository.findAllByOrderByCreatedTimeDesc(pageable);
         int totalElements = (int) reports.getTotalElements();
         return new PageImpl<ReportDto>(
                 reports.stream().map(report -> new ReportDto(
@@ -40,13 +43,16 @@ public class ReportService {
                             report.getStudySet().getId(),
                             report.getStudySet().getTitle(),
                             accountRepository.findUserNameByUserId(report.getReporter().getId()),
-                            report.getContent()
+                            report.getContent(),
+                            userRepository.findById(report.getReporter().getId()).get().getAvatar(),
+                            String.valueOf(report.getCreatedTime()),
+                            report.isChecked()
                         )
                 ).collect(Collectors.toList()), pageable, totalElements);
     }
     //get all the report's content containing
     public Page<ReportDto> getReportByContent(String content,Pageable pageable){
-        Page<Report> reports = reportRepository.findByIsCheckedFalseAndContentContains(content,pageable);
+        Page<Report> reports = reportRepository.findByContentContains(content,pageable);
         int totalElements = (int) reports.getTotalElements();
         return new PageImpl<ReportDto>(
                 reports.stream().map(report -> new ReportDto(
@@ -54,7 +60,10 @@ public class ReportService {
                                 report.getStudySet().getId(),
                                 report.getStudySet().getTitle(),
                                 accountRepository.findUserNameByUserId(report.getReporter().getId()),
-                                report.getContent()
+                                report.getContent(),
+                                userRepository.findById(report.getReporter().getId()).get().getAvatar(),
+                                String.valueOf(report.getCreatedTime()),
+                                report.isChecked()
                         )
                 ).collect(Collectors.toList()), pageable, totalElements);
     }
