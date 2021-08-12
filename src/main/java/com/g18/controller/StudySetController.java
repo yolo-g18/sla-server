@@ -85,5 +85,10 @@ public class StudySetController {
 		return reportService.checkReprotExistence(ssId);
 
 	}
+
+	@GetMapping("/color")
+	public ResponseEntity getColor(@RequestParam(value="id") Long studySetId) {
+		return studySetService.getColorStudySetLearning(studySetId);
+	}
 }
 

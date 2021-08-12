@@ -41,8 +41,9 @@ public class SearchService {
 
     //search study set by title and paging
     public Page<SearchStudySetResponse> searchStudySetByTitle(Pageable pageable, String keySearch) {
-        Page<StudySet> studySetPage =studySetRepository.findByTitleContainsAndIsPublicTrue(keySearch,pageable);
+        Page<StudySet> studySetPage =studySetRepository.findByTitleContainsAndIsPublicTrueAndIsActiveTrue(keySearch,pageable);
         int totalElements = (int) studySetPage.getTotalElements();
+        Pageable top4 = PageRequest.of(0, 4);
         return new PageImpl<SearchStudySetResponse>(
                 studySetPage.stream().map(studySet -> new SearchStudySetResponse(
                           studySet.getId(),
@@ -59,8 +60,9 @@ public class SearchService {
 
     //Search list public Study set by tag
     public Page<SearchStudySetResponse> searchStudySetByTag(Pageable pageable, String keySearch) {
-        Page<StudySet> studySetPage =studySetRepository.findByTagContainsAndIsPublicTrue(keySearch,pageable);
+        Page<StudySet> studySetPage =studySetRepository.findByTagContainsAndIsPublicTrueAndIsActiveTrue(keySearch,pageable);
         int totalElements = (int) studySetPage.getTotalElements();
+        Pageable top4 = PageRequest.of(0, 4);
         return new PageImpl<SearchStudySetResponse>(
                 studySetPage.stream().map(studySet -> new SearchStudySetResponse(
                                 studySet.getId(),
@@ -163,7 +165,7 @@ public class SearchService {
         return accountRepository.findUserNameByUserId(uid);
     }
 
-    private List<CardSearchResponse> convertToCardDto(List<Card> cards){
+    public List<CardSearchResponse> convertToCardDto(List<Card> cards){
         List<CardSearchResponse> cardsDto = new ArrayList<>();
         for (Card c : cards){
             CardSearchResponse cDto = new CardSearchResponse();

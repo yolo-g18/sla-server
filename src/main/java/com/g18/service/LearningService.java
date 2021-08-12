@@ -68,7 +68,11 @@ public class LearningService {
         List<CardLearningDto> responses = new ArrayList<>();
         try{
             User user = authService.getCurrentAccount().getUser();
-            StudySet studySet = studySetRepository.findById(studySetId).orElseThrow(() -> new ExpressionException("Study Set not exist"));
+//            StudySet studySet = studySetRepository.findById(studySetId).orElseThrow(() -> new ExpressionException("Study Set not exist"));
+            StudySet studySet = studySetRepository.findByIdAndIsActiveTrue(studySetId);
+            if(studySet == null){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Study Set not exist");
+            }
             List<Card> cards = studySet.getCards();
             int numberOfCardAddNew = 0;
             for (Card card: cards) {

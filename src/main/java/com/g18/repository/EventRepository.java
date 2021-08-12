@@ -28,5 +28,7 @@ public interface EventRepository extends JpaRepository<Event,Long> {
     List<Event> getListEventByUserIdAndDate(@Param("userId") Long userId, @Param("date") String  date);
 
     List<Event> findEventByIsLearnEventAndToTimeBefore(@Param("isLearnEvent") boolean isLearnEvent,@Param("toTime") Instant toTime);
+
+    List<Event> findEventByIsLearnEventTrueAndDescriptionLike(String description);
 }
 
