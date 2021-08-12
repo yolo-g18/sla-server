@@ -8,8 +8,8 @@ import com.g18.entity.User;
 import com.g18.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +28,8 @@ public class HomeService {
     private AccountRepository accountRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private SearchService searchService;
 
 
     public List<StudySetLearningResponse> getTop6LearningStudySets(){
@@ -68,6 +70,7 @@ public class HomeService {
             sssr.setTitle(ss.getTitle());
             sssr.setDescription(ss.getDescription());
             sssr.setTag(ss.getTag());
+            sssr.setFirst4Cards(searchService.convertToCardDto(cardRepository.findTop4ByStudySetId(ss.getId())));
             result.add(sssr);
         }
         return result;

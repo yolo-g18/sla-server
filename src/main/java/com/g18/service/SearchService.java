@@ -50,7 +50,7 @@ public class SearchService {
                         findUserNameByUserId(studySet.getCreator().getId()),
                         studySet.getTitle(),
                         studySet.getDescription(),
-                        convertToCardDto(cardRepository.findTop4ByStudySetId(studySet.getId(), top4)),
+                        convertToCardDto(cardRepository.findTop4ByStudySetId(studySet.getId())),
                         studySet.getTag(),
                         studySet.getCards().size(),
                         studySet.getCreatedDate()
@@ -69,7 +69,7 @@ public class SearchService {
                         findUserNameByUserId(studySet.getCreator().getId()),
                                 studySet.getTitle(),
                                 studySet.getDescription(),
-                                convertToCardDto(cardRepository.findTop4ByStudySetId(studySet.getId(), top4)),
+                                convertToCardDto(cardRepository.findTop4ByStudySetId(studySet.getId())),
                                 studySet.getTag(),
                                 studySet.getCards().size(),
                                 studySet.getCreatedDate()
@@ -165,7 +165,7 @@ public class SearchService {
         return accountRepository.findUserNameByUserId(uid);
     }
 
-    private List<CardSearchResponse> convertToCardDto(List<Card> cards){
+    public List<CardSearchResponse> convertToCardDto(List<Card> cards){
         List<CardSearchResponse> cardsDto = new ArrayList<>();
         for (Card c : cards){
             CardSearchResponse cDto = new CardSearchResponse();
