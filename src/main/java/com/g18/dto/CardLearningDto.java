@@ -19,8 +19,9 @@ public class CardLearningDto {
 
     private String hint;
     private Color color;
+    private int q;
 
-    public CardLearningDto(Long userId, Long cardId, Long studySetId, String front, String back, String hint, String color) {
+    public CardLearningDto(Long userId, Long cardId, Long studySetId, String front, String back, String hint, String color, int q) {
         this.userId = userId;
         this.cardId = cardId;
         this.studySetId = studySetId;
@@ -28,5 +29,6 @@ public class CardLearningDto {
         this.back = back;
         this.hint = hint;
         this.color = Color.valueOf(color);
+        this.q = q;
     }
 }
