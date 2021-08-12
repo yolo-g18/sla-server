@@ -65,6 +65,9 @@ public class StudySetService {
     private StudySetLearningRepository studySetLearningRepository;
 
     @Autowired
+    private EventRepository eventRepository;
+
+    @Autowired
     private ExcelUtils excelUtils;
 
 
@@ -120,6 +123,16 @@ public class StudySetService {
             if(user.equals(studySet.getCreator())){
                 studySet.setDescription(request.getDescription());
                 studySet.setTag(request.getTag());
+                if(!studySet.getTitle().equals(request.getTitle())){
+                    String studySetIdQuery = request.getId().toString();
+                    List<Event> eventList = eventRepository.findEventByIsLearnEventTrueAndDescriptionLike(studySetIdQuery);
+                    if(!eventList.isEmpty()){
+                        for(Event event : eventList){
+                            event.setName(request.getTitle());
+                            eventRepository.save(event);
+                        }
+                    }
+                }
                 studySet.setTitle(request.getTitle());
                 studySet.setPublic(request.isPublic());
 
