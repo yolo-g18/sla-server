@@ -41,15 +41,16 @@ public class SearchService {
 
     //search study set by title and paging
     public Page<SearchStudySetResponse> searchStudySetByTitle(Pageable pageable, String keySearch) {
-        Page<StudySet> studySetPage =studySetRepository.findByTitleContainsAndIsPublicTrue(keySearch,pageable);
+        Page<StudySet> studySetPage =studySetRepository.findByTitleContainsAndIsPublicTrueAndIsActiveTrue(keySearch,pageable);
         int totalElements = (int) studySetPage.getTotalElements();
+        Pageable top4 = PageRequest.of(0, 4);
         return new PageImpl<SearchStudySetResponse>(
                 studySetPage.stream().map(studySet -> new SearchStudySetResponse(
                           studySet.getId(),
                         findUserNameByUserId(studySet.getCreator().getId()),
                         studySet.getTitle(),
                         studySet.getDescription(),
-                        convertToCardDto(cardRepository.findTop4ByStudySetId(studySet.getId())),
+                        convertToCardDto(cardRepository.findTop4ByStudySetId(studySet.getId(), top4)),
                         studySet.getTag(),
                         studySet.getCards().size(),
                         studySet.getCreatedDate()
@@ -59,15 +60,16 @@ public class SearchService {
 
     //Search list public Study set by tag
     public Page<SearchStudySetResponse> searchStudySetByTag(Pageable pageable, String keySearch) {
-        Page<StudySet> studySetPage =studySetRepository.findByTagContainsAndIsPublicTrue(keySearch,pageable);
+        Page<StudySet> studySetPage =studySetRepository.findByTagContainsAndIsPublicTrueAndIsActiveTrue(keySearch,pageable);
         int totalElements = (int) studySetPage.getTotalElements();
+        Pageable top4 = PageRequest.of(0, 4);
         return new PageImpl<SearchStudySetResponse>(
                 studySetPage.stream().map(studySet -> new SearchStudySetResponse(
                                 studySet.getId(),
                         findUserNameByUserId(studySet.getCreator().getId()),
                                 studySet.getTitle(),
                                 studySet.getDescription(),
-                                convertToCardDto(cardRepository.findTop4ByStudySetId(studySet.getId())),
+                                convertToCardDto(cardRepository.findTop4ByStudySetId(studySet.getId(), top4)),
                                 studySet.getTag(),
                                 studySet.getCards().size(),
                                 studySet.getCreatedDate()

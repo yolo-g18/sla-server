@@ -48,7 +48,11 @@ public class CardService {
 
     public ResponseEntity createCard(List<CardDto> request) {
         try{
-            StudySet studySet = studySetRepository.findById(request.get(0).getStudySet()).orElseThrow(() -> new ExpressionException("Study Set not exist"));
+            //StudySet studySet = studySetRepository.findById(request.get(0).getStudySet()).orElseThrow(() -> new ExpressionException("Study Set not exist"));
+            StudySet studySet = studySetRepository.findByIdAndIsActiveTrue(request.get(0).getStudySet());
+            if(studySet == null){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Study Set not exist");
+            }
             User user = authService.getCurrentAccount().getUser();
             StudySetLearning studySetLearning = studySetLearningRepository.findStudySetLearningByStudySetAndUser(studySet, user);
 
@@ -70,7 +74,11 @@ public class CardService {
     public ResponseEntity editCard(List<CardDto> request) {
         try{
             for (CardDto cardDto: request) {
-                Card card = cardRepository.findById(cardDto.getId()).orElseThrow(() -> new ExpressionException("Card not exist"));
+//                Card card = cardRepository.findById(cardDto.getId()).orElseThrow(() -> new ExpressionException("Card not exist"));
+                Card card = cardRepository.findByCardId(cardDto.getId());
+                if(card == null){
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Card not exist");
+                }
                 card.setBack(cardDto.getBack());
                 card.setFront(cardDto.getFront());
                 cardRepository.save(card);
@@ -83,12 +91,17 @@ public class CardService {
     }
 
     public ResponseEntity deleteCard(Long id) {
-        Card card = cardRepository.findById(id).orElseThrow(()->  new ExpressionException("Card not exist"));
+//        Card card = cardRepository.findById(id).orElseThrow(()->  new ExpressionException("Card not exist"));
+        Card card = cardRepository.findByCardId(id);
+        if(card == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Card not exist");
+        }
         User auth = authService.getCurrentAccount().getUser();
 
-        StudySet studySet = studySetRepository.findById(card.getStudySet().getId())
-                                                .orElseThrow(()->  new ExpressionException("Study Set not exist"));
-
+        StudySet studySet = studySetRepository.findByIdAndIsActiveTrue(card.getStudySet().getId());
+        if(studySet == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Study Set not exist");
+        }
         //Check permission
         if(auth.equals(studySet.getCreator())) {
             cardRepository.delete(card);
@@ -118,14 +131,19 @@ public class CardService {
         }
     }
 
-    public ResponseEntity listCardByStudySet(Long id) {
+    public ResponseEntity listCardByStudySet(Long studySetId) {
         try{
-            List<Card> cards = studySetRepository.findById(id).orElse(null).getCards();
+            StudySet studySet = studySetRepository.findByIdAndIsActiveTrue(studySetId);
+            if(studySet == null){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Study Set not exist");
+            }
+            List<Card> cards = studySet.getCards();
+
             List<CardDto> responses = new ArrayList<>();
             for (Card card: cards) {
                 CardDto cardDto = new CardDto();
                 cardDto.setId(card.getId());
-                cardDto.setStudySet(id);
+                cardDto.setStudySet(studySetId);
                 cardDto.setBack(card.getBack());
                 cardDto.setFront(card.getFront());
 

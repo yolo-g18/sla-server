@@ -28,6 +28,7 @@ public class StudySet {
 	private String tag;
 	private Instant createdDate;
 	private boolean isPublic;
+	private boolean isActive;
 
 	@OneToMany(mappedBy = "studySet", orphanRemoval = true, cascade = CascadeType.ALL)
 	private List<Card> cards; //List Card

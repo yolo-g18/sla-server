@@ -7,6 +7,8 @@ import com.g18.entity.StudySetLearning;
 import com.g18.entity.User;
 import com.g18.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -31,7 +33,9 @@ public class HomeService {
     public List<StudySetLearningResponse> getTop6LearningStudySets(){
         List<StudySetLearningResponse> results = new ArrayList<>();
         User currentUser = authService.getCurrentUser();
-        List<StudySetLearning> listLearningSS = studySetLearningRepository.findTop6StudySetLearningByUserId(currentUser.getId());
+//        List<StudySetLearning> listLearningSS = studySetLearningRepository.findTop6StudySetLearningByUserId(currentUser.getId());
+        Pageable top6 = PageRequest.of(0, 6);
+        List<StudySetLearning> listLearningSS = studySetLearningRepository.findTop6StudySetLearningByUserId(currentUser.getId(),top6);
         for(StudySetLearning ssl : listLearningSS){
             StudySetLearningResponse sslDto = new StudySetLearningResponse();
             sslDto.setStudySetId(ssl.getStudySet().getId());
@@ -54,7 +58,7 @@ public class HomeService {
     //
     public List<SearchStudySetResponse> getTop6StudySetCreatedByUserId() {
         User currentUser = authService.getCurrentUser();
-        List<StudySet> studySetList =studySetRepository.findTop6ByCreatorIdOrderByIdDesc(currentUser.getId());
+        List<StudySet> studySetList =studySetRepository.findTop6ByIsActiveTrueAndCreatorIdOrderByIdDesc(currentUser.getId());
         List<SearchStudySetResponse> result = new ArrayList<>();
         for(StudySet ss : studySetList){
             SearchStudySetResponse sssr = new SearchStudySetResponse();

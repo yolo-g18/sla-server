@@ -93,7 +93,10 @@ public class StudySetService {
     }
 
     public ResponseEntity deleteStudySet(Long studySetId) {
-        StudySet studySet = studySetRepository.findById(studySetId).orElseThrow(() ->new ExpressionException("Study Set not exist"));
+        StudySet studySet = studySetRepository.findByIdAndIsActiveTrue(studySetId);
+        if(studySet == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Study Set not exist");
+        }
         User auth = authService.getCurrentAccount().getUser();
         //Check permission
         if(auth.equals(studySet.getCreator())){
@@ -110,8 +113,10 @@ public class StudySetService {
         try{
             User user = userRepository.findById(userId).orElse(null);
 
-            StudySet studySet = studySetRepository.findById(request.getId())
-                                        .orElseThrow(()->  new ExpressionException("Study Set not exist"));
+            StudySet studySet = studySetRepository.findByIdAndIsActiveTrue(request.getId());
+            if(studySet == null){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Study Set not exist");
+            }
             if(user.equals(studySet.getCreator())){
                 studySet.setDescription(request.getDescription());
                 studySet.setTag(request.getTag());
@@ -152,8 +157,10 @@ public class StudySetService {
 
     public ResponseEntity viewStudySetBy(Long studySetId) {
 
-        StudySet studySet = studySetRepository.findById(studySetId)
-                                    .orElseThrow(()->  new ExpressionException("Study Set not exist"));
+        StudySet studySet = studySetRepository.findByIdAndIsActiveTrue(studySetId);
+        if(studySet == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Study Set not exist");
+        }
 
         User user = authService.getCurrentAccount().getUser();
         boolean isPublic = studySet.isPublic();
@@ -220,7 +227,10 @@ public class StudySetService {
 
     public ResponseEntity getStudySetLearning(Long userId, Long studySetId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ExpressionException("User not exist"));
-        StudySet studySet = studySetRepository.findById(studySetId).orElseThrow(() -> new ExpressionException("Study Set not exist"));
+        StudySet studySet = studySetRepository.findByIdAndIsActiveTrue(studySetId);
+        if(studySet == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Study Set not exist");
+        }
         StudySetLearning studySetLearning = studySetLearningRepository.findStudySetLearningByStudySetAndUser(studySet, user);
 
         if(studySetLearning != null){
@@ -289,7 +299,6 @@ public class StudySetService {
     public ResponseEntity setColorStudySetLearning(Long studySetId, String color) {
         try {
             User user = authService.getCurrentAccount().getUser();
-
             StudySetLearning studySetLearning = studySetLearningRepository.findByUserIdAndStudySetId(user.getId(), studySetId);
             if (studySetLearning != null) {
                 studySetLearning.setColor(Color.valueOf(color));
@@ -299,6 +308,21 @@ public class StudySetService {
             }
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Set Color fail");
+        }
+    }
+
+    public ResponseEntity getColorStudySetLearning(Long studySetId) {
+        try {
+            User user = authService.getCurrentAccount().getUser();
+            StudySetLearning studySetLearning = studySetLearningRepository.findByUserIdAndStudySetId(user.getId(), studySetId);
+            if (studySetLearning != null) {
+                String color = studySetLearning.getColor().toString();
+                return ResponseEntity.status(HttpStatus.OK).body(color);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Study Set Learning not exist");
+            }
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Get Color fail");
         }
     }
 }

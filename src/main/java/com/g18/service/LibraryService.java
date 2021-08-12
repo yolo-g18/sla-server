@@ -55,7 +55,7 @@ public class LibraryService {
     }
     // get all study sets the current user have created
     public List<SearchStudySetResponse> getStudySetCreatedByUserId(long userId) {
-        List<StudySet> studySetList =studySetRepository.findByCreatorId(userId);
+        List<StudySet> studySetList =studySetRepository.findByCreatorIdAndIsActiveTrue(userId);
         List<SearchStudySetResponse> result = new ArrayList<>();
         for(StudySet ss : studySetList){
             SearchStudySetResponse sssr = new SearchStudySetResponse();
