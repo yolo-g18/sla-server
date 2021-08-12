@@ -41,11 +41,19 @@ public class AdminController {
         return reportService.getAllReport(pageable);
     }
 
+    //api get by true false
+
     //get all report
     @GetMapping("/report")
     public Page<ReportDto> getReportsContentContains(Pageable pageable,@RequestParam String content) {
         return reportService.getReportByContent(content,pageable);
     }
+    //get all reports, filter by isPublic (true or false)
+    @GetMapping("/report/filter")
+    public Page<ReportDto> getReportFilterByIsPublic(Pageable pageable,@RequestParam boolean isPublic){
+        return reportService.getReportFilterByIsPublic(pageable,isPublic);
+    }
+
     //get all Study Set has be reported
     @GetMapping("/report/ss")
     public Page<ObjectNode> getSSHasReport(@SortDefault(sort = "numberOfReport", direction = Sort.Direction.DESC) Pageable pageable) throws IOException {

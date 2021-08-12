@@ -29,14 +29,15 @@ public interface CardLearningRepository extends JpaRepository<CardLearning,Long>
             "AND cl.user_id = :userId AND cl.learned_date LIKE :learnedDate%", nativeQuery = true)
     List<CardLearning> getListCardLearningByStudySetIdAndUserIdAndDate(Long studySetId, Long userId, String learnedDate);
 
-    @Query("SELECT new com.g18.dto.CardLearningDto(cl.user.id, c.id, c.studySet.id, c.front, c.back, cl.hint, cl.color) FROM Card c " +
+    @Query("SELECT new com.g18.dto.CardLearningDto(cl.user.id, c.id, c.studySet.id, c.front, c.back, cl.hint, cl.color, cl.q) FROM Card c " +
             "INNER JOIN CardLearning cl ON c.id = cl.card.id " +
             "WHERE cl.card.studySet.isActive = TRUE AND cl.user.id = :userId AND c.studySet.id = :studySetId ORDER BY cl.learnedDate ASC")
     List<CardLearningDto> getListCardLearningOrderByLearnedDate(@Param("userId")Long userId, @Param("studySetId")Long studySetId);
 
-    @Query("SELECT new com.g18.dto.CardLearningDto(cl.user.id, c.id, c.studySet.id, c.front, c.back, cl.hint, cl.color) FROM Card c " +
+    @Query("SELECT new com.g18.dto.CardLearningDto(cl.user.id, c.id, c.studySet.id, c.front, c.back, cl.hint, cl.color, cl.q) FROM Card c " +
             "INNER JOIN CardLearning cl ON c.id = cl.card.id " +
             "WHERE cl.card.studySet.isActive = TRUE AND cl.user.id = :userId AND c.studySet.id = :studySetId ORDER BY cl.learnedDate ASC")
+
     List<CardLearningDto> getTopCardLearning(@Param("userId")Long userId, @Param("studySetId")Long studySetId, Pageable pageable);
 
     @Query("SELECT cl FROM CardLearning cl WHERE cl.card.studySet.isActive = TRUE AND cl.learnedDate < :learnedDate")

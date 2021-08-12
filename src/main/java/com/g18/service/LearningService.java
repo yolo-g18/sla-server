@@ -3,7 +3,6 @@ package com.g18.service;
 
 import com.g18.dto.CardLearningDto;
 import com.g18.dto.CardQualityRequestUpdate;
-import com.g18.dto.LearnRequestDto;
 import com.g18.dto.LearningrResponseDto;
 import com.g18.entity.*;
 
@@ -400,6 +399,7 @@ public class LearningService {
         cardLearningDto.setBack(cardLearning.getCard().getBack());
         cardLearningDto.setColor(cardLearning.getColor());
         cardLearningDto.setHint(cardLearning.getHint());
+        cardLearningDto.setQ(cardLearning.getQ());
         return cardLearningDto;
     }
 

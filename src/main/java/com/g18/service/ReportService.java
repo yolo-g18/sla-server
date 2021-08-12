@@ -35,7 +35,7 @@ public class ReportService {
     private UserRepository userRepository;
 
     public Page<ReportDto> getAllReport(Pageable pageable){
-        Page<Report> reports = reportRepository.findAllByOrderByCreatedTimeDesc(pageable);
+        Page<Report> reports = reportRepository.findAll(pageable);
         int totalElements = (int) reports.getTotalElements();
         return new PageImpl<ReportDto>(
                 reports.stream().map(report -> new ReportDto(
@@ -50,9 +50,48 @@ public class ReportService {
                         )
                 ).collect(Collectors.toList()), pageable, totalElements);
     }
+    //get all reports which property public is true or false
+    public Page<ReportDto> getReportFilterByIsPublic(Pageable pageable,boolean type){
+        List<ReportDto> reportDtoList = new ArrayList<>();
+        Page<Report> reportList;
+        if(type==true){
+            reportList = reportRepository.findByIsCheckedTrue(pageable);
+            int totalElements = (int) reportList.getTotalElements();
+            return new PageImpl<ReportDto>(
+                    reportList.stream().map(report -> new ReportDto(
+                                    report.getId(),
+                                    report.getStudySet().getId(),
+                                    report.getStudySet().getTitle(),
+                                    accountRepository.findUserNameByUserId(report.getReporter().getId()),
+                                    report.getContent(),
+                                    userRepository.findById(report.getReporter().getId()).get().getAvatar(),
+                                    String.valueOf(report.getCreatedTime()),
+                                    report.isChecked()
+                            )
+                    ).collect(Collectors.toList()), pageable, totalElements);
+
+        }else {
+            reportList = reportRepository.findByIsCheckedFalse(pageable);
+            int totalElements = (int) reportList.getTotalElements();
+            return new PageImpl<ReportDto>(
+                    reportList.stream().map(report -> new ReportDto(
+                                    report.getId(),
+                                    report.getStudySet().getId(),
+                                    report.getStudySet().getTitle(),
+                                    accountRepository.findUserNameByUserId(report.getReporter().getId()),
+                                    report.getContent(),
+                                    userRepository.findById(report.getReporter().getId()).get().getAvatar(),
+                                    String.valueOf(report.getCreatedTime()),
+                                    report.isChecked()
+                            )
+                    ).collect(Collectors.toList()), pageable, totalElements);
+        }
+    }
+
+
     //get all the report's content containing
     public Page<ReportDto> getReportByContent(String content,Pageable pageable){
-        Page<Report> reports = reportRepository.findByContentContains(content,pageable);
+        Page<Report> reports = reportRepository.findByContentContains(content,pageable); //sort
         int totalElements = (int) reports.getTotalElements();
         return new PageImpl<ReportDto>(
                 reports.stream().map(report -> new ReportDto(
