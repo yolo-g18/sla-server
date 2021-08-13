@@ -69,8 +69,8 @@ public class StudySetController {
 	}
 
 	@PutMapping("/color")
-	public ResponseEntity setColor(@RequestParam(value="id") Long studySetId, @RequestParam(value="color") String color){
-		return studySetService.setColorStudySetLearning(studySetId, color);
+	public ResponseEntity setColor(@RequestBody @Valid SetColorDto body){
+		return studySetService.setColorStudySetLearning(body.getId(), body.getColor());
 	}
 
 	//create report

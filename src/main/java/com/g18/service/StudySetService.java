@@ -82,6 +82,7 @@ public class StudySetService {
             studySet.setTitle(request.getTitle());
             studySet.setPublic(request.isPublic());
             studySet.setCreatedDate(Instant.now());
+            studySet.setActive(true);
             List<Card> listCard = request.getCards();
             for (Card card: listCard) {
                 card.setStudySet(studySet);
@@ -309,12 +310,12 @@ public class StudySetService {
 
     }
 
-    public ResponseEntity setColorStudySetLearning(Long studySetId, String color) {
+    public ResponseEntity setColorStudySetLearning(Long studySetId, Color color) {
         try {
             User user = authService.getCurrentAccount().getUser();
             StudySetLearning studySetLearning = studySetLearningRepository.findByUserIdAndStudySetId(user.getId(), studySetId);
             if (studySetLearning != null) {
-                studySetLearning.setColor(Color.valueOf(color));
+                studySetLearning.setColor(color);
                 return ResponseEntity.status(HttpStatus.OK).body("Set Color successfully");
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Study Set Learning not exist");

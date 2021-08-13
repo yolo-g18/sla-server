@@ -489,7 +489,7 @@ public class LearningService {
     public ResponseEntity getListCardLearningOrderByLearnedDate(Long studySetId) {
         User user = authService.getCurrentAccount().getUser();
 
-        List<CardLearningDto> response = cardLearningRepository.getListCardLearningOrderByLearnedDate(user.getId(), studySetId);
+        List<CardLearningDto> response = cardLearningRepository.getListCardLearningOrderByQ(user.getId(), studySetId);
         if(response != null){
             return ResponseEntity.status(HttpStatus.OK).body(response);
         }
