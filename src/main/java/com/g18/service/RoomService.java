@@ -380,9 +380,10 @@ public class RoomService {
         existingRoom.getRoomMembers().add(roomMember);
 
         // provide learning permisson for member
-        for(RoomStudySet roomStudySet : existingRoom.getRoomStudySets())
+        for(Long id : listIdOfSetsInRoom(room_id))
         {
-            learningService.addStudySetLearningByUserAndStudySet(existingMember,roomStudySet.getStudySet());
+            StudySet studySet = studySetRepository.findById(id).orElseThrow(() -> new StudySetNotFoundException());
+            learningService.addStudySetLearningByUserAndStudySet(existingMember,studySet);
         }
 
         roomRepository.saveAndFlush(existingRoom);
