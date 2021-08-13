@@ -50,6 +50,9 @@ public class RoomService {
     @Autowired
     private StudySetRepository studySetRepository;
 
+    @Autowired
+    private LearningService learningService;
+
     @Transactional
     public String saveRoom(ObjectNode json){
 
@@ -376,6 +379,12 @@ public class RoomService {
         // add relationship roomMember
         existingRoom.getRoomMembers().add(roomMember);
 
+        // provide learning permisson for member
+        for(RoomStudySet roomStudySet : existingRoom.getRoomStudySets())
+        {
+            learningService.addStudySetLearningByUserAndStudySet(existingMember,roomStudySet.getStudySet());
+        }
+
         roomRepository.saveAndFlush(existingRoom);
 
         return "add Member to Room successfully";
@@ -431,10 +440,6 @@ public class RoomService {
 
     @Transactional
     public String deleteMemberFromRoom(Long room_id,Long member_id){
-
-        // verify room's permisson
-        if(isCreatorOfRoom(room_id) == false)
-            throw new RoomPermisson();
 
         // find that room
         Room existingRoom = roomRepository.findById(room_id).orElseThrow(() -> new RoomNotFoundException());
@@ -614,6 +619,12 @@ public class RoomService {
 
         // add relationship roomStudySet
         room.getRoomStudySets().add(roomStudySet);
+
+        // provide learning set permisson
+        for(RoomMember roomMember : room.getRoomMembers())
+        {
+            learningService.addStudySetLearningByUserAndStudySet(roomMember.getMember(),studySet);
+        }
 
         roomRepository.saveAndFlush(room);
 
