@@ -506,20 +506,21 @@ public class LearningService {
             userStudySetId.setUserId(user.getId());
 
             //Set StudySetLearning
-            studySetLearning.setUserStudySetId(userStudySetId);
-            studySetLearning.setStudySet(studySet);
-            studySetLearning.setUser(user);
-            studySetLearning.setColor(null);
-            studySetLearning.setExpectedDate(null);
-            studySetLearning.setFeedback(null);
-            studySetLearning.setProgress(0);
-            studySetLearning.setRating(0);
-            studySetLearning.setStartDate(Instant.now());
-            studySetLearning.setStatus(Status.LEARNING);
-            studySetLearning.setPublic(studySet.isPublic());
+            StudySetLearning setLearning = new StudySetLearning();
+            setLearning.setUserStudySetId(userStudySetId);
+            setLearning.setStudySet(studySet);
+            setLearning.setUser(user);
+            setLearning.setColor(null);
+            setLearning.setExpectedDate(null);
+            setLearning.setFeedback(null);
+            setLearning.setProgress(0);
+            setLearning.setRating(0);
+            setLearning.setStartDate(Instant.now());
+            setLearning.setStatus(Status.LEARNING);
+            setLearning.setPublic(studySet.isPublic());
 
             //Insert into DB
-            studySetLearningRepository.save(studySetLearning);
+            studySetLearningRepository.save(setLearning);
         }
     }
 

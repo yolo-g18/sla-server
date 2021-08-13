@@ -65,4 +65,10 @@ public class User {
 	@OneToMany(mappedBy = "user", orphanRemoval=true, cascade = CascadeType.ALL)
 	private List<RoomInvitation>  invitationList;
 
+	@Override
+	public String toString() {
+		return "User{" +
+				"id=" + id +
+				'}';
+	}
 }
