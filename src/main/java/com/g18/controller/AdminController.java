@@ -84,12 +84,14 @@ public class AdminController {
         StudySet ss = studySetRepository.findById(ssId).orElseThrow(()
                 ->  new ExpressionException("Lỗi ko tìm thấy")) ;
         System.out.println("Email: " + ss.getCreator().getEmail());
-        emailSenderService.sendEmailWithAttachment(
+        emailSenderService.sendSimpleEmail(
                 ss.getCreator().getEmail(),
-                "Hi there your study set" +ss.getTitle()+ " has been report. We deleted it",
-                "Delete study set be reported",
-                "C:\\Users\\congv\\OneDrive\\Máy tính\\Marketing-Success-Image-1.jpg");
-        studySetRepository.delete(ss);
+                "Hi " + ss.getCreator().getLastName() +" " + ss.getCreator().getFirstName()
+                        + "\nYour study set : " +ss.getTitle()+ " violate our polices. The study set is disabled." +
+                        "\nEmail us if you need any support !",
+                "[SLA] Your study set is disabled");
+        ss.setActive(false);
+        studySetRepository.save(ss);
         return "Delete study set successfully !";
     }
 
