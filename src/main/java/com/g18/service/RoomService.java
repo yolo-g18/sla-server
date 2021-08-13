@@ -9,6 +9,7 @@ import com.g18.repository.FolderRepository;
 import com.g18.repository.RoomRepository;
 import com.g18.repository.StudySetRepository;
 import com.g18.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
+@Slf4j
 @Service
 public class RoomService {
 
@@ -379,11 +381,15 @@ public class RoomService {
         // add relationship roomMember
         existingRoom.getRoomMembers().add(roomMember);
 
-        // provide learning permisson for member
-        for(RoomStudySet roomStudySet : existingRoom.getRoomStudySets())
-        {
-            learningService.addStudySetLearningByUserAndStudySet(existingMember,roomStudySet.getStudySet());
-        }
+        // provide learning permisson for memberxx
+       try {
+           for(RoomStudySet roomStudySet : existingRoom.getRoomStudySets())
+           {
+               learningService.addStudySetLearningByUserAndStudySet(existingMember,roomStudySet.getStudySet());
+           }
+       }catch (Exception e) {
+           log.error(e.toString());
+       }
 
         roomRepository.saveAndFlush(existingRoom);
 
@@ -689,6 +695,7 @@ public class RoomService {
             ObjectNode json = mapper.createObjectNode();
             json.put("member_id",roomMember.getRoomMemberId().getMemberId());
             json.put("userName",userService.getUserNameOfPerson(roomMember.getMember().getId()));
+            json.put("avatar", roomMember.getMember().getAvatar());
 
 
             objectNodeList.add(json);
@@ -762,6 +769,7 @@ public class RoomService {
             json.put("user_id",roomRequestAttend.getRoomRequestAttendId().getUserId());
             json.put("userName",userService.getUserNameOfPerson(roomRequestAttend.getUser().getId()));
             json.put("time",formatter.format(roomRequestAttend.getRequestedDate()));
+            json.put("avatar", roomRequestAttend.getUser().getAvatar());
 
             objectNodeList.add(json);
         }
