@@ -531,10 +531,10 @@ public class LearningService {
         notification.setTitle("Notice to learn daily");
         notification.setDescription(event.getName());
         notification.setType("daily");
-        notification.setLink(null);
+        notification.setLink("/schedule");
         notification.setCreatedTime(Instant.now());
         notification.setTimeTrigger(Instant.now());
-        notification.setRead(true);
+        notification.setRead(false);
         notificationRepository.save(notification);
     }
 }
