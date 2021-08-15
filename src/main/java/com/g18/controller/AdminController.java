@@ -1,13 +1,17 @@
 package com.g18.controller;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.g18.dto.DisableSetDto;
 import com.g18.dto.ReportDto;
 import com.g18.entity.StudySet;
 import com.g18.repository.StudySetRepository;
+import com.g18.service.CardService;
 import com.g18.service.EmailSenderService;
 import com.g18.service.ReportService;
+import com.g18.service.StudySetService;
 import javassist.NotFoundException;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Sort;
@@ -27,6 +31,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/admin")
 @AllArgsConstructor
+@Slf4j
 public class AdminController {
     @Autowired
     private ReportService reportService;
@@ -34,6 +39,12 @@ public class AdminController {
     private StudySetRepository studySetRepository;
     @Autowired
     private EmailSenderService emailSenderService;
+
+    @Autowired
+    private StudySetService studySetService;
+
+    @Autowired
+    private CardService cardService;
 
     //get all report
     @GetMapping("/report/all")
@@ -50,8 +61,8 @@ public class AdminController {
     }
     //get all reports, filter by isPublic (true or false)
     @GetMapping("/report/filter")
-    public Page<ReportDto> getReportFilterByIsPublic(Pageable pageable,@RequestParam boolean isPublic){
-        return reportService.getReportFilterByIsPublic(pageable,isPublic);
+    public Page<ReportDto> getReportFilterByIsPublic(Pageable pageable,@RequestParam boolean isChecked){
+        return reportService.getReportFilterByIsChecked(pageable,isChecked);
     }
 
     //get all Study Set has be reported
@@ -78,10 +89,19 @@ public class AdminController {
         return new PageImpl<ObjectNode>(nodes.subList(start, end), pageable, nodes.size());
     }
 
+    @GetMapping("/studySet/view")
+    public ResponseEntity viewStudySet(@RequestParam(value="id") Long id){
+        return studySetService.viewStudySetAdmin(id);
+    }
 
-    @DeleteMapping("/report/delete/{ssId}")
-    public String deleteReport(@PathVariable("ssId") Long ssId) throws NotFoundException, MessagingException {
-        StudySet ss = studySetRepository.findById(ssId).orElseThrow(()
+    @GetMapping("card/list")
+    public ResponseEntity listStudySet(@RequestParam(value = "id") Long id) {
+        return cardService.listCardByStudySetAdmin(id);
+    }
+
+    @PutMapping("/report/disable")
+    public String deleteReport(@RequestBody DisableSetDto payload) throws NotFoundException, MessagingException {
+        StudySet ss = studySetRepository.findById(payload.getId()).orElseThrow(()
                 ->  new ExpressionException("Lỗi ko tìm thấy")) ;
         System.out.println("Email: " + ss.getCreator().getEmail());
         emailSenderService.sendSimpleEmail(
@@ -90,9 +110,10 @@ public class AdminController {
                         + "\nYour study set : " +ss.getTitle()+ " violate our polices. The study set is disabled." +
                         "\nEmail us if you need any support !",
                 "[SLA] Your study set is disabled");
-        ss.setActive(false);
+        ss.setActive(payload.isActive());
         studySetRepository.save(ss);
-        return "Delete study set successfully !";
+
+        return "Successfully !";
     }
 
     @PutMapping("/report/check")

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
+
 @Repository
 public interface StudySetRepository extends JpaRepository<StudySet,Long> {
 //    Page<StudySet> findByTitleContainsAndIsPublicTrue(String title, Pageable pageable);
@@ -34,5 +36,7 @@ public interface StudySetRepository extends JpaRepository<StudySet,Long> {
     List<StudySet> findAllSSHasReport();
 
     StudySet findByIdAndIsActiveTrue(Long id);
+
+    Optional<StudySet> findById(Long id);
 
 }

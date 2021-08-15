@@ -155,6 +155,31 @@ public class CardService {
         }
     }
 
+    public ResponseEntity listCardByStudySetAdmin(Long studySetId) {
+        try{
+            StudySet studySet = studySetRepository.findById(studySetId).orElseThrow(()
+                    ->  new ExpressionException("Study Set not exist"));;
+            if(studySet == null){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Study Set not exist");
+            }
+            List<Card> cards = studySet.getCards();
+
+            List<CardDto> responses = new ArrayList<>();
+            for (Card card: cards) {
+                CardDto cardDto = new CardDto();
+                cardDto.setId(card.getId());
+                cardDto.setStudySet(studySetId);
+                cardDto.setBack(card.getBack());
+                cardDto.setFront(card.getFront());
+
+                responses.add(cardDto);
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(responses);
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
     public ResponseEntity setColorCardLearning(Long cardId, Color color) {
         try {
             User user = authService.getCurrentAccount().getUser();

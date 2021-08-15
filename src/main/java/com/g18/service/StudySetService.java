@@ -15,10 +15,7 @@ import com.g18.dto.StudySetResponse;
 
 import com.g18.entity.*;
 
-import com.g18.model.Color;
-import com.g18.model.Status;
-import com.g18.model.UserCardId;
-import com.g18.model.UserStudySetId;
+import com.g18.model.*;
 import com.g18.repository.*;
 
 import com.g18.utils.ExcelUtils;
@@ -60,6 +57,9 @@ public class StudySetService {
 
     @Autowired
     private CardLearningRepository cardLearningRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Autowired
     private StudySetLearningRepository studySetLearningRepository;
@@ -176,13 +176,33 @@ public class StudySetService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Study Set not exist");
         }
 
-        User user = authService.getCurrentAccount().getUser();
+        Account account = authService.getCurrentAccount();
         boolean isPublic = studySet.isPublic();
-        if(!isPublic && !user.equals(studySet.getCreator())){
-            StudySetLearning isExistStudySetLearning = studySetLearningRepository.findByUserIdAndStudySetId(user.getId(), studySetId);
+        log.error(account.getRoles().toString());
+        if(!isPublic && !account.getUser().equals(studySet.getCreator())){
+            StudySetLearning isExistStudySetLearning = studySetLearningRepository.findByUserIdAndStudySetId(account.getUser().getId(), studySetId);
             if(isExistStudySetLearning == null){
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not allowed");
             }
+        }
+        StudySetResponse studySetResponse = setStudySetResponse(studySet, 0);
+        return ResponseEntity.status(HttpStatus.OK).body(studySetResponse);
+    }
+
+    public ResponseEntity viewStudySetAdmin(Long studySetId) {
+
+        StudySet studySet = studySetRepository.findById(studySetId).orElseThrow(()
+                ->  new ExpressionException("Study Set not exist"));
+        if(studySet == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Study Set not exist");
+        }
+
+        Account account = authService.getCurrentAccount();
+        boolean isAdmin = account.getRoles().contains(roleRepository.findByName(ERole.ROLE_ADMIN)
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found.")));
+        log.error(account.getRoles().toString());
+        if(!isAdmin){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not allowed");
         }
         StudySetResponse studySetResponse = setStudySetResponse(studySet, 0);
         return ResponseEntity.status(HttpStatus.OK).body(studySetResponse);

@@ -50,8 +50,8 @@ public class ReportService {
                         )
                 ).collect(Collectors.toList()), pageable, totalElements);
     }
-    //get all reports which property public is true or false
-    public Page<ReportDto> getReportFilterByIsPublic(Pageable pageable,boolean type){
+    //get all reports which property checked is true or false
+    public Page<ReportDto> getReportFilterByIsChecked(Pageable pageable,boolean type){
         List<ReportDto> reportDtoList = new ArrayList<>();
         Page<Report> reportList;
         if(type==true){
