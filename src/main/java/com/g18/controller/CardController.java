@@ -2,6 +2,7 @@ package com.g18.controller;
 
 import com.g18.dto.CardDto;
 import com.g18.dto.CardLearningDto;
+import com.g18.dto.SetColorDto;
 import com.g18.service.CardService;
 
 import lombok.AllArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -46,8 +48,8 @@ public class CardController {
 	}
 
 	@PutMapping("/color")
-	public ResponseEntity setColor(@RequestParam(value="id") Long cardId, @RequestParam(value="color") String color){
-		return cardService.setColorCardLearning(cardId, color);
+	public ResponseEntity setColor(@RequestBody @Valid SetColorDto body){
+		return cardService.setColorCardLearning(body.getId(), body.getColor());
 	}
 }
 

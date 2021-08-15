@@ -155,7 +155,7 @@ public class CardService {
         }
     }
 
-    public ResponseEntity setColorCardLearning(Long cardId, String color) {
+    public ResponseEntity setColorCardLearning(Long cardId, Color color) {
         try {
             User user = authService.getCurrentAccount().getUser();
             UserCardId userCardId = new UserCardId();
@@ -163,7 +163,8 @@ public class CardService {
             userCardId.setCardId(cardId);
             CardLearning cardLearning = cardLearningRepository.getCardLearningByUserCardId(userCardId);
             if (cardLearning != null) {
-                cardLearning.setColor(Color.valueOf(color));
+                cardLearning.setColor(color);
+                cardLearningRepository.save(cardLearning);
                 return ResponseEntity.status(HttpStatus.OK).body("Set Color successfully");
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Card Learning not exist");

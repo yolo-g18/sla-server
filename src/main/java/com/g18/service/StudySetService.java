@@ -331,6 +331,7 @@ public class StudySetService {
             StudySetLearning studySetLearning = studySetLearningRepository.findByUserIdAndStudySetId(user.getId(), studySetId);
             if (studySetLearning != null) {
                 String color = studySetLearning.getColor().toString();
+                studySetLearningRepository.save(studySetLearning);
                 return ResponseEntity.status(HttpStatus.OK).body(color);
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Study Set Learning not exist");
