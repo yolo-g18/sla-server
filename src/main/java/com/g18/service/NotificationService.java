@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import java.time.Instant;
+import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 
@@ -78,6 +80,7 @@ public class NotificationService {
     }
     //get top 20 notifications and paging
     public Page<NotificationDto> getNotification(Long userId, Pageable pageable){
+
         Page<Notification> notiPage = notificationRepository.findByUserIdOrderByCreatedTimeDesc(userId,pageable);
         int totalElements = (int) notiPage.getTotalElements();
         return new PageImpl<NotificationDto>(

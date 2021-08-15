@@ -31,10 +31,13 @@ import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @AllArgsConstructor
@@ -525,11 +528,13 @@ public class LearningService {
     }
 
     private void createNotificationAfterCreateEvent(Event event){
+
         User user = event.getUser();
         Notification notification = new Notification();
         notification.setUser(user);
         notification.setTitle("Notice to learn daily");
-        notification.setDescription(event.getName());
+        notification.setDescription("You have new task '"+event.getName()+
+                "'.");
         notification.setType("daily");
         notification.setLink("/schedule");
         notification.setCreatedTime(Instant.now());
