@@ -31,10 +31,13 @@ import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @AllArgsConstructor
@@ -506,34 +509,37 @@ public class LearningService {
             userStudySetId.setUserId(user.getId());
 
             //Set StudySetLearning
-            studySetLearning.setUserStudySetId(userStudySetId);
-            studySetLearning.setStudySet(studySet);
-            studySetLearning.setUser(user);
-            studySetLearning.setColor(null);
-            studySetLearning.setExpectedDate(null);
-            studySetLearning.setFeedback(null);
-            studySetLearning.setProgress(0);
-            studySetLearning.setRating(0);
-            studySetLearning.setStartDate(Instant.now());
-            studySetLearning.setStatus(Status.LEARNING);
-            studySetLearning.setPublic(studySet.isPublic());
+            StudySetLearning setLearning = new StudySetLearning();
+            setLearning.setUserStudySetId(userStudySetId);
+            setLearning.setStudySet(studySet);
+            setLearning.setUser(user);
+            setLearning.setColor(null);
+            setLearning.setExpectedDate(null);
+            setLearning.setFeedback(null);
+            setLearning.setProgress(0);
+            setLearning.setRating(0);
+            setLearning.setStartDate(Instant.now());
+            setLearning.setStatus(Status.LEARNING);
+            setLearning.setPublic(studySet.isPublic());
 
             //Insert into DB
-            studySetLearningRepository.save(studySetLearning);
+            studySetLearningRepository.save(setLearning);
         }
     }
 
     private void createNotificationAfterCreateEvent(Event event){
+
         User user = event.getUser();
         Notification notification = new Notification();
         notification.setUser(user);
         notification.setTitle("Notice to learn daily");
-        notification.setDescription(event.getName());
+        notification.setDescription("You have new task '"+event.getName()+
+                "'.");
         notification.setType("daily");
-        notification.setLink(null);
+        notification.setLink("/schedule");
         notification.setCreatedTime(Instant.now());
         notification.setTimeTrigger(Instant.now());
-        notification.setRead(true);
+        notification.setRead(false);
         notificationRepository.save(notification);
     }
 }
