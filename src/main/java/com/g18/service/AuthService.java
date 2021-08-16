@@ -193,21 +193,11 @@ public class AuthService {
 
             UserResponse userResponse = getUserResponseByCurrentAccount(getCurrentAccount());
 
-
-            org.springframework.security.core.userdetails.User userDetails
-                    = (org.springframework.security.core.userdetails.User) SecurityContextHolder
-                    .getContext().getAuthentication().getPrincipal();
-
-            List<String> roles = userDetails.getAuthorities().stream()
-                    .map(item -> item.getAuthority())
-                    .collect(Collectors.toList());
-
             return AuthenticationResponse.builder()
                     .authenticationToken(token)
                     .refreshToken(refreshTokenService.generateRefreshToken(loginRequest.getUsername()).getToken())
-                    .expiresAt(String.valueOf(Date.from(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))))
+                    .expiresAt(String.valueOf(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis())))
                     .userResponse(userResponse)
-                    .roles(roles)
                     .build();
         }catch (Exception ex) {
             throw new AccountException("Incorrect password.");
@@ -247,15 +237,22 @@ public class AuthService {
         refreshTokenService.validateRefreshToken(refreshTokenRequest.getRefreshToken());
         Account account = accountRepository.findByUsername(refreshTokenRequest.getUsername())
                 .orElseThrow(() -> new NotFoundException("Account not found with name " + refreshTokenRequest.getUsername()));
-        User user = account.getUser();
+
 
         UserResponse userResponse = getUserResponseByCurrentAccount(account);
 
         String token = jwtProvider.generateTokenWithUsername(refreshTokenRequest.getUsername());
+
+//        org.springframework.security.core.userdetails.User userDetails
+//                = (org.springframework.security.core.userdetails.User) SecurityContextHolder
+//                .getContext().getAuthentication().getPrincipal();
+//        List<String> roles = userDetails.getAuthorities().stream()
+//                .map(item -> item.getAuthority())
+//                .collect(Collectors.toList());
         return AuthenticationResponse.builder()
                 .authenticationToken(token)
                 .refreshToken(refreshTokenRequest.getRefreshToken())
-                .expiresAt(String.valueOf(Date.from(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))))
+                .expiresAt(String.valueOf(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis())))
                 .userResponse(userResponse)
                 .build();
     }
