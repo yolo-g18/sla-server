@@ -1,5 +1,6 @@
 package com.g18.controller;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.dto.*;
 import com.g18.entity.Account;
 import com.g18.service.AuthService;
@@ -61,7 +62,10 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body("Refresh Token Delete Successfully!!");
     }
 
-
+    @PostMapping("/forgotPassword")
+    public String forgotPassword(@RequestBody ObjectNode json){
+        return authService.resetNewPasswordForUser(json);
+    }
 
 
 
