@@ -42,5 +42,10 @@ public class LearningController {
 	public ResponseEntity getListCardLearningOrderByLearnedDate(@RequestParam(value="id") Long request){
 		return learningService.getListCardLearningOrderByLearnedDate(request);
 	}
+
+	@DeleteMapping("/stop")
+	public ResponseEntity stopLearning(@RequestParam(value="id") Long request){
+		return learningService.stopLearning(request);
+	}
 }
 

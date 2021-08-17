@@ -542,4 +542,20 @@ public class LearningService {
         notification.setRead(false);
         notificationRepository.save(notification);
     }
+
+    public ResponseEntity stopLearning(Long studySetId) {
+        try {
+            Long userId = authService.getCurrentAccount().getUser().getId();
+            StudySetLearning studySetLearning = studySetLearningRepository.findByUserIdAndStudySetId(userId, studySetId);
+
+            if (studySetLearning != null) {
+                studySetLearningRepository.delete(studySetLearning);
+                return ResponseEntity.status(HttpStatus.OK).body("Delete successful");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
+            }
+        }catch(Exception ex){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Stop fail");
+        }
+    }
 }

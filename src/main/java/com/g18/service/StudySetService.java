@@ -330,12 +330,22 @@ public class StudySetService {
 
     }
 
+    @Transactional
     public ResponseEntity setColorStudySetLearning(Long studySetId, Color color) {
         try {
             User user = authService.getCurrentAccount().getUser();
             StudySetLearning studySetLearning = studySetLearningRepository.findByUserIdAndStudySetId(user.getId(), studySetId);
             if (studySetLearning != null) {
                 studySetLearning.setColor(color);
+                studySetLearningRepository.save(studySetLearning);
+
+                List<Event> eventList = eventRepository.findEventByIsLearnEventTrueAndDescriptionLike(studySetId.toString());
+                if(!eventList.isEmpty()){
+                    for(Event event : eventList){
+                        event.setColor(color);
+                        eventRepository.save(event);
+                    }
+                }
                 return ResponseEntity.status(HttpStatus.OK).body("Set Color successfully");
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Study Set Learning not exist");
