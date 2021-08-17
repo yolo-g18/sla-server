@@ -19,7 +19,7 @@ public class StudySetRequest {
     private Long id;
     @NotBlank(message = "Title is required")
     @NotNull(message = "Title is required")
-    @Size(max = 50, message = "Title is not over 50 character")
+    @Size(max = 59, message = "Title is not over 59 character")
     private String title;
 
     @Size(max = 250, message = "Description is not over 250 character")
