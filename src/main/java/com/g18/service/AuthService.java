@@ -1,9 +1,11 @@
 package com.g18.service;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.g18.dto.*;
 import com.g18.entity.*;
 import com.g18.exceptions.AccountException;
 import com.g18.exceptions.SLAException;
+import com.g18.exceptions.UserNotFoundException;
 import com.g18.model.ERole;
 import com.g18.model.NotificationEmail;
 import com.g18.repository.AccountRepository;
@@ -60,6 +62,9 @@ public class AuthService {
 
     @Value("${admin.email}")
     private String adminEmail;
+
+    @Autowired
+    private EmailSenderService emailSenderService;
 
     @Transactional
     public void signup( RegisterRequest registerRequest) {
@@ -276,7 +281,65 @@ public class AuthService {
 
     }
 
+    private String generatePassword(int length) {
+        String capitalCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
+        String specialCharacters = "!@#$";
+        String numbers = "1234567890";
+        String combinedChars = capitalCaseLetters + lowerCaseLetters + specialCharacters + numbers;
+        Random random = new Random();
+        char[] password = new char[length];
 
+        password[0] = lowerCaseLetters.charAt(random.nextInt(lowerCaseLetters.length()));
+        password[1] = capitalCaseLetters.charAt(random.nextInt(capitalCaseLetters.length()));
+        password[2] = specialCharacters.charAt(random.nextInt(specialCharacters.length()));
+        password[3] = numbers.charAt(random.nextInt(numbers.length()));
 
+        for(int i = 4; i< length ; i++) {
+            password[i] = combinedChars.charAt(random.nextInt(combinedChars.length()));
+        }
+
+        return String.valueOf(password);
+    }
+
+    public String resetNewPasswordForUser(ObjectNode jsonNodes){
+
+        String newPassword = generatePassword(10);
+
+        // update new password for user
+
+        User user = userRepository.findByEmail(jsonNodes.get("email").asText()).orElseThrow(
+                () -> new UserNotFoundException()
+        );
+
+        Account account = accountRepository.findByUser(user).orElseThrow(
+                () -> new AccountException("account not found")
+        );
+
+        account.setPassword(passwordEncoder.encode(newPassword));
+
+        // send mail to notify about new password has been changed successfully
+        String mailTo = jsonNodes.get("email").asText();
+
+        String subjectMail = "Request to reset password";
+
+        String bodyMail = "Hello, "+user.getFirstName()+" "+user.getLastName()+"\n" +
+                "\n" +
+                "** This is an automated message -- please do not reply as you will not receive a response. **\n" +
+                "\n" +
+                "This message is in response to your request to reset your account password.\n" +
+                "\n" +
+                "Your password is: "+newPassword+"\n" +
+                "\n" +
+                "Thank you.\n" +
+                "\n" +
+                "SLA Support System.";
+
+        emailSenderService.sendSimpleEmail(
+                mailTo,bodyMail,subjectMail
+        );
+
+        return "reset password successfully";
+    }
 
 }
