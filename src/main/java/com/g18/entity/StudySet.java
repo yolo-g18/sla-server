@@ -25,6 +25,7 @@ public class StudySet {
 	private User creator;
 	private String title;
 	private String description;
+	@Column(columnDefinition = "LONGTEXT")
 	private String tag;
 	private Instant createdDate;
 	private boolean isPublic;

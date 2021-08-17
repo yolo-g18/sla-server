@@ -21,7 +21,9 @@ public class Card {
 	@JoinColumn(name = "study_set_id")
 	private StudySet studySet;
 
+	@Column(columnDefinition = "LONGTEXT")
 	private String front;
+	@Column(columnDefinition = "LONGTEXT")
 	private String back;
 
 	@OneToMany(mappedBy = "card", orphanRemoval=true, cascade=CascadeType.ALL)
