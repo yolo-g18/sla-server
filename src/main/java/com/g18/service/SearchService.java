@@ -48,6 +48,7 @@ public class SearchService {
                 studySetPage.stream().map(studySet -> new SearchStudySetResponse(
                           studySet.getId(),
                         findUserNameByUserId(studySet.getCreator().getId()),
+                        studySet.getCreator().getAvatar(),
                         studySet.getTitle(),
                         studySet.getDescription(),
                         convertToCardDto(cardRepository.findTop4ByStudySetId(studySet.getId())),
@@ -67,6 +68,7 @@ public class SearchService {
                 studySetPage.stream().map(studySet -> new SearchStudySetResponse(
                                 studySet.getId(),
                         findUserNameByUserId(studySet.getCreator().getId()),
+                                studySet.getCreator().getAvatar(),
                                 studySet.getTitle(),
                                 studySet.getDescription(),
                                 convertToCardDto(cardRepository.findTop4ByStudySetId(studySet.getId())),

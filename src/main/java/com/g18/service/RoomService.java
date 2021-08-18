@@ -154,6 +154,7 @@ public class RoomService {
         json.put("ownerName",userService.getUserNameOfPerson(existingRoom.getOwner().getId()));
         json.put("setNumbers",listIdOfSetsInRoom(id).size());
         json.put("folderNumbers",existingRoom.getRoomFolders().size());
+        json.put ("memberNumbers", existingRoom.getRoomMembers().size());
         return json;
 
     }
@@ -690,6 +691,7 @@ public class RoomService {
             ObjectNode json = mapper.createObjectNode();
             json.put("member_id",roomMember.getRoomMemberId().getMemberId());
             json.put("userName",userService.getUserNameOfPerson(roomMember.getMember().getId()));
+            json.put("avatar", roomMember.getMember().getAvatar());
 
 
             objectNodeList.add(json);
@@ -763,6 +765,7 @@ public class RoomService {
             json.put("user_id",roomRequestAttend.getRoomRequestAttendId().getUserId());
             json.put("userName",userService.getUserNameOfPerson(roomRequestAttend.getUser().getId()));
             json.put("time",formatter.format(roomRequestAttend.getRequestedDate()));
+            json.put("avatar", roomRequestAttend.getUser().getAvatar());
 
             objectNodeList.add(json);
         }

@@ -13,6 +13,7 @@ import java.util.List;
 public class SearchStudySetResponse {
     private Long id;
     private String creator;
+    private String creatorAvatar;
     private String title;
     private String description;
     private List<CardSearchResponse> first4Cards;
