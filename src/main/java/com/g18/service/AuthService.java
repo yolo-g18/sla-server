@@ -119,14 +119,10 @@ public class AuthService {
 
 
             //send mail for
-            mailService.sendMail(new NotificationEmail("Please Active your Account", user.getEmail(),
-                    "Thank you for signing up SLS, " +
-                            "please click on the below url to activate your account: " +
-                            "http://localhost:8080/api/auth/accountVerification/" + token));
             emailSenderService.sendSimpleEmail(
                     user.getEmail(),
-                    "Thank you for signing up SLS, " +
-                            "please click on the below url to activate your account: " +
+                    "Hi " + account.getUsername() + "Thank you for signing up SLS\n" +
+                            "Please click on the below url to activate your account: " +
                             "http://localhost:8080/api/auth/accountVerification/" + token,
                     "[SLA] Active account");
         }
@@ -242,8 +238,8 @@ public class AuthService {
                     .schoolName(user.getSchoolName())
                     .createdAt(String.valueOf(account.getCreatedDate()))
                     .updatedAt(String.valueOf(account.getUpdateDate()))
-                    .favourTimeFrom(String.valueOf(user.getFavourTimeFrom()))
-                    .favourTimeTo(String.valueOf(user.getFavourTimeTo()))
+                    .favourTimeFrom(user.getFavourTimeFrom() != null ? String.valueOf(user.getFavourTimeFrom()) : null)
+                    .favourTimeTo(user.getFavourTimeTo() != null ? String.valueOf(user.getFavourTimeTo()) : null)
                     .build();
             return userResponse;
 
