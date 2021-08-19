@@ -123,6 +123,12 @@ public class AuthService {
                     "Thank you for signing up SLS, " +
                             "please click on the below url to activate your account: " +
                             "http://localhost:8080/api/auth/accountVerification/" + token));
+            emailSenderService.sendSimpleEmail(
+                    user.getEmail(),
+                    "Thank you for signing up SLS, " +
+                            "please click on the below url to activate your account: " +
+                            "http://localhost:8080/api/auth/accountVerification/" + token,
+                    "[SLA] Active account");
         }
     }
 

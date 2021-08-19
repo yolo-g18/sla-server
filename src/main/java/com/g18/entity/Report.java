@@ -27,6 +27,7 @@ public class Report {
     @JoinColumn(name="study_set_id")
     private StudySet studySet;
 
+    @Column(columnDefinition = "LONGTEXT")
     private String content;
     @JsonProperty
     private boolean isChecked;

@@ -13,13 +13,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-@RestController
+
+@Controller
 @RequestMapping("api/auth")
 @AllArgsConstructor
 @Slf4j
@@ -29,28 +32,32 @@ public class AuthController {
     private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/register")
+    @ResponseBody
     public ResponseEntity<String> signup(@Valid @RequestBody RegisterRequest registerRequest) {
         authService.signup(registerRequest);
         return new ResponseEntity<>("User Register Successful", HttpStatus.OK);
     }
 
     @GetMapping("/accountVerification/{token}")
-    public ResponseEntity<String> verifyAccount(@PathVariable String token) {
+    public String verifyAccount(@PathVariable String token) {
         authService.verifyAccount(token);
-        return new ResponseEntity<>("Account Activated Successful", HttpStatus.OK);
+        return "activeAcc";
     }
 
     @PostMapping("/login")
+    @ResponseBody
     public AuthenticationResponse login(@Valid @RequestBody LoginRequest loginRequest) throws NotFoundException {
         return authService.login(loginRequest);
     }
 
     @PostMapping("refresh/token")
+    @ResponseBody
     public AuthenticationResponse refreshTokens(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) throws Exception {
         return authService.refreshToken(refreshTokenRequest);
     }
 
     @GetMapping("/logout")
+    @ResponseBody
     public ResponseEntity<String> logout (HttpServletRequest request, HttpServletResponse response) {
         Account account = authService.getCurrentAccount();
         log.error("acc id: " + account.getId());
@@ -63,6 +70,7 @@ public class AuthController {
     }
 
     @PostMapping("/forgotPassword")
+    @ResponseBody
     public String forgotPassword(@RequestBody ObjectNode json){
         return authService.resetNewPasswordForUser(json);
     }
