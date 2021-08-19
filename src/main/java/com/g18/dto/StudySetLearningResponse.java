@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 public class StudySetLearningResponse {
     private Long userID;
     private String owner;
+    private String creatorAvatar;
     private Long studySetId;
     private String studySetName;
     private String ssDescription;

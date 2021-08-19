@@ -49,6 +49,7 @@ public class LibraryService {
             sslDto.setStatus(ssl.getStatus());
             sslDto.setNumberOfCards(cardRepository.countNumberCardBySSID(ssl.getStudySet().getId()));
             sslDto.setOwner(findUserNameByUserId(ssl.getStudySet().getCreator().getId()));
+            sslDto.setCreatorAvatar(ssl.getStudySet().getCreator().getAvatar());
             results.add(sslDto);
         }
         return results;
@@ -61,6 +62,7 @@ public class LibraryService {
             SearchStudySetResponse sssr = new SearchStudySetResponse();
             sssr.setId(ss.getId());
             sssr.setCreator(findUserNameByUserId(ss.getCreator().getId()));
+            sssr.setCreatorAvatar(ss.getCreator().getAvatar());
             sssr.setNumberOfCards(ss.getCards().size());
             sssr.setTitle(ss.getTitle());
             sssr.setDescription(ss.getDescription());
