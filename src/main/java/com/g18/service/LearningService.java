@@ -543,12 +543,19 @@ public class LearningService {
         notificationRepository.save(notification);
     }
 
+    @Transactional
     public ResponseEntity stopLearning(Long studySetId) {
         try {
             Long userId = authService.getCurrentAccount().getUser().getId();
             StudySetLearning studySetLearning = studySetLearningRepository.findByUserIdAndStudySetId(userId, studySetId);
 
             if (studySetLearning != null) {
+                List<CardLearning> cards= cardLearningRepository.getListCardLearningByUserIdAndStudySetId(userId, studySetId);
+                if(!cards.isEmpty()){
+                    for(CardLearning cardLearning : cards){
+                        cardLearningRepository.delete(cardLearning);
+                    }
+                }
                 studySetLearningRepository.delete(studySetLearning);
                 return ResponseEntity.status(HttpStatus.OK).body("Delete successful");
             } else {

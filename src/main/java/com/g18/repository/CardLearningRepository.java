@@ -42,4 +42,7 @@ public interface CardLearningRepository extends JpaRepository<CardLearning,Long>
 
     @Query("SELECT cl FROM CardLearning cl WHERE cl.card.studySet.isActive = TRUE AND cl.learnedDate < :learnedDate")
     List<CardLearning> findCardLearningByLearnedDateBefore(@Param("learnedDate") Instant learnedDate);
+
+    @Query("SELECT cl FROM CardLearning cl WHERE cl.user.id = :userId AND cl.card.studySet.id = :studySetId ")
+    List<CardLearning> getListCardLearningByUserIdAndStudySetId(@Param("userId")Long userId, @Param("studySetId")Long studySetId);
 }
