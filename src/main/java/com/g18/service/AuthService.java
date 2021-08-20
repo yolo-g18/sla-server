@@ -278,7 +278,7 @@ public class AuthService {
             account.setPassword(passwordEncoder.encode((changePasswordDto.getNewPassword())));
             accountRepository.save(account);
         } else {
-            throw new AccountException("Wrong old passwod, try again!");
+            throw new AccountException("Wrong old password, try again!");
         }
 
     }

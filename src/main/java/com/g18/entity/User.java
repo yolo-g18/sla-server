@@ -24,18 +24,28 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Column(columnDefinition = "LONGTEXT")
 	private String firstName;
+	@Column(columnDefinition = "LONGTEXT")
 	private String lastName;
 
+	@Column(columnDefinition = "LONGTEXT")
 	private String schoolName;
+	@Column(columnDefinition = "LONGTEXT")
 	private String job;
+	@Column(columnDefinition = "LONGTEXT")
 	private String major;
+	@Column(columnDefinition = "LONGTEXT")
 	private String avatar;
+	@Column(columnDefinition = "LONGTEXT")
 	private String bio;
 
 	private Instant favourTimeFrom;
 	private Instant favourTimeTo;
+
+	@Column(columnDefinition = "LONGTEXT")
 	private String email;
+	@Column(columnDefinition = "LONGTEXT")
 	private String address;
 
 	@OneToMany(mappedBy = "user", orphanRemoval=true, cascade=CascadeType.ALL)
