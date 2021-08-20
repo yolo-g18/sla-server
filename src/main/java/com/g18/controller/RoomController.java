@@ -21,7 +21,7 @@ public class RoomController {
     @PostMapping("/createRoom")
     public String createRoom(@RequestBody ObjectNode json){ return roomService.saveRoom(json);
     }
-
+    //findallroom
     @GetMapping("/getRoomListOfUser/{id}")
     public List<ObjectNode> findAllRooms(@PathVariable Long id){
         return roomService.getRoomListOfUser(id);

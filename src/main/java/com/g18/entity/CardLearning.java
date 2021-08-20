@@ -22,7 +22,7 @@ public class CardLearning {
 
     @EmbeddedId
     private UserCardId userCardId;
-    //a
+    //
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @MapsId("userId")
