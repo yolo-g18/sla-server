@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -20,7 +21,11 @@ public class Card {
 	@JoinColumn(name = "study_set_id")
 	private StudySet studySet;
 
+	@Column(columnDefinition = "LONGTEXT")
 	private String front;
+	@Column(columnDefinition = "LONGTEXT")
 	private String back;
 
+	@OneToMany(mappedBy = "card", orphanRemoval=true, cascade=CascadeType.ALL)
+	private List<CardLearning> cardLearningList; //list cardLearning
 }

@@ -5,6 +5,4 @@ public class MasterCode {
 	private String code;
 	private Integer index;
 	private String name;
-
-	
 }

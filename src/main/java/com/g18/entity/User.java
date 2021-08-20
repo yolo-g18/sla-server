@@ -1,6 +1,8 @@
 package com.g18.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 public class User {
 
 	@Id
@@ -24,17 +27,22 @@ public class User {
 	private String firstName;
 	private String lastName;
 
-	private Date dateOfBirth;
-	private Boolean gender;
 	private String schoolName;
 	private String job;
-	private String phone;
+	private String major;
 	private String avatar;
+	private String bio;
 
 	private Instant favourTimeFrom;
 	private Instant favourTimeTo;
 	private String email;
 	private String address;
+
+	@OneToMany(mappedBy = "user", orphanRemoval=true, cascade=CascadeType.ALL)
+	private List<Notification> notis;
+
+	@OneToMany(mappedBy = "reporter", orphanRemoval=true, cascade=CascadeType.ALL)
+	private List<Report> reports;
 
 	@OneToMany(mappedBy = "creator")
 	private List<StudySet>  studySetsOwn; //list study sets created
@@ -45,13 +53,22 @@ public class User {
 	@OneToMany(mappedBy = "owner")
 	private List<Folder>  FoldersOwn; //list folders created
 
-	@OneToMany(mappedBy = "room")
-	private List<RoomMember>  roomsJoin; //list rooms joined
+	@OneToMany(mappedBy = "member", orphanRemoval=true, cascade=CascadeType.ALL)
+	private List<RoomMember>  MemberJoin; //list rooms joined
 
-	@OneToMany(mappedBy = "studySet")
+	@OneToMany(mappedBy = "user", orphanRemoval=true, cascade=CascadeType.ALL)
 	private List<StudySetLearning>  studySetsLearning; //list study sets learning
 
-//	@OneToMany(mappedBy = "card", cascade = CascadeType.ALL)
-//	private List<CardLearning>  cardsLearning;
+	@OneToMany(mappedBy = "user", orphanRemoval=true, cascade = CascadeType.ALL)
+	private List<CardLearning>  cardsLearning; //list cardLearning
 
+	@OneToMany(mappedBy = "user", orphanRemoval=true, cascade = CascadeType.ALL)
+	private List<RoomInvitation>  invitationList;
+
+	@Override
+	public String toString() {
+		return "User{" +
+				"id=" + id +
+				'}';
+	}
 }

@@ -6,6 +6,8 @@ import com.g18.model.UserCardId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.Max;
@@ -34,14 +36,14 @@ public class CardLearning {
     private int q; //quality
     private double intervalTime;
     private double eFactor;
+    private int repetitionNumber;
 
     private String hint;
-    private Instant LearnedDate;
+    private Instant learnedDate;
 
     @Enumerated(EnumType.STRING)
     private Status status;
 
     @Enumerated(EnumType.STRING)
     private Color color;
-
 }
