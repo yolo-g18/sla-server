@@ -104,12 +104,23 @@ public class AdminController {
         StudySet ss = studySetRepository.findById(payload.getId()).orElseThrow(()
                 ->  new ExpressionException("Lỗi ko tìm thấy")) ;
         System.out.println("Email: " + ss.getCreator().getEmail());
-        emailSenderService.sendSimpleEmail(
-                ss.getCreator().getEmail(),
-                "Hi " + ss.getCreator().getLastName() +" " + ss.getCreator().getFirstName()
-                        + "\nYour study set : " +ss.getTitle()+ " violate our polices. The study set is disabled." +
-                        "\nEmail us if you need any support !",
-                "[SLA] Your study set is disabled");
+        if(payload.isActive() == false) {
+            emailSenderService.sendSimpleEmail(
+                    ss.getCreator().getEmail(),
+                    "Hi " + ss.getCreator().getLastName() +" " + ss.getCreator().getFirstName()
+                            + "\nYour study set : " +ss.getTitle()+ " violate our polices. The study set is disabled." +
+                            "\nEmail us if you need any support !",
+                    "[SLA] Your study set is disabled");
+        } else {
+            emailSenderService.sendSimpleEmail(
+                    ss.getCreator().getEmail(),
+                    "Hi " + ss.getCreator().getLastName() +" " + ss.getCreator().getFirstName()
+                            + "\nYour study set : " +ss.getTitle()+ "is reinstated" +
+                            "\nAfter careful consideration, we have decided to reinstate your study set." +
+                            "\nEmail us if you need any support !",
+                    "[SLA] Your study set is reinstated");
+        }
+
         ss.setActive(payload.isActive());
         studySetRepository.save(ss);
 
