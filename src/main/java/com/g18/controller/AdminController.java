@@ -98,6 +98,11 @@ public class AdminController {
     public ResponseEntity listStudySet(@RequestParam(value = "id") Long id) {
         return cardService.listCardByStudySetAdmin(id);
     }
+    @GetMapping("studySet/check")
+    public ResponseEntity checkActiveStudySet(@RequestParam(value = "id") Long id) {
+        return studySetService.viewStudySetAdminCheck(id);
+    }
+
 
     @PutMapping("/report/disable")
     public String deleteReport(@RequestBody DisableSetDto payload) throws NotFoundException, MessagingException {

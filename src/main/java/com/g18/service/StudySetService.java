@@ -208,6 +208,22 @@ public class StudySetService {
         return ResponseEntity.status(HttpStatus.OK).body(studySetResponse);
     }
 
+    public ResponseEntity viewStudySetAdminCheck(Long studySetId) {
+        StudySet studySet = studySetRepository.findByIdAndIsActiveTrue(studySetId);
+        if(studySet == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Study Set not exist");
+        }
+        Account account = authService.getCurrentAccount();
+        boolean isAdmin = account.getRoles().contains(roleRepository.findByName(ERole.ROLE_ADMIN)
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found.")));
+        log.error(account.getRoles().toString());
+        if(!isAdmin){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not allowed");
+        }
+        StudySetResponse studySetResponse = setStudySetResponse(studySet, 0);
+        return ResponseEntity.status(HttpStatus.OK).body(studySetResponse);
+    }
+
     public void exportStudySetToExcel(HttpServletResponse response, Long studySetId) throws IOException {
         // TODO Auto-generated method stub
         String headerKey = "Content-Disposition";
