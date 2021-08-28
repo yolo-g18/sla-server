@@ -156,7 +156,7 @@ public class LearningService {
                 List<Event> eventListToday = eventRepository.getListEventByUserIdAndDate(user.getId(), today);
 
                 //If there was another event before
-                if(!eventListToday.isEmpty()) {
+                if(eventListToday != null) {
                     //Check if exist event learn of StudySet before
                     boolean isExistEventOfStudySet = false;
 
@@ -228,7 +228,7 @@ public class LearningService {
             Long userId = authService.getCurrentUser().getId();
 
             List<CardLearning> cardLearningList = cardLearningRepository.getListCardLearningByStudySetIdAndUserIdAndDate(studySetId, userId, date);
-            if(!cardLearningList.isEmpty()){
+            if(cardLearningList != null){
                 for(CardLearning cardLearning : cardLearningList){
                     CardLearningDto cardLearningDto = convertCardLearningToDTO(cardLearning);
                     responses.add(cardLearningDto);
@@ -258,6 +258,11 @@ public class LearningService {
                 Integer repetitionNumber = cardLearning.getRepetitionNumber();
                 Status status;
 
+                eFactor = eFactor + (0.1 - (5 - cardQualityRequestUpdate.getQ()) * (0.08 + (5 - cardQualityRequestUpdate.getQ()) * 0.02));
+                if(eFactor < 1.3){
+                    eFactor = 1.3;
+                }
+
                 //If quality >=3, update interval, eFactor, repetitionNumber, status
                 if(cardQualityRequestUpdate.getQ() >= 3){
                     status = Status.REVIEW;
@@ -268,10 +273,7 @@ public class LearningService {
                     }else{
                         interval = interval * eFactor;
                     }
-                    eFactor = eFactor + (0.1 - (5 - cardQualityRequestUpdate.getQ()) * (0.08 + (5 - cardQualityRequestUpdate.getQ()) * 0.02));
-                    if(eFactor < 1.3){
-                        eFactor = 1.3;
-                    }
+
                     repetitionNumber++;
 
                     //If qualityBerore < 3, qualityUpdate >=3 -> Update progress increase(+)
@@ -497,10 +499,7 @@ public class LearningService {
         User user = authService.getCurrentAccount().getUser();
 
         List<CardLearningDto> response = cardLearningRepository.getListCardLearningOrderByQ(user.getId(), studySetId);
-        if(!response.isEmpty()){
-            return ResponseEntity.status(HttpStatus.OK).body(response);
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     public void addStudySetLearningByUserAndStudySet(User user, StudySet studySet){

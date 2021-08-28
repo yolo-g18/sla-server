@@ -339,7 +339,7 @@ public class StudySetService {
     public ResponseEntity getListProgressByStudySet(Long studySetId) {
         List<ProgressResponse> responses = studySetLearningRepository.getListProgressByStudySet(studySetId);
 
-        if(!responses.isEmpty()){
+        if(responses != null){
             return ResponseEntity.status(HttpStatus.OK).body(responses);
         }else{
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found.");
