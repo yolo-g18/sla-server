@@ -111,6 +111,7 @@ public class StudySetService {
         }
     }
 
+    @Transactional
     public ResponseEntity editStudySet(StudySetRequest request) {
         Long userId = authService.getCurrentAccount().getUser().getId();
 
@@ -338,12 +339,11 @@ public class StudySetService {
     public ResponseEntity getListProgressByStudySet(Long studySetId) {
         List<ProgressResponse> responses = studySetLearningRepository.getListProgressByStudySet(studySetId);
 
-        if(responses != null){
+        if(!responses.isEmpty()){
             return ResponseEntity.status(HttpStatus.OK).body(responses);
         }else{
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found.");
         }
-
     }
 
     @Transactional
@@ -377,7 +377,6 @@ public class StudySetService {
             StudySetLearning studySetLearning = studySetLearningRepository.findByUserIdAndStudySetId(user.getId(), studySetId);
             if (studySetLearning != null) {
                 String color = studySetLearning.getColor().toString();
-                studySetLearningRepository.save(studySetLearning);
                 return ResponseEntity.status(HttpStatus.OK).body(color);
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Study Set Learning not exist");

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -38,7 +39,7 @@ public class ScheduleConfig {
     @Autowired
     private AccountRepository accountRepository;
 
-
+    @Transactional
     @Scheduled(cron = "0 0 1 * * *")//Run at 1 A.M every day
     public void updateDaily() {
 
@@ -68,13 +69,12 @@ public class ScheduleConfig {
 
                     Notification notification = new Notification();
                     notification.setUser(user);
-                    notification.setTitle("Notice to learn daily");
-                    notification.setDescription(event.getName());
+                    notification.setDescription("You have new task '"+event.getName()+"'.");
                     notification.setType("daily");
-                    notification.setLink(null);
+                    notification.setLink("/schedule");
                     notification.setCreatedTime(Instant.now());
                     notification.setTimeTrigger(Instant.now());
-                    notification.setRead(true);
+                    notification.setRead(false);
                     notificationRepository.save(notification);
                 }
             }

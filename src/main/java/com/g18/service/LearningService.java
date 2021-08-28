@@ -66,6 +66,7 @@ public class LearningService {
     @Autowired
     private NotificationRepository notificationRepository;
 
+    @Transactional
     public ResponseEntity learningFlashCardByStudySet(Long studySetId){
         // TODO Auto-generated method stub
         List<CardLearningDto> responses = new ArrayList<>();
@@ -76,6 +77,7 @@ public class LearningService {
             if(studySet == null){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Study Set not exist");
             }
+            Color color = Color.GRAY;
             List<Card> cards = studySet.getCards();
             int numberOfCardAddNew = 0;
             for (Card card: cards) {
@@ -96,7 +98,7 @@ public class LearningService {
                     Instant now = Instant.now().truncatedTo(ChronoUnit.HOURS);
                     cardLearning.setLearnedDate(now);
 
-                    cardLearning.setColor(null);
+                    cardLearning.setColor(color);
                     cardLearning.setEFactor(2.5);
                     cardLearning.setHint(null);
                     cardLearning.setIntervalTime(0);
@@ -112,7 +114,6 @@ public class LearningService {
             int numberOfCard = cards.size();
             StudySetLearning studySetLearning = new StudySetLearning();
             boolean isFirstTime = false;
-            Color color = Color.GRAY;
             if(numberOfCardAddNew != 0) {
                 if (numberOfCardAddNew == numberOfCard) {
                     isFirstTime = true;
@@ -155,13 +156,13 @@ public class LearningService {
                 List<Event> eventListToday = eventRepository.getListEventByUserIdAndDate(user.getId(), today);
 
                 //If there was another event before
-                if(eventListToday != null) {
+                if(!eventListToday.isEmpty()) {
                     //Check if exist event learn of StudySet before
                     boolean isExistEventOfStudySet = false;
 
                     for(Event eventToday : eventListToday){
                         Long studySetIdOfEventBefore = Long.valueOf(eventToday.getDescription().trim());
-                        if(studySetIdOfEventBefore == studySetId) {
+                        if(studySetIdOfEventBefore.equals(studySetId)) {
                             isExistEventOfStudySet = true;
                             break;
                         }
@@ -219,6 +220,7 @@ public class LearningService {
         return ResponseEntity.status(HttpStatus.OK).body(responses);
     }
 
+    @Transactional
     public ResponseEntity learningFlashCardByDateAndStudySetAndUser(Long studySetId, String date) {
         // TODO Auto-generated method stub
         List<CardLearningDto> responses = new ArrayList<>();
@@ -226,7 +228,7 @@ public class LearningService {
             Long userId = authService.getCurrentUser().getId();
 
             List<CardLearning> cardLearningList = cardLearningRepository.getListCardLearningByStudySetIdAndUserIdAndDate(studySetId, userId, date);
-            if(cardLearningList != null){
+            if(!cardLearningList.isEmpty()){
                 for(CardLearning cardLearning : cardLearningList){
                     CardLearningDto cardLearningDto = convertCardLearningToDTO(cardLearning);
                     responses.add(cardLearningDto);
@@ -239,6 +241,7 @@ public class LearningService {
         }
     }
 
+    @Transactional
     public ResponseEntity updateCardLearning(CardQualityRequestUpdate cardQualityRequestUpdate) {
         try{
             User user = authService.getCurrentUser();
@@ -261,7 +264,7 @@ public class LearningService {
                     if(repetitionNumber == 0){
                         interval = 1;
                     }else if(repetitionNumber == 1){
-                        interval = 6;
+                        interval = 2;
                     }else{
                         interval = interval * eFactor;
                     }
@@ -310,7 +313,7 @@ public class LearningService {
                 }
 
                 Instant now = Instant.now();
-                BigDecimal intervalRounding = new BigDecimal(interval).setScale(0,RoundingMode.DOWN);
+                BigDecimal intervalRounding = new BigDecimal(interval).setScale(0,RoundingMode.HALF_UP);
                 Instant learnDate = now.plus(intervalRounding.intValue(), ChronoUnit.DAYS);
 
                 //Update CardLearning DB
@@ -329,13 +332,13 @@ public class LearningService {
                 Long studySetIdOfCard = card.getStudySet().getId();
 
                 List<Event> eventListToday = eventRepository.getListEventByUserIdAndDate(user.getId(), date);
-                if(eventListToday != null){
+                if(!eventListToday.isEmpty()){
                     //Check if exist event learn of StudySet before
                     boolean isExistEventOfStudySet = false;
 
                     for(Event eventToday : eventListToday){
                         Long studySetIdOfEventBefore = Long.valueOf(eventToday.getDescription().trim());
-                        if(studySetIdOfEventBefore == studySetIdOfCard) {
+                        if(studySetIdOfEventBefore.equals(studySetIdOfCard)) {
                             isExistEventOfStudySet = true;
                             break;
                         }
@@ -406,6 +409,7 @@ public class LearningService {
         return cardLearningDto;
     }
 
+    @Transactional
     public ResponseEntity learningContinue(Long studySetId) {
         try {
             User user = authService.getCurrentAccount().getUser();
@@ -453,7 +457,7 @@ public class LearningService {
                     studySetLearning.setUserStudySetId(userStudySetId);
                     studySetLearning.setStudySet(studySet);
                     studySetLearning.setUser(user);
-                    studySetLearning.setColor(null);
+                    studySetLearning.setColor(Color.GRAY);
                     studySetLearning.setExpectedDate(null);
                     studySetLearning.setFeedback(null);
                     studySetLearning.setProgress(0);
@@ -472,9 +476,9 @@ public class LearningService {
                 }
 
             }
-            Pageable top20 = PageRequest.of(0, 20);
+            Pageable top10 = PageRequest.of(0, 10);
 
-            List<CardLearningDto> listCardLearning = cardLearningRepository.getTopCardLearning(user.getId(), studySetId, top20);
+            List<CardLearningDto> listCardLearning = cardLearningRepository.getTopCardLearning(user.getId(), studySetId, top10);
             LearningrResponseDto response
                     = new LearningrResponseDto(studySetLearningRepository.findStudySetLearningByStudySetAndUser(studySet, user)
                     .getProgress(),
@@ -493,7 +497,7 @@ public class LearningService {
         User user = authService.getCurrentAccount().getUser();
 
         List<CardLearningDto> response = cardLearningRepository.getListCardLearningOrderByQ(user.getId(), studySetId);
-        if(response != null){
+        if(!response.isEmpty()){
             return ResponseEntity.status(HttpStatus.OK).body(response);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found");
@@ -513,7 +517,7 @@ public class LearningService {
             setLearning.setUserStudySetId(userStudySetId);
             setLearning.setStudySet(studySet);
             setLearning.setUser(user);
-            setLearning.setColor(null);
+            setLearning.setColor(Color.GRAY);
             setLearning.setExpectedDate(null);
             setLearning.setFeedback(null);
             setLearning.setProgress(0);
