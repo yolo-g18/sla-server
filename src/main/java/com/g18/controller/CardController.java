@@ -41,7 +41,6 @@ public class CardController {
 	public ResponseEntity writeHint(@RequestBody CardDto cardDto) {
 		return cardService.writeHint(cardDto);
 	}
-
 	@GetMapping("/list")
 	public ResponseEntity listStudySet(@RequestParam(value = "id") Long id) {
 		return cardService.listCardByStudySet(id);

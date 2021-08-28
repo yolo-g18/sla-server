@@ -16,7 +16,7 @@ public class FeedbackRequest {
 
     @Min(0)
     @Max(5)
-    private double rating;
+        private double rating;
 
     @Size(max = 250, message = "Feedback cannot exceed 250 character.")
     private String feedback;

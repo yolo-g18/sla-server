@@ -376,7 +376,7 @@ public class LearningService {
 
                     eventLearning.setColor(color);
 
-                    eventLearning.setName("Review " + card.getStudySet().getTitle());
+                    eventLearning.setName(card.getStudySet().getTitle());
                     eventLearning.setCreatedTime(now);
                     eventLearning.setUpdateTime(now);
                     eventRepository.save(eventLearning);

@@ -14,6 +14,6 @@ public class CardQualityRequestUpdate {
     private Long cardId;
 
     @Min(value=0, message="q must be greater than 0")
-    @Max(value=5, message="q must be less than 0")
+    @Max(value=5, message="q must be less than 6")
     private int q;
 }
