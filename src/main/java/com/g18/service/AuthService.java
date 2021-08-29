@@ -123,7 +123,7 @@ public class AuthService {
                     user.getEmail(),
                     "Hi " + account.getUsername() + "Thank you for signing up SLS\n" +
                             "Please click on the below url to activate your account: " +
-                            "http://localhost:8080/api/auth/accountVerification/" + token,
+                            "http://sla-server-290821-env.eba-mkummnqb.ap-southeast-1.elasticbeanstalk.com/api/auth/accountVerification/" + token,
                     "[SLA] Active account");
         }
     }

@@ -202,6 +202,7 @@ public class LearningService {
 
                     Instant to = now.atZone(ZoneId.systemDefault()).withHour(23).withMinute(59).toInstant();
                     eventLearning.setToTime(to);
+                    eventLearning.setLearnEvent(true);
 
                     eventLearning.setColor(color);
 
@@ -380,11 +381,12 @@ public class LearningService {
                     eventLearning.setToTime(to);
 
                     eventLearning.setColor(color);
-
+                    eventLearning.setLearnEvent(true);
                     eventLearning.setName(card.getStudySet().getTitle());
                     eventLearning.setCreatedTime(now);
                     eventLearning.setUpdateTime(now);
                     eventRepository.save(eventLearning);
+
 
                     createNotificationAfterCreateEvent(eventLearning);
                 }
