@@ -23,6 +23,7 @@ public class StorageService {
     @Value("${amazonProperties.endpointUrl}")
     private String endpointUrl;
 
+
     @Autowired
     private AmazonS3 s3Client;
 
