@@ -119,7 +119,7 @@ public class ScheduleConfig {
                             "You have some events to attend today.\n" +
                             "Please participate fully and on time events on SLA.\n" +
                             "Have a good day!\n" +
-                            "http://sla-client-290821-env.ap-southeast-1.elasticbeanstalk.com/schedule";
+                            "http://localhost:8080/schedule";
                     String subject = "Notice to learn on " + learnTime;
                     emailSenderService.sendSimpleEmail(toEmail, body, subject);
 
@@ -152,7 +152,7 @@ public class ScheduleConfig {
                 String body = "Hello " + username + "\n" +
                         "Time to learn is " + learnTime + "\n" +
                         "Please go to SLA to learn. \n" +
-                        "http://sla-client-290821-env.ap-southeast-1.elasticbeanstalk.com/schedule";
+                        "http://localhost:8080/schedule";
                 String subject = "Time to learn";
                 emailSenderService.sendSimpleEmail(toEmail, body, subject);
 
